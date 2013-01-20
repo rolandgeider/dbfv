@@ -1,0 +1,10 @@
+{% load dbfv_extras %}
+
+{% csrf_token %}
+
+{% table_form_errors form %}
+{% for field in form %}
+    {% table_form_field field %}
+{% endfor %}
+
+{% table_form_submit save_text %}

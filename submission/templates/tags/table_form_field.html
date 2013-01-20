@@ -1,0 +1,35 @@
+{% if field.name != "DELETE" %}
+<div class="control-group {% if field.errors %}error{% endif %}" id="form-{{field.name}}">
+    {% if not field.is_hidden %}
+        {% if field.field.comment_top %}
+            <div class="comment-top">
+                {{ field.field.comment_top }}
+            </div>
+        {% endif %}
+        {% block field %}
+        <label class="control-label {% if field.field.required %}required{% endif %}" for="{{field.auto_id}}">
+            {{field.label}}
+        </label>
+
+        <div class="controls">
+        {{field}}
+            <span class="help-inline">
+            {{field.help_text}}
+
+            {% if field.errors %}
+                {{field.errors}}
+            {% endif %}
+            </span>
+        </div>
+        {% endblock %}
+
+        {% if field.field.comment_bottom %}
+            <div class="comment-bottom">
+                {{ field.field.comment_bottom }}
+            </div>
+        {% endif %}
+    {% else %}
+        {{ field }}
+    {% endif %}
+</div>
+{% endif %}

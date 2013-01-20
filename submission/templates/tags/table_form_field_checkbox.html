@@ -1,0 +1,18 @@
+{% extends "tags/table_form_field.html" %}
+
+{% block field %}
+<div class="controls">
+    <label class="checkbox {% if field.field.required %}required{% endif %}" for="{{field.auto_id}}">
+        {{field}}
+        {{field.label}}
+    </label>
+    <span class="help-inline">
+        {{field.help_text}}
+
+        {% if field.errors %}
+        {{field.errors}}
+        {% endif %}
+    </span>
+</div>
+{% endblock %}
+

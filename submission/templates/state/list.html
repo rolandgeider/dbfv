@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load url from future %}
+
+{% block title %}Konzepte{% endblock %}
+
+{% block content %}
+<h2>Studios</h2>
+
+{% if state_list %}
+<table class="table table-striped" data-toggle="list">
+    <thead>
+    <tr>
+        <th>Nr.</th>
+        <th>Kürzel</th>
+        <th>Name</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for state in state_list %}
+    <tr>
+        <td>
+            {{state.id}}
+        </td>
+        <td>
+            {{state.short_name}}
+        </td>
+        <td>
+            <a href="{{state.get_absolute_url}}">{{state.name}}</a>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+    <p>Es liegen momentan keine Bundesländer vor.</p>
+{% endif %}
+{% endblock %}
+
+{% block sidebar %}
+<div class="sidebar-box">
+    <h5>Aktionen</h5>
+    <p><a href="{% url 'state-add' %}">Bundesland hinzufügen</a></p>
+</div>
+<div class="sidebar-box">
+    <h5>Weitere Infos</h5>
+    <p>Wählen Sie ein Konzept, um es zu bearbeiten.</p>
+</div>
+{% endblock %}

@@ -19,6 +19,12 @@ from django.conf.urls import patterns, url
 
 from django.views.generic import TemplateView
 
+from submission.views import GymListView
+from submission.views import GymCreateView
+
+from submission.views import StateListView
+from submission.views import StateCreateView
+
 
 urlpatterns = patterns('',
 
@@ -26,5 +32,21 @@ urlpatterns = patterns('',
     url(r'^$',
         TemplateView.as_view(template_name="index.html"),
         name="index"),
+
+    # Gyms
+    url(r'^gym/view/all/$',
+        GymListView.as_view(),
+        name='gym-list'),
+    url(r'^gym/add/$',
+        GymCreateView.as_view(),
+        name='gym-add'),
+
+    # States
+    url(r'^state/view/all/$',
+        StateListView.as_view(),
+        name='state-list'),
+    url(r'^state/add/$',
+        StateCreateView.as_view(),
+        name='state-add'),
 
 )

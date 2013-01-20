@@ -35,7 +35,7 @@ class State(models.Model):
         '''
         Return a more human-readable representation
         '''
-        return self.short_name
+        return self.name
 
 
 class Gym(models.Model):

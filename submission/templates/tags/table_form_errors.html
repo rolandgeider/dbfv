@@ -1,0 +1,15 @@
+{% if form.is_bound and not form.is_valid or form.non_field_errors %}
+<div class="alert alert-error">
+    Das Formular enthält noch Fehler
+    <a href="#" class="close" data-dismiss="alert">&times;</a>
+</div>
+{% endif %}
+{% if form.non_field_errors %}
+    <div class="control-group error">
+        <div class="controls">
+        <span class="help-inline">
+            {{ form.non_field_errors }}
+        </span>
+        </div>
+    </div>
+{% endif %}

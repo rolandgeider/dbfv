@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load url from future %}
+
+{% block title %}Konzepte{% endblock %}
+
+{% block content %}
+<h2>Studios</h2>
+
+{% if gym_list %}
+<table class="table table-striped" data-toggle="list">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>email</th>
+        <th>Bundesland</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for gym in gym_list %}
+    <tr>
+        <td>
+            {{gym.name}}
+        </td>
+        <td>
+            <a href= "mailto:{{gym.email}}">{{gym.email}}</a>
+        </td>
+        <td>
+            {{gym.state.name}}
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+    <p>Es liegen momentan keine Studios vor.</p>
+{% endif %}
+{% endblock %}
+
+{% block sidebar %}
+<div class="sidebar-box">
+    <h5>Aktionen</h5>
+    <p><a href="{% url 'gym-add' %}">Studio hinzufügen</a></p>
+</div>
+<div class="sidebar-box">
+    <h5>Weitere Infos</h5>
+    <p>Wählen Sie ein Konzept, um es zu bearbeiten.</p>
+</div>
+{% endblock %}

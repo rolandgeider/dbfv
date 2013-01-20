@@ -1,0 +1,51 @@
+{% load dbfv_extras %}
+
+{{ formset.management_form }}
+
+{% for form in formset %}
+<ul>
+    <li>
+    {% if form.instance.pk %}
+        <a href="#{{ form.prefix }}">{{ form.label }}</a>
+    {% else %}
+        <a href="#{{ form.prefix }}">Neuer Eintrag</a>
+    {% endif %}
+    </li>
+</ul>
+{% endfor %}
+
+<div class="accordion">
+{% for form in formset %}
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <div class="toggle-group">
+                <a data-toggle="collapse" href="#{{ form.prefix }}">
+                {% if form.instance.pk %}
+                    {{ form.label }}
+                {% else %}
+                    Neuer Eintrag
+                {% endif %}
+                </a>
+                {% if formset.can_delete and form.instance.pk and not formset.read_only %}
+                    <a data-toggle="delete" class="delete pull-right btn"
+                        href="#{{ form.DELETE.auto_id }}" ref="tooltip"
+                        title="Löschen">X</a>
+                <div class="delete-checkbox">
+                    <label class="checkbox pull-right" for="{{form.DELETE.auto_id}}">
+                        {{ form.DELETE }} Löschen
+                    </label>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div id="{{ form.prefix }}" class="accordion-body collapse {% if form.instance.pk or form.errors %}in{% endif %}">
+            <div class="accordion-inner">
+                {% table_form_render form %}
+            </div>
+        </div>
+    </div>
+{% empty %}
+    <em>Keine Einträge vorhanden</em>
+{% endfor %}
+</div>
