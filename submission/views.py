@@ -6,6 +6,10 @@ from submission.models import Gym
 from submission.models import State
 
 
+#
+# Gyms
+#
+
 class GymListView(generic.ListView):
     '''
     Shows a list with all konzepts
@@ -16,9 +20,27 @@ class GymListView(generic.ListView):
     template_name = 'gym/list.html'
 
 
+class GymDetailView(generic.DetailView):
+    '''
+    Detail view of a gym
+    '''
+
+    model = Gym
+    template_name = 'gym/view.html'
+
+
 class GymCreateView(generic.CreateView):
     '''
     Shows a list with all konzepts
+    '''
+
+    model = Gym
+    template_name = 'form.html'
+
+
+class GymUpdateView(generic.UpdateView):
+    '''
+    Edits an existing Gym
     '''
 
     model = Gym

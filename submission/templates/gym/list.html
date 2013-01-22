@@ -19,7 +19,7 @@
     {% for gym in gym_list %}
     <tr>
         <td>
-            {{gym.name}}
+            <a href="{% url 'gym-view' gym.id %}">{{gym.name}}</a>
         </td>
         <td>
             <a href= "mailto:{{gym.email}}">{{gym.email}}</a>

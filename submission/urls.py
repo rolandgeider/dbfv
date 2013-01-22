@@ -19,8 +19,10 @@ from django.conf.urls import patterns, url
 
 from django.views.generic import TemplateView
 
+from submission.views import GymDetailView
 from submission.views import GymListView
 from submission.views import GymCreateView
+from submission.views import GymUpdateView
 
 from submission.views import StateListView
 from submission.views import StateCreateView
@@ -34,12 +36,18 @@ urlpatterns = patterns('',
         name="index"),
 
     # Gyms
+    url(r'^gym/(?P<pk>\d+)/view/$',
+        GymDetailView.as_view(),
+        name='gym-view'),
     url(r'^gym/view/all/$',
         GymListView.as_view(),
         name='gym-list'),
     url(r'^gym/add/$',
         GymCreateView.as_view(),
         name='gym-add'),
+    url(r'^gym/(?P<pk>\d+)/edit/$',
+        GymUpdateView.as_view(),
+        name="gym-edit"),
 
     # States
     url(r'^state/view/all/$',
