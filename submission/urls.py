@@ -26,6 +26,11 @@ from submission.views.gym import GymUpdateView
 
 from submission.views.state import StateListView
 from submission.views.state import StateCreateView
+from submission.views.state import StateUpdateView
+
+from submission.views.bank_account import BankAccountCreateView
+from submission.views.bank_account import BankAccountUpdateView
+from submission.views.bank_account import BankAccountListView
 
 
 urlpatterns = patterns('',
@@ -56,5 +61,21 @@ urlpatterns = patterns('',
     url(r'^state/add/$',
         StateCreateView.as_view(),
         name='state-add'),
+    url(r'^state/(?P<pk>\d+)/edit/$',
+        StateUpdateView.as_view(),
+        name='state-edit'),
+
+    # Bank account
+    url(r'^bank-account/view/all/$',
+        BankAccountListView.as_view(),
+        name='bank-account-list'),
+    url(r'^bank-account/add/$',
+        BankAccountCreateView.as_view(),
+        name='bank-account-add'),
+    url(r'^bank-account/(?P<pk>\d+)/edit/$',
+        BankAccountUpdateView.as_view(),
+        name='bank-account-edit'),
+
+
 
 )

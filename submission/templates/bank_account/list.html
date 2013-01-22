@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load url from future %}
+
+{% block title %}Liste der Bankkonten{% endblock %}
+
+{% block content %}
+<h2>Liste der Bankkonten</h2>
+
+{% if account_list %}
+<table class="table table-striped" data-toggle="list">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Kontonr.</th>
+        <th>BLZ</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for account in account_list %}
+    <tr>
+        <td>
+            <a href="{%url 'bank-account-edit' account.id %}">{{account.owner_name}}</a>
+        </td>
+        <td>
+            {{account.account_nr}}
+        </td>
+        <td>
+            {{account.bank_nr}} ({{account.bank_name}})</a>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+    <p>Es liegen momentan keine Daten vor.</p>
+{% endif %}
+{% endblock %}
+
+{% block sidebar %}
+<div class="sidebar-box">
+    <h5>Aktionen</h5>
+    <p><a href="{% url 'bank-account-add' %}">Konto hinzufügen</a></p>
+</div>
+{% endblock %}

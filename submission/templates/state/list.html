@@ -11,8 +11,8 @@
     <thead>
     <tr>
         <th>Nr.</th>
-        <th>Kürzel</th>
         <th>Name</th>
+        <th>Kürzel</th>
     </tr>
     </thead>
     <tbody>
@@ -22,10 +22,10 @@
             {{state.id}}
         </td>
         <td>
-            {{state.short_name}}
+            <a href="{% url 'state-edit' state.id %}">{{state.name}}</a>
         </td>
         <td>
-            <a href="{{state.get_absolute_url}}">{{state.name}}</a>
+            {{state.short_name}}
         </td>
     </tr>
     {% endfor %}
@@ -40,9 +40,5 @@
 <div class="sidebar-box">
     <h5>Aktionen</h5>
     <p><a href="{% url 'state-add' %}">Bundesland hinzufügen</a></p>
-</div>
-<div class="sidebar-box">
-    <h5>Weitere Infos</h5>
-    <p>Wählen Sie ein Konzept, um es zu bearbeiten.</p>
 </div>
 {% endblock %}

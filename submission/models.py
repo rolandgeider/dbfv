@@ -1,24 +1,45 @@
 # -*- coding: utf-8 -*-
 
-# This file is part of Workout Manager.
+# This file is part of the DBFV site.
 #
-# Workout Manager is free software: you can redistribute it and/or modify
+# the DBFV site is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Workout Manager is distributed in the hope that it will be useful,
+# the DBFV site is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU Affero General Public License
-# along with Workout Manager.  If not, see <http://www.gnu.org/licenses/>.
+# along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
 
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
+
+
+class BankAccount(models.Model):
+    '''
+    Model for a bank account
+    '''
+
+    owner_name = models.CharField(verbose_name=_('Owner name'),
+                            max_length=100,)
+    account_nr = models.CharField(verbose_name=_('Account nr.'),
+                                  max_length=9,)
+    bank_nr = models.CharField(verbose_name=_('Bank nr.'),
+                               max_length=8,)
+    bank_name = models.CharField(verbose_name=_('Bank name'),
+                                 max_length=30,)
+
+    def __unicode__(self):
+        '''
+        Return a more human-readable representation
+        '''
+        return "%s, BLZ: %s" % (self.account_nr, self.bank_nr)
 
 
 class State(models.Model):
@@ -30,6 +51,7 @@ class State(models.Model):
                             max_length=100,)
     short_name = models.CharField(verbose_name=_('Short name'),
                                   max_length=2,)
+    bank_account = models.ForeignKey(BankAccount, verbose_name=_('Bank account'))
 
     def __unicode__(self):
         '''

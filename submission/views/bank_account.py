@@ -16,42 +16,36 @@
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.views import generic
+from django.core.urlresolvers import reverse_lazy
 
-from submission.models import Gym
+from submission.models import BankAccount
 
 
-class GymListView(generic.ListView):
+class BankAccountListView(generic.ListView):
     '''
-    Shows a list with all konzepts
-    '''
-
-    context_object_name = "gym_list"
-    model = Gym
-    template_name = 'gym/list.html'
-
-
-class GymDetailView(generic.DetailView):
-    '''
-    Detail view of a gym
+    Shows a list with all bank accounts
     '''
 
-    model = Gym
-    template_name = 'gym/view.html'
+    context_object_name = "account_list"
+    model = BankAccount
+    template_name = 'bank_account/list.html'
 
 
-class GymCreateView(generic.CreateView):
+class BankAccountCreateView(generic.CreateView):
     '''
-    Shows a list with all konzepts
+    Creates a new bank account
     '''
 
-    model = Gym
+    model = BankAccount
     template_name = 'form.html'
+    success_url = reverse_lazy('bank-account-list')
 
 
-class GymUpdateView(generic.UpdateView):
+class BankAccountUpdateView(generic.UpdateView):
     '''
-    Edits an existing Gym
+    Edits a bank account
     '''
 
-    model = Gym
+    model = BankAccount
     template_name = 'form.html'
+    success_url = reverse_lazy('bank-account-list')
