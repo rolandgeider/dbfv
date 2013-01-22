@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load url from future %}
+{% load dbfv_extras %}
+
+{% block title %}Konzepte{% endblock %}
+
+{% block content %}
+<h2>Detailseite für Studio</h2>
+
+<table class="table table-bordered">
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Bundesland</th>
+    </tr>
+    <tr>
+        <td>{{object.name}}</td>
+        <td>{{object.email}}</td>
+        <td>{{object.state.name}}</td>
+    </tr>
+</table>
+
+{% endblock %}
+
+{% block sidebar %}
+<div class="sidebar-box">
+    <h5>Aktionen</h5>
+    <p><a href="{% url 'gym-edit' object.id %}">Studio bearbeiten</a></p>
+</div>
+{% endblock %}
