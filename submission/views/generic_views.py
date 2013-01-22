@@ -16,6 +16,7 @@
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.views.generic.base import TemplateResponseMixin
+from django.views.generic.edit import ModelFormMixin
 from django.core.urlresolvers import reverse
 
 from django.http import HttpResponseRedirect
@@ -40,8 +41,9 @@ class DbfvViewMixin(TemplateResponseMixin):
         return super(DbfvViewMixin, self).dispatch(request, *args, **kwargs)
 
 
-class DbfvFormMixin(DbfvViewMixin):
+class DbfvFormMixin(DbfvViewMixin, ModelFormMixin):
 
+    page_title = ''
     template_name = 'form.html'
 
     def get_context_data(self, **kwargs):
@@ -50,7 +52,7 @@ class DbfvFormMixin(DbfvViewMixin):
         '''
 
         context = super(DbfvFormMixin, self).get_context_data(**kwargs)
-        context['form_action'] = self.get_form_action()
+        context['form_action'] = self.request.get_full_path()
         context['title'] = self.page_title
 
         return context
