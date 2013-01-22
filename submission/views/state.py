@@ -20,32 +20,36 @@ from django.core.urlresolvers import reverse_lazy
 
 from submission.models import State
 
+from submission.views.generic_views import DbfvViewMixin
+from submission.views.generic_views import DbfvFormMixin
 
-class StateListView(generic.ListView):
+
+class StateListView(DbfvViewMixin, generic.ListView):
     '''
     Shows a list with all federal states
     '''
 
-    context_object_name = "state_list"
     model = State
+    context_object_name = "state_list"
     template_name = 'state/list.html'
+    login_required = True
 
 
-class StateCreateView(generic.CreateView):
+class StateCreateView(DbfvFormMixin, generic.CreateView):
     '''
     Creates a new federal state
     '''
 
     model = State
-    template_name = 'form.html'
     success_url = reverse_lazy('state-list')
+    permission_required = 'submission.add_state'
 
 
-class StateUpdateView(generic.UpdateView):
+class StateUpdateView(DbfvFormMixin, generic.UpdateView):
     '''
     Updates a federal state
     '''
 
     model = State
-    template_name = 'form.html'
     success_url = reverse_lazy('state-list')
+    permission_required = 'submission.change_state'

@@ -20,8 +20,11 @@ from django.core.urlresolvers import reverse_lazy
 
 from submission.models import BankAccount
 
+from submission.views.generic_views import DbfvViewMixin
+from submission.views.generic_views import DbfvFormMixin
 
-class BankAccountListView(generic.ListView):
+
+class BankAccountListView(DbfvViewMixin, generic.ListView):
     '''
     Shows a list with all bank accounts
     '''
@@ -29,23 +32,24 @@ class BankAccountListView(generic.ListView):
     context_object_name = "account_list"
     model = BankAccount
     template_name = 'bank_account/list.html'
+    permission_required = 'submission.change_bankaccount'
 
 
-class BankAccountCreateView(generic.CreateView):
+class BankAccountCreateView(DbfvFormMixin, generic.CreateView):
     '''
     Creates a new bank account
     '''
 
     model = BankAccount
-    template_name = 'form.html'
     success_url = reverse_lazy('bank-account-list')
+    permission_required = 'submission.add_bankaccount'
 
 
-class BankAccountUpdateView(generic.UpdateView):
+class BankAccountUpdateView(DbfvFormMixin, generic.UpdateView):
     '''
     Edits a bank account
     '''
 
     model = BankAccount
-    template_name = 'form.html'
     success_url = reverse_lazy('bank-account-list')
+    permission_required = 'submission.change_bankaccount'

@@ -18,9 +18,11 @@
 from django.views import generic
 
 from submission.models import Gym
+from submission.views.generic_views import DbfvViewMixin
+from submission.views.generic_views import DbfvFormMixin
 
 
-class GymListView(generic.ListView):
+class GymListView(DbfvViewMixin, generic.ListView):
     '''
     Shows a list with all konzepts
     '''
@@ -28,30 +30,32 @@ class GymListView(generic.ListView):
     context_object_name = "gym_list"
     model = Gym
     template_name = 'gym/list.html'
+    login_required = True
 
 
-class GymDetailView(generic.DetailView):
+class GymDetailView(DbfvViewMixin, generic.DetailView):
     '''
     Detail view of a gym
     '''
 
     model = Gym
     template_name = 'gym/view.html'
+    login_required = True
 
 
-class GymCreateView(generic.CreateView):
+class GymCreateView(DbfvFormMixin, generic.CreateView):
     '''
     Shows a list with all konzepts
     '''
 
     model = Gym
-    template_name = 'form.html'
+    permission_required = 'submission.add_gym'
 
 
-class GymUpdateView(generic.UpdateView):
+class GymUpdateView(DbfvFormMixin, generic.UpdateView):
     '''
     Edits an existing Gym
     '''
 
     model = Gym
-    template_name = 'form.html'
+    permission_required = 'submission.change_gym'

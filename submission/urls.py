@@ -76,6 +76,46 @@ urlpatterns = patterns('',
         BankAccountUpdateView.as_view(),
         name='bank-account-edit'),
 
-
-
 )
+
+# Password reset is implemented by Django, no need to cook our own soup here
+# (besides the templates)
+urlpatterns = urlpatterns + patterns('',
+    url(r'^anmelden/$',
+        'django.contrib.auth.views.login',
+        {'template_name': 'user/login.html'},
+        name='login'),
+
+    url(r'^abmelden/$',
+        'django.contrib.auth.views.logout',
+        {'template_name': 'user/logout.html'},
+        name='logout'),
+
+
+#    url(r'^benutzer/passwort/aendern$',
+#        'application.auth.views.password_change',
+#        {'template_name': 'user/password_change.html',
+#          'post_change_redirect': reverse_lazy('index'),
+#          'password_change_form': PasswordChangeForm},
+#        name='change-password'),
+
+#    url(r'^benutzer/passwort/zuruecksetzen/$',
+#        'application.auth.views.password_reset',
+#        {'template_name': 'user/password_reset_form.html'},
+#        name='password_reset'),
+
+#    url(r'^benutzer/passwort/zuruecksetzen/ok/$',
+#        'application.auth.views.password_reset_done',
+#        {'template_name': 'user/password_reset_done.html'},
+#        name='password_reset_done'),
+
+#url(r'^benutzer/passwort/zuruecksetzen/pruefen/(?P<uidb36>[0-9A-Za-z]{1,13})-(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
+#        'application.auth.views.password_reset_confirm',
+#        {'template_name': 'user/password_reset_confirm.html'},
+#        name='password_reset_confirm'),
+
+#    url(r'^benutzer/passwort/zuruecksetzen/erfolgt/$',
+#        'application.auth.views.password_reset_complete',
+#        {'template_name': 'user/password_reset_complete.html'},
+#        name='password_reset_complete'),
+    )
