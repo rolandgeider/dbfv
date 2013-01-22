@@ -19,13 +19,13 @@ from django.conf.urls import patterns, url
 
 from django.views.generic import TemplateView
 
-from submission.views import GymDetailView
-from submission.views import GymListView
-from submission.views import GymCreateView
-from submission.views import GymUpdateView
+from submission.views.gym import GymDetailView
+from submission.views.gym import GymListView
+from submission.views.gym import GymCreateView
+from submission.views.gym import GymUpdateView
 
-from submission.views import StateListView
-from submission.views import StateCreateView
+from submission.views.state import StateListView
+from submission.views.state import StateCreateView
 
 
 urlpatterns = patterns('',
