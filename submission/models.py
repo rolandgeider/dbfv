@@ -19,6 +19,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
+from django.contrib.auth.models import User
 
 
 class BankAccount(models.Model):
@@ -89,26 +90,40 @@ class StateAssociation(models.Model):
     bank_account = models.CharField(verbose_name=_('Name'),
                                     max_length=100,)
 
-    def AAAget_absolute_url(self):
-        '''
-        Returns the canonical URL to view a workout
-        '''
-        return reverse('manager.views.view_workout', kwargs={'id': self.id})
-
     def __unicode__(self):
         '''
         Return a more human-readable representation
         '''
         return "Association %s" % self.state.short_name
 
-    def get_owner_object(self):
-        '''
-        Returns the object that has owner information
-        '''
-        return self
 
-    #class Meta:
-    #    '''
-    #    Metaclass to set some other properties
-    #    '''
-    #    ordering = ["-creation_date", ]
+SUBMISSION_TYPES = (
+    ('ST', 'Starterlizenz'),
+    ('KR', 'Kapmfrichter'),
+)
+
+SUBMISSION_STATUS_EINGEGANGEN = '1'
+SUBMISSION_STATUS_BEWILLIGT = '2'
+
+SUBMISSION_STATUS = (
+    (SUBMISSION_STATUS_EINGEGANGEN, 'Eingegangen'),
+    (SUBMISSION_STATUS_BEWILLIGT, 'Bewilligt'),
+)
+
+
+class Submission(models.Model):
+    '''
+    Model for a submission
+    '''
+
+    creation_date = models.DateField(_('Creation date'), auto_now_add=True)
+    gym = models.ForeignKey(Gym, verbose_name=_('Gym'))
+    user = models.ForeignKey(User, verbose_name=_('User'))
+    submission_type = models.CharField(max_length=2, choices=SUBMISSION_TYPES)
+    submission_status = models.CharField(max_length=2, choices=SUBMISSION_STATUS)
+
+    def __unicode__(self):
+        '''
+        Return a more human-readable representation
+        '''
+        return "%s - %s" % (self.creation_date, self.user)

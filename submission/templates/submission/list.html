@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load url from future %}
+
+{% block title %}Anträge{% endblock %}
+
+{% block content %}
+<h2>Anträge</h2>
+
+{% if submission_list %}
+<table class="table table-striped" data-toggle="list">
+    <thead>
+    <tr>
+        <th>Nr.</th>
+        <th>Datum</th>
+        <th>Bundesland</th>
+        <th>Benutzer</th>
+        <th>Typ</th>
+        <th>Status</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for submission in submission_list %}
+    <tr>
+        <td>
+            {{submission.id}}
+        </td>
+        <td>
+            <a href="{% url 'submission-edit' submission.id %}">{{submission.creation_date}}</a>
+        </td>
+        <td>
+            {{submission.gym.state}}
+        </td>
+        </td>
+        <td>
+            {{submission.user}}
+        </td>
+        </td>
+        <td>
+            {{submission.get_submission_type_display}}
+        </td>
+        </td>
+        <td>
+            {{submission.get_submission_status_display}}
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+    <p>Es liegen momentan keine Anträge vor.</p>
+{% endif %}
+{% endblock %}
+
+{% block sidebar %}
+<div class="sidebar-box">
+    <h5>Aktionen</h5>
+    <p><a href="{% url 'submission-add' %}">Anträge hinzufügen</a></p>
+</div>
+{% endblock %}
