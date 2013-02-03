@@ -28,7 +28,7 @@ class BankAccount(models.Model):
     '''
 
     owner_name = models.CharField(verbose_name=_('Owner name'),
-                            max_length=100,)
+                                  max_length=100,)
     account_nr = models.CharField(verbose_name=_('Account nr.'),
                                   max_length=9,)
     bank_nr = models.CharField(verbose_name=_('Bank nr.'),

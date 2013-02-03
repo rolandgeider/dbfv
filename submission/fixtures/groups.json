@@ -1,82 +1,117 @@
 [
     {
-        "pk": 1,
-        "model": "auth.group",
+        "pk": 1, 
+        "model": "auth.group", 
         "fields": {
-            "name": "Landesverband",
-            "permissions": []
-        }
-    },
-    {
-        "pk": 2,
-        "model": "auth.group",
-        "fields": {
-            "name": "Bundesverband",
+            "name": "Landesverband", 
             "permissions": [
                 [
-                    "add_user",
-                    "auth",
+                    "change_submission", 
+                    "submission", 
+                    "submission"
+                ]
+            ]
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "auth.group", 
+        "fields": {
+            "name": "Bundesverband", 
+            "permissions": [
+                [
+                    "add_user", 
+                    "auth", 
                     "user"
-                ],
+                ], 
                 [
-                    "add_bankaccount",
-                    "submission",
+                    "add_bankaccount", 
+                    "submission", 
                     "bankaccount"
-                ],
+                ], 
                 [
-                    "change_bankaccount",
-                    "submission",
+                    "change_bankaccount", 
+                    "submission", 
                     "bankaccount"
-                ],
+                ], 
                 [
-                    "delete_bankaccount",
-                    "submission",
+                    "delete_bankaccount", 
+                    "submission", 
                     "bankaccount"
-                ],
+                ], 
                 [
-                    "add_gym",
-                    "submission",
+                    "add_gym", 
+                    "submission", 
                     "gym"
-                ],
+                ], 
                 [
-                    "change_gym",
-                    "submission",
+                    "change_gym", 
+                    "submission", 
                     "gym"
-                ],
+                ], 
                 [
-                    "delete_gym",
-                    "submission",
+                    "delete_gym", 
+                    "submission", 
                     "gym"
-                ],
+                ], 
                 [
-                    "add_state",
-                    "submission",
+                    "add_state", 
+                    "submission", 
                     "state"
-                ],
+                ], 
                 [
-                    "change_state",
-                    "submission",
+                    "change_state", 
+                    "submission", 
                     "state"
-                ],
+                ], 
                 [
-                    "delete_state",
-                    "submission",
+                    "delete_state", 
+                    "submission", 
                     "state"
-                ],
+                ], 
                 [
-                    "add_stateassociation",
-                    "submission",
+                    "add_stateassociation", 
+                    "submission", 
                     "stateassociation"
-                ],
+                ], 
                 [
-                    "change_stateassociation",
-                    "submission",
+                    "change_stateassociation", 
+                    "submission", 
                     "stateassociation"
-                ],
+                ], 
                 [
-                    "delete_stateassociation",
-                    "submission",
+                    "delete_stateassociation", 
+                    "submission", 
                     "stateassociation"
+                ], 
+                [
+                    "add_submission", 
+                    "submission", 
+                    "submission"
+                ], 
+                [
+                    "change_submission", 
+                    "submission", 
+                    "submission"
+                ], 
+                [
+                    "delete_submission", 
+                    "submission", 
+                    "submission"
+                ]
+            ]
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "auth.group", 
+        "fields": {
+            "name": "User", 
+            "permissions": [
+                [
+                    "add_submission", 
+                    "submission", 
+                    "submission"
                 ]
             ]
         }

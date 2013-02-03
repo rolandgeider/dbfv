@@ -59,6 +59,10 @@ STATICFILES_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
 )
 
+LOGIN_URL = '/anmelden/'
+LOGIN_REDIRECT_URL = '/'
+
+
 # List of finder classes that know how to find static files in
 # various locations.
 STATICFILES_FINDERS = (
@@ -109,6 +113,9 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+
+    # reCaptcha support, see https://github.com/praekelt/django-recaptcha
+    'captcha',
 
     # The dbfv submission app
     'submission',

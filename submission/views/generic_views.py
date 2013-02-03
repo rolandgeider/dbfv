@@ -28,14 +28,15 @@ class DbfvViewMixin(TemplateResponseMixin):
     login_required = False
 
     def dispatch(self, request, *args, **kwargs):
-
-        # Check for necessary permissions
+        '''
+        Check for necessary permissions
+        '''
         if self.login_required or self.permission_required:
             if not request.user.is_authenticated():
                 return HttpResponseRedirect(reverse('index')+'?next=%s' % request.path)
 
             if self.permission_required and \
-                not request.user.has_perm(self.permission_required):
+                    not request.user.has_perm(self.permission_required):
                 return HttpResponseForbidden()
 
         return super(DbfvViewMixin, self).dispatch(request, *args, **kwargs)

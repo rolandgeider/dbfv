@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 
 from django.conf.urls import patterns, url
+from django.core.urlresolvers import reverse_lazy
 #from django.core.urlresolvers import reverse_lazy
 
 from django.views.generic import TemplateView
@@ -23,14 +24,25 @@ from submission.views import gym
 from submission.views import state
 from submission.views import bank_account
 from submission.views import submissions
+from submission.views import user
 
 
-urlpatterns = patterns('',
+urlpatterns = patterns('submission.views',
 
     # The index page
     url(r'^$',
         TemplateView.as_view(template_name="index.html"),
         name="index"),
+
+    url(r'^user/registration$', user.registration, name='registration'),
+    # Login/logout
+    #url(r'^anmelden/$',
+    #    'django.contrib.auth.views.login',
+    #    {'template_name': 'user/login.html'},
+    #    name="login"),
+    #url(r'^abmelden/$',
+    #    'submission.views.user.logout',
+    #    name="logout"),
 
     # Gyms
     url(r'^gym/(?P<pk>\d+)/view/$',
@@ -84,41 +96,38 @@ urlpatterns = patterns('',
 # Password reset is implemented by Django, no need to cook our own soup here
 # (besides the templates)
 urlpatterns = urlpatterns + patterns('',
-    url(r'^anmelden/$',
+    url(r'^login/$',
         'django.contrib.auth.views.login',
         {'template_name': 'user/login.html'},
         name='login'),
 
-    url(r'^abmelden/$',
+    url(r'^logout/$',
         'django.contrib.auth.views.logout',
-        {'template_name': 'user/logout.html'},
         name='logout'),
 
+    url(r'^user/password/change$',
+        'django.contrib.auth.views.password_change',
+        {'template_name': 'user/change_password.html',
+          'post_change_redirect': reverse_lazy('index')},
+        name='change-password'),
 
-#    url(r'^benutzer/passwort/aendern$',
-#        'application.auth.views.password_change',
-#        {'template_name': 'user/password_change.html',
-#          'post_change_redirect': reverse_lazy('index'),
-#          'password_change_form': PasswordChangeForm},
-#        name='change-password'),
+    url(r'^user/password/reset/$',
+        'django.contrib.auth.views.password_reset',
+        {'template_name': 'user/password_reset_form.html'},
+        name='password_reset'),
 
-#    url(r'^benutzer/passwort/zuruecksetzen/$',
-#        'application.auth.views.password_reset',
-#        {'template_name': 'user/password_reset_form.html'},
-#        name='password_reset'),
+    url(r'^user/password/reset/done/$',
+        'django.contrib.auth.views.password_reset_done',
+        {'template_name': 'user/password_reset_done.html'},
+        name='password_reset_done'),
 
-#    url(r'^benutzer/passwort/zuruecksetzen/ok/$',
-#        'application.auth.views.password_reset_done',
-#        {'template_name': 'user/password_reset_done.html'},
-#        name='password_reset_done'),
+    url(r'^user/password/reset/check/(?P<uidb36>[0-9A-Za-z]{1,13})-(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
+        'django.contrib.auth.views.password_reset_confirm',
+        {'template_name': 'user/password_reset_confirm.html'},
+        name='password_reset_confirm'),
 
-#url(r'^benutzer/passwort/zuruecksetzen/pruefen/(?P<uidb36>[0-9A-Za-z]{1,13})-(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
-#        'application.auth.views.password_reset_confirm',
-#        {'template_name': 'user/password_reset_confirm.html'},
-#        name='password_reset_confirm'),
-
-#    url(r'^benutzer/passwort/zuruecksetzen/erfolgt/$',
-#        'application.auth.views.password_reset_complete',
-#        {'template_name': 'user/password_reset_complete.html'},
-#        name='password_reset_complete'),
+    url(r'^user/password/reset/complete/$',
+        'django.contrib.auth.views.password_reset_complete',
+        {'template_name': 'user/password_reset_complete.html'},
+        name='password_reset_complete'),
     )
