@@ -22,6 +22,7 @@ from django.forms import ModelForm
 from submission.models import Submission
 from submission.models import SUBMISSION_STATUS_EINGEGANGEN
 from submission.models import SUBMISSION_STATUS_BEWILLIGT
+from submission.models import SUBMISSION_TYPES
 
 from submission.views.generic_views import DbfvViewMixin
 from submission.views.generic_views import DbfvFormMixin
@@ -42,7 +43,8 @@ class SubmissionForm(ModelForm):
     class Meta:
         model = Submission
         exclude = ('user',
-                   'submission_status')
+                   'submission_status',
+                   'submission_type')
 
 
 class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
@@ -61,6 +63,17 @@ class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
         '''
         form.instance.user = self.request.user
         form.instance.submission_status = SUBMISSION_STATUS_EINGEGANGEN
+
+        # Starterlizenz
+        if self.kwargs['type'] == SUBMISSION_TYPES[0][1]:
+            form.instance.submission_type = SUBMISSION_TYPES[0][0]
+            print form.instance.submission_type
+
+        # Kampfrichter
+        else:
+            form.instance.submission_type = SUBMISSION_TYPES[1][0]
+            print form.instance.submission_type
+
         return super(SubmissionCreateView, self).form_valid(form)
 
 

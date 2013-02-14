@@ -99,7 +99,10 @@
         </div>
     </div>
 
+<!--
     <footer class="footer navbar navbar-fixed-bottom">
+-->
+    <footer class="footer navbar ">
           <div class="navbar-inner">
               <ul class="nav">
                   <li class="disabled">
@@ -107,8 +110,8 @@
                   </li>
               </ul>
               <ul class="nav pull-right">
-                  <li><a href="">Impressum</a></li>
-                  <li><a href="">Kontakt</a></li>
+                  <li><a href="{% url 'impressum' %}">Impressum</a></li>
+                  <li><a href="{% url 'kontakt' %}">Kontakt</a></li>
               </ul>
           </div>
       </footer>

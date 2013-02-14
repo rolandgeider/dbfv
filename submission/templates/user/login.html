@@ -4,7 +4,7 @@
 {% load dbfv_extras %}
 {% load url from future %}
 
-{% block title %} {% trans "Login" %}{% endblock %}
+{% block title %} {% trans "Anmelden" %}{% endblock %}
 
 {% block content %}
 {% if not user.is_authenticated %}
@@ -15,4 +15,12 @@
     {% table_form_render_fields form 'Anmelden' %}
 </form>
 {% endif %}
+{% endblock %}
+
+{% block sidebar %}
+<div class="well">
+<h3>Kein Account?</h3>
+
+<a href="{% url 'registration' %}">Registrieren</a>
+</div>
 {% endblock %}

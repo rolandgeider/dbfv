@@ -17,6 +17,7 @@
 
 
 from django.db import models
+from django.db.models.signals import post_delete
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
@@ -75,7 +76,7 @@ class Gym(models.Model):
         '''
         Return a more human-readable representation
         '''
-        return self.name
+        return "%s (%s)" % (self.name, self.state)
 
     def get_absolute_url(self):
         return reverse('gym-view', kwargs={'pk': self.id})
@@ -104,11 +105,16 @@ SUBMISSION_TYPES = (
 
 SUBMISSION_STATUS_EINGEGANGEN = '1'
 SUBMISSION_STATUS_BEWILLIGT = '2'
+SUBMISSION_STATUS_ABGELEHNT = '3'
 
 SUBMISSION_STATUS = (
     (SUBMISSION_STATUS_EINGEGANGEN, 'Eingegangen'),
     (SUBMISSION_STATUS_BEWILLIGT, 'Bewilligt'),
 )
+
+def attachment_submission_dir(instance, filename):
+
+    return "anlagen/antrag/%s/%s/%s" % (instance.gym.state.short_name, instance.gym_id, filename)
 
 
 class Submission(models.Model):
@@ -116,8 +122,10 @@ class Submission(models.Model):
     Model for a submission
     '''
 
-    creation_date = models.DateField(_('Creation date'), auto_now_add=True)
     gym = models.ForeignKey(Gym, verbose_name=_('Gym'))
+    anhang = models.FileField(upload_to=attachment_submission_dir)
+
+    creation_date = models.DateField(_('Creation date'), auto_now_add=True)
     user = models.ForeignKey(User, verbose_name=_('User'))
     submission_type = models.CharField(max_length=2, choices=SUBMISSION_TYPES)
     submission_status = models.CharField(max_length=2, choices=SUBMISSION_STATUS)
@@ -127,3 +135,13 @@ class Submission(models.Model):
         Return a more human-readable representation
         '''
         return "%s - %s" % (self.creation_date, self.user)
+
+
+# Deleting a Submission object also deletes the file from disk
+def delete_submission_attachment(sender, instance, **kwargs):
+    try:
+        os.remove(os.path.join(settings.MEDIA_ROOT, instance.anhang))
+    except Exception, e:
+        logger.error("Could not delete attachment", e)
+
+post_delete.connect(delete_submission_attachment, sender=Submission)

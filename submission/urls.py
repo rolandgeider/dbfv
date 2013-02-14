@@ -84,12 +84,20 @@ urlpatterns = patterns('submission.views',
     url(r'^submission/view/all/$',
         submissions.SubmissionListView.as_view(),
         name='submission-list'),
-    url(r'^submission/add/$',
+    url(r'^submission/add/(?P<type>(Starterlizenz|Kapmfrichter))$',
         submissions.SubmissionCreateView.as_view(),
         name='submission-add'),
     url(r'^submission/(?P<pk>\d+)/edit/$',
         submissions.SubmissionUpdateView.as_view(),
         name='submission-edit'),
+
+    # Impressum
+    url(r'^impressum$',
+        TemplateView.as_view(template_name="misc/impressum.html"),
+        name="impressum"),
+    url(r'^kontakt$',
+        TemplateView.as_view(template_name="misc/kontakt.html"),
+        name="kontakt"),
 
 )
 

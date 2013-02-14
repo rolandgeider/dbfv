@@ -18,29 +18,32 @@
 </div>
 
 <!-- Example row of columns -->
-<div class="row">
-    <div class="span4">
-        <h2>Listen</h2>
-        <p><a class="btn" href="{% url 'gym-list' %}">Liste der Studios &raquo;</a></p>
-        <p><a class="btn" href="{% url 'state-list' %}">Liste der Bundesländer &raquo;</a></p>
-        <p><a class="btn" href="{% url 'bank-account-list' %}">Liste der Konten &raquo;</a></p>
-        <p><a class="btn" href="{% url 'submission-list' %}">Liste der Anträge &raquo;</a></p>
-    </div>
-    <div class="span4">
-        <h2>Bundesländer</h2>
+
+<h2>Antrag stellen</h2>
+
+<div class="row-fluid">
+    <div class="span6">
+        <h3>Starterlizenz</h3>
         <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus
         commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam
         porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+        <p><a class="btn btn-success" href="{% url 'submission-add' 'Starterlizenz' %}">Antrag stellen &raquo;</a></p>
     </div>
-    <div class="span4">
-        <h2>Anträge</h2>
+    <div class="span6">
+        <h3>Kampfrichterlizenz</h3>
         <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam.
         Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus
         commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-        <p><a class="btn" href="#">View details &raquo;</a></p>
+        <p><a class="btn btn-success" href="{% url 'submission-add' 'Kapmfrichter' %}">Antrag stellen &raquo;</a></p>
     </div>
 </div>
 {% endblock %}
 
 
-{% block sidebar %}{% endblock %}
+{% block sidebar %}
+<h2>Listen</h2>
+<p><a class="btn" href="{% url 'gym-list' %}">Liste der Studios &raquo;</a></p>
+<p><a class="btn" href="{% url 'state-list' %}">Liste der Bundesländer &raquo;</a></p>
+<p><a class="btn" href="{% url 'bank-account-list' %}">Liste der Konten &raquo;</a></p>
+<p><a class="btn" href="{% url 'submission-list' %}">Liste der Anträge &raquo;</a></p>
+{% endblock %}
