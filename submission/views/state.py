@@ -32,6 +32,7 @@ class StateListView(DbfvViewMixin, generic.ListView):
     model = State
     context_object_name = "state_list"
     template_name = 'state/list.html'
+    permission_required = 'submission.add_state'
     login_required = True
 
 

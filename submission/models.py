@@ -16,7 +16,9 @@
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
 
 
+
 from django.db import models
+from django.db.models.signals import post_save
 from django.db.models.signals import post_delete
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
@@ -110,6 +112,7 @@ SUBMISSION_STATUS_ABGELEHNT = '3'
 SUBMISSION_STATUS = (
     (SUBMISSION_STATUS_EINGEGANGEN, 'Eingegangen'),
     (SUBMISSION_STATUS_BEWILLIGT, 'Bewilligt'),
+    (SUBMISSION_STATUS_ABGELEHNT, 'Abgelehnt'),
 )
 
 def attachment_submission_dir(instance, filename):
@@ -128,7 +131,12 @@ class Submission(models.Model):
     creation_date = models.DateField(_('Creation date'), auto_now_add=True)
     user = models.ForeignKey(User, verbose_name=_('User'))
     submission_type = models.CharField(max_length=2, choices=SUBMISSION_TYPES)
-    submission_status = models.CharField(max_length=2, choices=SUBMISSION_STATUS)
+    submission_status_lv = models.CharField(max_length=2,
+                                            choices=SUBMISSION_STATUS,
+                                            default=SUBMISSION_STATUS_EINGEGANGEN)
+    submission_status_bv = models.CharField(max_length=2,
+                                            choices=SUBMISSION_STATUS,
+                                            default=SUBMISSION_STATUS_EINGEGANGEN)
 
     def __unicode__(self):
         '''
@@ -145,3 +153,73 @@ def delete_submission_attachment(sender, instance, **kwargs):
         logger.error("Could not delete attachment", e)
 
 post_delete.connect(delete_submission_attachment, sender=Submission)
+
+
+USER_TYPE_UNKNOWN = -1
+USER_TYPE_LANDESVERBAND = 1
+USER_TYPE_BUNDESVERBAND = 2
+USER_TYPE_USER = 3
+USER_TYPES = ((USER_TYPE_BUNDESVERBAND, u'Bundesverband'),
+              (USER_TYPE_LANDESVERBAND, u'Landesverband'),
+              (USER_TYPE_USER, u'User'),
+              (USER_TYPE_UNKNOWN, u'Unbekannt'))
+
+class UserProfile(models.Model):
+    # This field is required.
+    user = models.OneToOneField(User)
+
+    # User type
+    type = models.IntegerField(max_length=1,
+                               choices=USER_TYPES,
+                               default=USER_TYPE_UNKNOWN)
+
+    # Foreign keys
+    state = models.ForeignKey(State,
+                                blank=True,
+                                null=True)
+
+    def __unicode__(self):
+        '''
+        Return a more human-readable representation
+        '''
+        return 'Profile for %s' % self.user.username
+
+# Every new user gets a profile
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.get_or_create(user=instance)
+
+post_save.connect(create_user_profile, sender=User)
+
+
+def user_profile(user):
+    '''
+    Return the profile of user or None if the user is not authenticated.
+    '''
+    if user.is_anonymous():
+        return None
+
+    # for authenticated users, look into the profile.
+    return user.get_profile()
+
+
+def user_type(user):
+    '''
+    Return the type of user or None if the user is not authenticated.
+    '''
+    profile = user_profile(user)
+    if profile is None:
+        return None
+
+    return profile.type
+
+
+def user_lv(user):
+    '''
+    Return the Landesverband of the user or None if the user is not an LV user.
+    Anonymous users are not LV users.
+    '''
+    profile = user_profile(user)
+    if profile is None or profile.type != USER_TYPE_LANDESVERBAND:
+        return None
+    return profile.state

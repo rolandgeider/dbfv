@@ -20,6 +20,9 @@ TIME_ZONE = 'Europe/Berlin'
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'de'
 
+# Model used for the user profile
+AUTH_PROFILE_MODULE = 'submission.UserProfile'
+
 SITE_ID = 1
 
 # If you set this to False, Django will make some optimizations so as not
@@ -69,6 +72,12 @@ STATICFILES_FINDERS = (
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'k_vs+njlo%#alue1uu28z67jz#1e#pv$mes7x7!klpsdmj4%p3'
+
+# Set the context processors
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'submission.context_processor.processor',
+    'django.contrib.auth.context_processors.auth',
+)
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (

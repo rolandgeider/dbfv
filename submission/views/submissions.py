@@ -43,7 +43,8 @@ class SubmissionForm(ModelForm):
     class Meta:
         model = Submission
         exclude = ('user',
-                   'submission_status',
+                   'submission_status_lv',
+                   'submission_status_bv',
                    'submission_type')
 
 

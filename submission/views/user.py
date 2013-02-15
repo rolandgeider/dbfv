@@ -27,7 +27,7 @@ from django.contrib.auth.models import User as Django_User
 from django.contrib.auth.models import Group
 
 from submission.forms import RegistrationForm
-
+from submission.models import USER_TYPE_USER
 
 def logout(request):
     '''
@@ -63,6 +63,11 @@ def registration(request):
             # New users are added to the 'User' group
             g = Group.objects.get(name='User')
             g.user_set.add(user)
+
+            # Set the user type in the profile
+            profile = user.get_profile()
+            profile.type = USER_TYPE_USER
+            profile.save()
 
             # Login the new user and redirect
             user = authenticate(username=username, password=password)

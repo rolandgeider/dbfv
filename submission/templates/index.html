@@ -41,9 +41,18 @@
 
 
 {% block sidebar %}
-<h2>Listen</h2>
-<p><a class="btn" href="{% url 'gym-list' %}">Liste der Studios &raquo;</a></p>
-<p><a class="btn" href="{% url 'state-list' %}">Liste der Bundesländer &raquo;</a></p>
-<p><a class="btn" href="{% url 'bank-account-list' %}">Liste der Konten &raquo;</a></p>
-<p><a class="btn" href="{% url 'submission-list' %}">Liste der Anträge &raquo;</a></p>
+{% if user.is_authenticated %}
+<div class="sidebar-box">
+    <h2>Optionen</h2>
+    {% if user_type == USER_TYPE_BUNDESVERBAND %}
+        <p><a class="btn" href="{% url 'gym-list' %}">Liste der Studios &raquo;</a></p>
+        <p><a class="btn" href="{% url 'state-list' %}">Liste der Bundesländer &raquo;</a></p>
+        <p><a class="btn" href="{% url 'bank-account-list' %}">Liste der Konten &raquo;</a></p>
+    {% elif user_type == USER_TYPE_LANDESVERBAND %}
+    {% elif user_type == USER_TYPE_USER %}
+    {% endif %}
+
+    <p><a class="btn" href="{% url 'submission-list' %}">Liste der Anträge &raquo;</a></p>
+</div>
+{% endif %}
 {% endblock %}

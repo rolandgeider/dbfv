@@ -13,7 +13,8 @@
         <th>Bundesland</th>
         <th>Benutzer</th>
         <th>Typ</th>
-        <th>Status</th>
+        <th>Status LV</th>
+        <th>Status BV</th>
     </tr>
     </thead>
     <tbody>
@@ -26,7 +27,7 @@
             <a href="{% url 'submission-edit' submission.id %}">{{submission.creation_date}}</a>
         </td>
         <td>
-            {{submission.gym.state}}
+            {{submission.gym.state.short_name}}
         </td>
         </td>
         <td>
@@ -37,8 +38,13 @@
             {{submission.get_submission_type_display}}
         </td>
         </td>
-        <td>
-            {{submission.get_submission_status_display}}
+        <td {% if submission.submission_status_lv == SUBMISSION_STATUS_BEWILLIGT %}style="color:green;"
+            {% elif submission.submission_status_lv == SUBMISSION_STATUS_ABGELEHNT %}style="color:red;"{% endif %}>
+            {{submission.get_submission_status_lv_display}}
+        </td>
+        <td {% if submission.submission_status_bv == SUBMISSION_STATUS_BEWILLIGT %}style="color:green;"
+            {% elif submission.submission_status_bv == SUBMISSION_STATUS_ABGELEHNT %}style="color:red;"{% endif %}>
+            {{submission.get_submission_status_bv_display}}
         </td>
     </tr>
     {% endfor %}
@@ -50,8 +56,4 @@
 {% endblock %}
 
 {% block sidebar %}
-<div class="sidebar-box">
-    <h5>Aktionen</h5>
-
-</div>
 {% endblock %}

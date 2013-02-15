@@ -20,10 +20,11 @@
     <div class="row-fluid">
         <div class="span2" id="logo">
             <a href="http://www.dbfv.de"
-                target="_blank"><img src="{% static 'img/DBFV-logo.png' %}"
-                width="142"
-                height="143"
-                alt="Logo des DBFV"></a>
+                target="_blank">
+                <img src="{% static 'img/DBFV-logo.png' %}"
+                     width="142"
+                     height="143"
+                     alt="Logo des DBFV"></a>
                 &nbsp;&nbsp;&nbsp;
         </div>
         {% if settings.DEBUG == True %}
@@ -48,7 +49,6 @@
           <a class="brand" href="{% url 'index' %}">DBFV</a>
           <div class="nav-collapse collapse">
             <ul class="nav">
-              <li class="active"><a href="#">Home</a></li>
               <li><a href="#about">About</a></li>
               <li><a href="#contact">Contact</a></li>
               <li class="dropdown">
@@ -105,9 +105,14 @@
     <footer class="footer navbar ">
           <div class="navbar-inner">
               <ul class="nav">
-                  <li class="disabled">
-                      <a href="">Antragssystem DBFV</a>
+                  <li>
+                      <a href="{% url 'index' %}">Antragssystem DBFV</a>
                   </li>
+<!--
+                  <li>
+                      <a href="https://bitbucket.org/rolandgeider/dbfv">AGPL3</a>
+                  </li>
+-->
               </ul>
               <ul class="nav pull-right">
                   <li><a href="{% url 'impressum' %}">Impressum</a></li>
