@@ -29,6 +29,7 @@ from django.contrib.auth.models import Group
 from submission.forms import RegistrationForm
 from submission.models import USER_TYPE_USER
 
+
 def logout(request):
     '''
     Logout the user

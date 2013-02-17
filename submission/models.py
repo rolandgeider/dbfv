@@ -16,7 +16,6 @@
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
 
 
-
 from django.db import models
 from django.db.models.signals import post_save
 from django.db.models.signals import post_delete
@@ -115,6 +114,7 @@ SUBMISSION_STATUS = (
     (SUBMISSION_STATUS_ABGELEHNT, 'Abgelehnt'),
 )
 
+
 def attachment_submission_dir(instance, filename):
 
     return "anlagen/antrag/%s/%s/%s" % (instance.gym.state.short_name, instance.gym_id, filename)
@@ -164,6 +164,7 @@ USER_TYPES = ((USER_TYPE_BUNDESVERBAND, u'Bundesverband'),
               (USER_TYPE_USER, u'User'),
               (USER_TYPE_UNKNOWN, u'Unbekannt'))
 
+
 class UserProfile(models.Model):
     # This field is required.
     user = models.OneToOneField(User)
@@ -175,14 +176,15 @@ class UserProfile(models.Model):
 
     # Foreign keys
     state = models.ForeignKey(State,
-                                blank=True,
-                                null=True)
+                              blank=True,
+                              null=True)
 
     def __unicode__(self):
         '''
         Return a more human-readable representation
         '''
         return 'Profile for %s' % self.user.username
+
 
 # Every new user gets a profile
 def create_user_profile(sender, instance, created, **kwargs):

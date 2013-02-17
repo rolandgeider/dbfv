@@ -27,6 +27,7 @@ from submission.models import SUBMISSION_STATUS_EINGEGANGEN
 from submission.models import SUBMISSION_STATUS_BEWILLIGT
 from submission.models import SUBMISSION_STATUS_ABGELEHNT
 
+
 def processor(request):
     return {
         # User type

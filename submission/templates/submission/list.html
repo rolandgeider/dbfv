@@ -10,10 +10,10 @@
     <tr>
         <th>Nr.</th>
         <th>Datum</th>
+        <th>Anlage</th>
         <th>Bundesland</th>
         <th>Benutzer</th>
         <th>Typ</th>
-        <th>Anlage</th>
         <th>Status LV</th>
         <th>Status BV</th>
     </tr>
@@ -25,7 +25,10 @@
             {{submission.id}}
         </td>
         <td>
-            <a href="{% url 'submission-edit' submission.id %}">{{submission.creation_date}}</a>
+            {{submission.creation_date}}
+        </td>
+        <td>
+            <a href="/{{ submission.anhang.url }}">Link</a>
         </td>
         <td>
             {{submission.gym.state.short_name}}
@@ -39,16 +42,17 @@
             {{submission.get_submission_type_display}}
 -->
         </td>
-        <td>
-            <a href="/{{ submission.anhang.url }}">Link</a>
-        </td>
         <td {% if submission.submission_status_lv == SUBMISSION_STATUS_BEWILLIGT %}style="color:green;"
             {% elif submission.submission_status_lv == SUBMISSION_STATUS_ABGELEHNT %}style="color:red;"{% endif %}>
             {{submission.get_submission_status_lv_display}}
+
+            {% if user_type == USER_TYPE_LANDESVERBAND %}<a href="{% url 'submission-edit-status' submission.id %}">[bearbeiten]</a>{% endif %}
         </td>
         <td {% if submission.submission_status_bv == SUBMISSION_STATUS_BEWILLIGT %}style="color:green;"
             {% elif submission.submission_status_bv == SUBMISSION_STATUS_ABGELEHNT %}style="color:red;"{% endif %}>
             {{submission.get_submission_status_bv_display}}
+
+            {% if user_type == USER_TYPE_BUNDESVERBAND %}<a href="{% url 'submission-edit-status' submission.id %}">[bearbeiten]</a>{% endif %}
         </td>
     </tr>
     {% endfor %}

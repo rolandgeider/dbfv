@@ -90,6 +90,9 @@ urlpatterns = patterns('submission.views',
     url(r'^submission/(?P<pk>\d+)/edit/$',
         submissions.SubmissionUpdateView.as_view(),
         name='submission-edit'),
+    url(r'^submission/(?P<pk>\d+)/edit-status/$',
+        submissions.SubmissionUpdateStatusView.as_view(),
+        name='submission-edit-status'),
 
     # Impressum
     url(r'^impressum$',
