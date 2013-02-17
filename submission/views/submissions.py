@@ -81,26 +81,30 @@ class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
     form_class = SubmissionForm
     success_url = reverse_lazy('index')
     permission_required = 'submission.add_submission'
-    #template_name = 'submission/form.html'
 
     def form_valid(self, form):
         '''
-        Manually set the user when saving the form
+        Manually set some values when saving the form
         '''
+
+        # Set the user
         form.instance.user = self.request.user
-        form.instance.submission_status = SUBMISSION_STATUS_EINGEGANGEN
 
         # Starterlizenz
         if self.kwargs['type'] == SUBMISSION_TYPES[0][1]:
             form.instance.submission_type = SUBMISSION_TYPES[0][0]
-            print form.instance.submission_type
 
         # Kampfrichter
         else:
             form.instance.submission_type = SUBMISSION_TYPES[1][0]
-            print form.instance.submission_type
+
+        self.form_instance = form.instance
 
         return super(SubmissionCreateView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('bank-account-view',
+                            kwargs={'pk': self.form_instance.gym.state.bank_account_id})
 
 
 class SubmissionUpdateView(DbfvFormMixin, generic.UpdateView):

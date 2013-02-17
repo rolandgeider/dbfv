@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load url from future %}
+
+{% block title %}Bankkonto{% endblock %}
+
+{% block content %}
+<table class="table table-striped" data-toggle="list">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Kontonummer</th>
+        <th>BLZ</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>
+            {{bankaccount.owner_name}}</a>
+        </td>
+        <td>
+            {{bankaccount.account_nr}}
+        </td>
+        <td>
+            {{bankaccount.bank_nr}} ({{bankaccount.bank_name}})</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+{% endblock %}
+
+{% block sidebar %}
+{% endblock %}

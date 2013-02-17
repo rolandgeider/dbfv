@@ -35,6 +35,16 @@ class BankAccountListView(DbfvViewMixin, generic.ListView):
     permission_required = 'submission.change_bankaccount'
 
 
+class BankAccountDetailView(DbfvViewMixin, generic.DetailView):
+    '''
+    Detail view of a bank account
+    '''
+
+    model = BankAccount
+    template_name = 'bank_account/view.html'
+    login_required = True
+
+
 class BankAccountCreateView(DbfvFormMixin, generic.CreateView):
     '''
     Creates a new bank account
