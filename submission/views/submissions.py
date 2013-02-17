@@ -27,7 +27,6 @@ from submission.models import SUBMISSION_TYPES
 from submission.views.generic_views import DbfvViewMixin
 from submission.views.generic_views import DbfvFormMixin
 
-
 class SubmissionListView(DbfvViewMixin, generic.ListView):
     '''
     Shows a list with all submissions
@@ -57,6 +56,7 @@ class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
     form_class = SubmissionForm
     success_url = reverse_lazy('index')
     permission_required = 'submission.add_submission'
+    #template_name = 'submission/form.html'
 
     def form_valid(self, form):
         '''

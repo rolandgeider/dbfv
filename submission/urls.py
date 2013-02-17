@@ -139,3 +139,8 @@ urlpatterns = urlpatterns + patterns('',
         {'template_name': 'user/password_reset_complete.html'},
         name='password_reset_complete'),
     )
+
+from django.conf import settings
+urlpatterns = urlpatterns + patterns('',
+    (r'^(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
+)

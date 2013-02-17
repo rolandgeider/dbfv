@@ -13,6 +13,7 @@
         <th>Bundesland</th>
         <th>Benutzer</th>
         <th>Typ</th>
+        <th>Anlage</th>
         <th>Status LV</th>
         <th>Status BV</th>
     </tr>
@@ -29,14 +30,17 @@
         <td>
             {{submission.gym.state.short_name}}
         </td>
-        </td>
         <td>
             {{submission.user}}
         </td>
+        <td>
+            {{submission.submission_type}}
+<!--
+            {{submission.get_submission_type_display}}
+-->
         </td>
         <td>
-            {{submission.get_submission_type_display}}
-        </td>
+            <a href="/{{ submission.anhang.url }}">Link</a>
         </td>
         <td {% if submission.submission_status_lv == SUBMISSION_STATUS_BEWILLIGT %}style="color:green;"
             {% elif submission.submission_status_lv == SUBMISSION_STATUS_ABGELEHNT %}style="color:red;"{% endif %}>
