@@ -50,11 +50,11 @@ class State(models.Model):
     Model for a state
     '''
 
-    name = models.CharField(verbose_name=_('Name'),
+    name = models.CharField(verbose_name='Name',
                             max_length=100,)
-    short_name = models.CharField(verbose_name=_('Short name'),
+    short_name = models.CharField(verbose_name='Kürzel',
                                   max_length=2,)
-    bank_account = models.ForeignKey(BankAccount, verbose_name=_('Bank account'))
+    bank_account = models.ForeignKey(BankAccount, verbose_name='Bankkonto')
 
     def __unicode__(self):
         '''
@@ -68,10 +68,10 @@ class Gym(models.Model):
     Model for a gym
     '''
 
-    name = models.CharField(verbose_name=_('Name'),
+    name = models.CharField(verbose_name='Name',
                             max_length=100,)
-    email = models.EmailField(verbose_name=_('Email'))
-    state = models.ForeignKey(State, verbose_name=_('State'))
+    email = models.EmailField(verbose_name='Email')
+    state = models.ForeignKey(State, verbose_name='Bundesland')
 
     def __unicode__(self):
         '''
@@ -88,8 +88,8 @@ class StateAssociation(models.Model):
     Model for a State Association (Landesverband)
     '''
 
-    state = models.ForeignKey(State, verbose_name=_('State'))
-    bank_account = models.CharField(verbose_name=_('Name'),
+    state = models.ForeignKey(State, verbose_name='Bundesland')
+    bank_account = models.CharField(verbose_name='Name',
                                     max_length=100,)
 
     def __unicode__(self):
@@ -125,8 +125,10 @@ class Submission(models.Model):
     Model for a submission
     '''
 
-    gym = models.ForeignKey(Gym, verbose_name=_('Gym'))
-    anhang = models.FileField(upload_to=attachment_submission_dir)
+    gym = models.ForeignKey(Gym, verbose_name='Studio')
+    anhang = models.FileField(upload_to=attachment_submission_dir,
+                              verbose_name='Antrag',
+                              help_text='Den ausgefüllten Antrags-PDF hier hochladen.')
 
     creation_date = models.DateField(_('Creation date'), auto_now_add=True)
     user = models.ForeignKey(User, verbose_name=_('User'))
