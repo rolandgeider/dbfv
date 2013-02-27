@@ -48,7 +48,9 @@
           <a class="brand" href="{% url 'index' %}">DBFV</a>
           <div class="nav-collapse collapse">
             <ul class="nav">
+              {% if user.is_authenticated %}
               <li><a href="{% url 'submission-list' %}">Anträge</a></li>
+              {% endif %}
               
               {% if user_type == USER_TYPE_BUNDESVERBAND %}
               <li class="dropdown">
