@@ -59,7 +59,7 @@ STATICFILES_DIRS = (
 )
 
 LOGIN_URL = '/anmelden/'
-LOGIN_REDIRECT_URL = '/anmelden/'
+LOGIN_REDIRECT_URL = '/'
 
 
 # List of finder classes that know how to find static files in
@@ -94,7 +94,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    #'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 ROOT_URLCONF = 'dbfv.urls'
@@ -127,7 +127,8 @@ INSTALLED_APPS = (
     'submission',
 
     # Django debug toolbar
-    'debug_toolbar',
+    #'debug_toolbar',
+
 )
 
 DEBUG_TOOLBAR_CONFIG = {'INTERCEPT_REDIRECTS': False}
