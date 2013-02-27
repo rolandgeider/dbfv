@@ -29,13 +29,13 @@ class BankAccount(models.Model):
     Model for a bank account
     '''
 
-    owner_name = models.CharField(verbose_name=_('Owner name'),
+    owner_name = models.CharField(verbose_name='Begünstigter',
                                   max_length=100,)
-    account_nr = models.CharField(verbose_name=_('Account nr.'),
+    account_nr = models.CharField(verbose_name='Kontonummer',
                                   max_length=9,)
-    bank_nr = models.CharField(verbose_name=_('Bank nr.'),
+    bank_nr = models.CharField(verbose_name='BLZ',
                                max_length=8,)
-    bank_name = models.CharField(verbose_name=_('Bank name'),
+    bank_name = models.CharField(verbose_name='Bankname',
                                  max_length=30,)
 
     def __unicode__(self):
