@@ -35,7 +35,7 @@ def logout(request):
     Logout the user
     '''
     django_logout(request)
-    return HttpResponseRedirect(reverse('login'))
+    return HttpResponseRedirect(reverse('logout-page'))
 
 
 def registration(request):

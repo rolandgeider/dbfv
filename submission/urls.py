@@ -34,15 +34,15 @@ urlpatterns = patterns('submission.views',
         TemplateView.as_view(template_name="index.html"),
         name="index"),
 
+    # User actions
     url(r'^benutzer/registrieren$', user.registration, name='registration'),
-    # Login/logout
-    #url(r'^anmelden/$',
-    #    'django.contrib.auth.views.login',
-    #    {'template_name': 'user/login.html'},
-    #    name="login"),
-    #url(r'^abmelden/$',
-    #    'submission.views.user.logout',
-    #    name="logout"),
+    url(r'^abmelden/$',
+        'user.logout',
+        name="logout"),
+    url(r'^abmelden/ok$',
+        TemplateView.as_view(template_name="user/logout.html"),
+        name="logout-page"),
+
 
     # Gyms
     url(r'^studio/(?P<pk>\d+)/details/$',
@@ -110,14 +110,10 @@ urlpatterns = patterns('submission.views',
 # Password reset is implemented by Django, no need to cook our own soup here
 # (besides the templates)
 urlpatterns = urlpatterns + patterns('',
-    url(r'^login/$',
+    url(r'^anmelden/$',
         'django.contrib.auth.views.login',
         {'template_name': 'user/login.html'},
         name='login'),
-
-    url(r'^logout/$',
-        'django.contrib.auth.views.logout',
-        name='logout'),
 
     url(r'^user/password/change$',
         'django.contrib.auth.views.password_change',

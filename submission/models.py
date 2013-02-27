@@ -81,11 +81,10 @@ class Gym(models.Model):
 
     def get_absolute_url(self):
         return reverse('gym-view', kwargs={'pk': self.id})
-        
+
     # Metaclass to set some other properties
     class Meta:
         ordering = ["state__name", "name"]
-
 
 
 class StateAssociation(models.Model):
