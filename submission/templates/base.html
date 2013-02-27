@@ -1,10 +1,26 @@
 {% load i18n %}
 {% load staticfiles %}
 {% load url from future %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!--
+     This file is part of the DBFV site.
+
+     the DBFV site is free software: you can redistribute it and/or modify
+     it under the terms of the GNU Affero General Public License as published by
+     the Free Software Foundation, either version 3 of the License, or
+     (at your option) any later version.
+
+     the DBFV site is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.
+
+     You should have received a copy of the GNU Affero General Public License
+     along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
+    -->
+    
     <meta charset="utf-8">
     <title>DBFV Antragsystem</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -54,7 +70,7 @@
               
               {% if user_type == USER_TYPE_BUNDESVERBAND %}
               <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Administration <b class="caret"></b></a>
+                <a href="" class="dropdown-toggle" data-toggle="dropdown">Administration <b class="caret"></b></a>
                 <ul class="dropdown-menu">
                     <li><a href="{% url 'gym-list' %}">Studios</a></li>
                     <li><a href="{% url 'state-list' %}">Bundesländer</a></li>
@@ -65,7 +81,7 @@
             </ul>
             <ul class="nav pull-right">
                 {% if not user.is_anonymous %}
-                <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Benutzer: {{user.username}} <b class="caret"></b></a>
+                <li class="dropdown"><a href="" class="dropdown-toggle" data-toggle="dropdown">Benutzer: {{user.username}} <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                       <li><a href="{% url 'logout' %}">Abmelden</a></li>
                       <li><a href="{% url 'django.contrib.auth.views.password_change' %}">Passwort ändern</a></li>
