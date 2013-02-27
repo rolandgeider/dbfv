@@ -70,7 +70,7 @@ class Gym(models.Model):
 
     name = models.CharField(verbose_name='Name',
                             max_length=100,)
-    email = models.EmailField(verbose_name='Email')
+    email = models.EmailField(verbose_name='Email', blank=True)
     state = models.ForeignKey(State, verbose_name='Bundesland')
 
     def __unicode__(self):
@@ -81,6 +81,11 @@ class Gym(models.Model):
 
     def get_absolute_url(self):
         return reverse('gym-view', kwargs={'pk': self.id})
+        
+    # Metaclass to set some other properties
+    class Meta:
+        ordering = ["state__name", "name"]
+
 
 
 class StateAssociation(models.Model):
