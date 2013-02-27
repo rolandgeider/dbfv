@@ -85,11 +85,6 @@
                     "stateassociation"
                 ], 
                 [
-                    "add_submission", 
-                    "submission", 
-                    "submission"
-                ], 
-                [
                     "change_submission", 
                     "submission", 
                     "submission"
