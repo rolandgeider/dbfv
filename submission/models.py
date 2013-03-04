@@ -53,7 +53,7 @@ class State(models.Model):
     name = models.CharField(verbose_name='Name',
                             max_length=100,)
     short_name = models.CharField(verbose_name='Kürzel',
-                                  max_length=2,)
+                                  max_length=3,)
     bank_account = models.ForeignKey(BankAccount, verbose_name='Bankkonto')
 
     def __unicode__(self):
