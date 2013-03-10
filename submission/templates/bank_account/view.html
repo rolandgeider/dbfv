@@ -1,30 +1,30 @@
 {% extends "base.html" %}
 {% load url from future %}
 
-{% block title %}Bankkonto{% endblock %}
+{% block title %}Überweisungsdaten{% endblock %}
 
 {% block content %}
+
+<p>Bitte überweisen Sie den Teilnahmebeitrag innerhalb von ABC Tagen
+an das folgende Konto:</p>
+
 <table class="table table-striped" data-toggle="list">
-    <thead>
     <tr>
-        <th>Name</th>
+        <th>Betrag</th>
+        <td>50EUR</td>
+    </tr>
+    <tr>
+        <th>Begünstigter</th>
+        <td>{{bankaccount.owner_name}}</td>
+    </tr>
+    <tr>
         <th>Kontonummer</th>
-        <th>BLZ</th>
+        <td>{{bankaccount.account_nr}}</td>
     </tr>
-    </thead>
-    <tbody>
     <tr>
-        <td>
-            {{bankaccount.owner_name}}</a>
-        </td>
-        <td>
-            {{bankaccount.account_nr}}
-        </td>
-        <td>
-            {{bankaccount.bank_nr}} ({{bankaccount.bank_name}})</a>
-        </td>
+        <th>BLZ</th>
+        <td>{{bankaccount.bank_nr}} ({{bankaccount.bank_name}})</td>
     </tr>
-    </tbody>
 </table>
 {% endblock %}
 
