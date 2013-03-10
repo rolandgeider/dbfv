@@ -62,6 +62,27 @@ class SubmissionListView(DbfvViewMixin, generic.ListView):
         #else:
         #    pass
 
+class SubmissionListYearView(SubmissionListView, generic.dates.YearMixin):
+    def get_queryset(self):
+        '''
+        Change the queryset depending on the user's rights. The rules are the
+        follwing:
+            * A BC user sees all submissions
+            * A LV user sees the submissions for all gyms in his state
+            * A regular user sees it's own submissions
+        '''
+
+        # Get queryset from parent class
+        if user_type(self.request.user) == USER_TYPE_BUNDESVERBAND:
+            return Submission.objects.filter(creation_date__year=self.get_year())
+        elif user_type(self.request.user) == USER_TYPE_LANDESVERBAND:
+            return Submission.objects.filter(gym__state=user_lv(self.request.user),
+                                            creation_date__year=self.get_year())
+        elif user_type(self.request.user) == USER_TYPE_USER:
+            return Submission.objects.filter(user=self.request.user,
+                                            creation_date__year=self.get_year())
+        #else:
+        #    pass
 
 class SubmissionForm(ModelForm):
     class Meta:
