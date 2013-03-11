@@ -1,7 +1,22 @@
 {% extends "base.html" %}
+{% load staticfiles %}
 {% load url from future %}
 
 {% block title %}Anträge{% endblock %}
+
+{% block header %}
+<script src="{% static 'js/datatables/media/js/jquery.dataTables.min.js' %}"></script>
+<script>
+$(document).ready(function(){
+    $('#closed-submissions').dataTable( {
+            "oLanguage": {
+                "sUrl": "{% static 'js/datatables-german.json' %}"
+            },
+            "bPaginate": false
+        } );
+});
+</script>
+{% endblock %}
 
 {% block content %}
 {% if submission_list %}
@@ -75,10 +90,12 @@
 
 {% if submission_list %}
 <h3>Geschlossene Anträge</h3>
-<table class="table table-striped" data-toggle="list">
+<table class="table table-striped" data-toggle="list" id="closed-submissions">
     <thead>
     <tr>
+        {% if user_type != USER_TYPE_USER %}
         <th>Nr.</th>
+        {% endif %}
         <th>Datum</th>
         <th>Anlage</th>
         <th>Studio</th>

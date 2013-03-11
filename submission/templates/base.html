@@ -29,6 +29,11 @@
 
     <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">
     <link href="{% static 'css/bootstrap-custom.css' %}" rel="stylesheet">
+    
+    <script src="{% static 'js/jquery-1.9.0.js' %}"></script>
+    <script src="{% static 'js/bootstrap.js' %}"></script>
+  
+    {% block header %}{% endblock %}
 </head>
 
 <body>
@@ -140,8 +145,5 @@
               </ul>
           </div>
       </footer>
-
-    <script src="{% static 'js/jquery-1.9.0.js' %}"></script>
-    <script src="{% static 'js/bootstrap.js' %}"></script>
-  </body>
+    </body>
 </html>
