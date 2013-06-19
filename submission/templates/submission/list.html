@@ -54,7 +54,6 @@
             {% elif submission.submission_status_lv == SUBMISSION_STATUS_ABGELEHNT %}style="color:red;"{% endif %}>
             {{submission.get_submission_status_lv_display}}
 
-            {% if user_type == USER_TYPE_LANDESVERBAND %}<a href="{% url 'submission-edit-status' submission.id %}">[bearbeiten]</a>{% endif %}
         </td>
         <td {% if submission.submission_status_bv == SUBMISSION_STATUS_BEWILLIGT %}style="color:green;"
             {% elif submission.submission_status_bv == SUBMISSION_STATUS_ABGELEHNT %}style="color:red;"{% endif %}>

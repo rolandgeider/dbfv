@@ -132,7 +132,7 @@ class Submission(models.Model):
     gym = models.ForeignKey(Gym, verbose_name='Studio')
     anhang = models.FileField(upload_to=attachment_submission_dir,
                               verbose_name='Antrag',
-                              help_text='Den ausgefüllten Antrags-PDF hier hochladen.')
+                              help_text='Das ausgefüllten Antrags-PDF hier hochladen.')
 
     creation_date = models.DateField(_('Creation date'), auto_now_add=True)
     user = models.ForeignKey(User, verbose_name=_('User'))
@@ -162,11 +162,9 @@ post_delete.connect(delete_submission_attachment, sender=Submission)
 
 
 USER_TYPE_UNKNOWN = -1
-USER_TYPE_LANDESVERBAND = 1
 USER_TYPE_BUNDESVERBAND = 2
 USER_TYPE_USER = 3
 USER_TYPES = ((USER_TYPE_BUNDESVERBAND, u'Bundesverband'),
-              (USER_TYPE_LANDESVERBAND, u'Landesverband'),
               (USER_TYPE_USER, u'User'),
               (USER_TYPE_UNKNOWN, u'Unbekannt'))
 
@@ -220,14 +218,3 @@ def user_type(user):
         return None
 
     return profile.type
-
-
-def user_lv(user):
-    '''
-    Return the Landesverband of the user or None if the user is not an LV user.
-    Anonymous users are not LV users.
-    '''
-    profile = user_profile(user)
-    if profile is None or profile.type != USER_TYPE_LANDESVERBAND:
-        return None
-    return profile.state

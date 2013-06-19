@@ -17,9 +17,7 @@
 
 
 from submission.models import user_type
-from submission.models import user_lv
 
-from submission.models import USER_TYPE_LANDESVERBAND
 from submission.models import USER_TYPE_BUNDESVERBAND
 from submission.models import USER_TYPE_USER
 
@@ -32,10 +30,8 @@ def processor(request):
     return {
         # User type
         'user_type': user_type(request.user),
-        'user_lv': user_lv(request.user),
 
         # User types
-        'USER_TYPE_LANDESVERBAND': USER_TYPE_LANDESVERBAND,
         'USER_TYPE_BUNDESVERBAND': USER_TYPE_BUNDESVERBAND,
         'USER_TYPE_USER': USER_TYPE_USER,
 

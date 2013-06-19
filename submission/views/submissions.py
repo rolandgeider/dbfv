@@ -21,9 +21,8 @@ from django.core.urlresolvers import reverse_lazy
 from django.forms import ModelForm
 
 from submission.models import Submission
+from submission.models import State
 from submission.models import user_type
-from submission.models import user_lv
-from submission.models import USER_TYPE_LANDESVERBAND
 from submission.models import USER_TYPE_BUNDESVERBAND
 from submission.models import USER_TYPE_USER
 from submission.models import SUBMISSION_STATUS_EINGEGANGEN
@@ -55,8 +54,6 @@ class SubmissionListView(DbfvViewMixin, generic.ListView):
 
         if user_type(self.request.user) == USER_TYPE_BUNDESVERBAND:
             return Submission.objects.all()
-        elif user_type(self.request.user) == USER_TYPE_LANDESVERBAND:
-            return Submission.objects.filter(gym__state=user_lv(self.request.user))
         elif user_type(self.request.user) == USER_TYPE_USER:
             return Submission.objects.filter(user=self.request.user)
         #else:
@@ -75,9 +72,6 @@ class SubmissionListYearView(SubmissionListView, generic.dates.YearMixin):
         # Get queryset from parent class
         if user_type(self.request.user) == USER_TYPE_BUNDESVERBAND:
             return Submission.objects.filter(creation_date__year=self.get_year())
-        elif user_type(self.request.user) == USER_TYPE_LANDESVERBAND:
-            return Submission.objects.filter(gym__state=user_lv(self.request.user),
-                                            creation_date__year=self.get_year())
         elif user_type(self.request.user) == USER_TYPE_USER:
             return Submission.objects.filter(user=self.request.user,
                                             creation_date__year=self.get_year())
@@ -102,6 +96,7 @@ class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
     form_class = SubmissionForm
     success_url = reverse_lazy('index')
     permission_required = 'submission.add_submission'
+    template_name = 'submission/create.html'
 
     def form_valid(self, form):
         '''
@@ -126,6 +121,14 @@ class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
     def get_success_url(self):
         return reverse_lazy('bank-account-view',
                             kwargs={'pk': self.form_instance.gym.state.bank_account_id})
+
+    def get_context_data(self, **kwargs):
+        '''
+        Pass a list of all states
+        '''
+        context = super(SubmissionCreateView, self).get_context_data(**kwargs)
+        context['states_list'] = State.objects.all()
+        return context
 
 
 class SubmissionUpdateView(DbfvFormMixin, generic.UpdateView):
@@ -174,5 +177,3 @@ class SubmissionUpdateStatusView(DbfvFormMixin, generic.UpdateView):
 
         if user_type(self.request.user) == USER_TYPE_BUNDESVERBAND:
             return SubmissionFormBV
-        elif user_type(self.request.user) == USER_TYPE_LANDESVERBAND:
-            return SubmissionFormLV
