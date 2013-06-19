@@ -2,11 +2,14 @@
 
 from django.forms import ModelForm
 from django.forms import EmailField
+from django.forms import ModelChoiceField
 from django.contrib.auth.models import User as Django_User
 from django.contrib.auth.forms import UserCreationForm
 from django.utils.translation import ugettext as _
 
 from captcha.fields import ReCaptchaField
+
+from submission.models import State
 
 
 class UserEmailForm(ModelForm):
@@ -26,8 +29,9 @@ class UserEmailForm(ModelForm):
             return email
         raise ValidationError(_("This email is already used."))
 
-
 class RegistrationForm(UserCreationForm, UserEmailForm):
+    state = ModelChoiceField(label=_("Federal state"),
+                             queryset=State.objects.all())
     captcha = ReCaptchaField(attrs={'theme': 'clean'},
                              label=_('Confirmation text'),
                              help_text=_('As a security measure, please enter the previous words'),)

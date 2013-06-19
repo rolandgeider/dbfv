@@ -68,6 +68,7 @@ def registration(request):
             # Set the user type in the profile
             profile = user.get_profile()
             profile.type = USER_TYPE_USER
+            profile.state = form.cleaned_data['state']
             profile.save()
 
             # Login the new user and redirect
