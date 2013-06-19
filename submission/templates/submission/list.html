@@ -1,10 +1,26 @@
 {% extends "base.html" %}
+{% load staticfiles %}
 {% load url from future %}
 
 {% block title %}Anträge{% endblock %}
 
+{% block header %}
+<script src="{% static 'js/datatables/media/js/jquery.dataTables.min.js' %}"></script>
+<script>
+$(document).ready(function(){
+    $('#closed-submissions').dataTable( {
+            "oLanguage": {
+                "sUrl": "{% static 'js/datatables-german.json' %}"
+            },
+            "bPaginate": false
+        } );
+});
+</script>
+{% endblock %}
+
 {% block content %}
 {% if submission_list %}
+<h3>Laufende Anträge</h3>
 <table class="table table-striped" data-toggle="list">
     <thead>
     <tr>
@@ -24,6 +40,7 @@
     </thead>
     <tbody>
     {% for submission in submission_list %}
+    {% if submission.submission_status_lv == SUBMISSION_STATUS_EINGEGANGEN or submission.submission_status_bv == SUBMISSION_STATUS_EINGEGANGEN %}
     <tr>
         {% if user_type != USER_TYPE_USER %}
         <td>
@@ -62,12 +79,74 @@
             {% if user_type == USER_TYPE_BUNDESVERBAND %}<a href="{% url 'submission-edit-status' submission.id %}">[bearbeiten]</a>{% endif %}
         </td>
     </tr>
+    {% endif %}
     {% endfor %}
     </tbody>
 </table>
 {% else %}
     <p>Es liegen momentan keine Anträge vor.</p>
 {% endif %}
+
+{% if submission_list %}
+<h3>Geschlossene Anträge</h3>
+<table class="table table-striped" data-toggle="list" id="closed-submissions">
+    <thead>
+    <tr>
+        {% if user_type != USER_TYPE_USER %}
+        <th>Nr.</th>
+        {% endif %}
+        <th>Datum</th>
+        <th>Anlage</th>
+        <th>Studio</th>
+        {% if user_type != USER_TYPE_USER %}
+        <th>Benutzer</th>
+        {% endif %}
+        <th>Typ</th>
+        <th>Status LV</th>
+        <th>Status BV</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for submission in submission_list %}
+    {% if submission.submission_status_lv != SUBMISSION_STATUS_EINGEGANGEN and submission.submission_status_bv != SUBMISSION_STATUS_EINGEGANGEN %}
+    <tr>
+        {% if user_type != USER_TYPE_USER %}
+        <td>
+            {{submission.id}}
+        </td>
+        {% endif %}
+        <td>
+            {{submission.creation_date}}
+        </td>
+        <td>
+            <a href="/{{ submission.anhang.url }}">Link</a>
+        </td>
+        <td>
+            {{submission.gym}}
+        </td>
+        {% if user_type != USER_TYPE_USER %}
+        <td>
+            {{submission.user}}
+        </td>
+        {% endif %}
+        <td>
+            {{submission.submission_type}}
+        </td>
+        <td {% if submission.submission_status_lv == SUBMISSION_STATUS_BEWILLIGT %}style="color:green;"
+            {% elif submission.submission_status_lv == SUBMISSION_STATUS_ABGELEHNT %}style="color:red;"{% endif %}>
+            {{submission.get_submission_status_lv_display}}
+        </td>
+        <td {% if submission.submission_status_bv == SUBMISSION_STATUS_BEWILLIGT %}style="color:green;"
+            {% elif submission.submission_status_bv == SUBMISSION_STATUS_ABGELEHNT %}style="color:red;"{% endif %}>
+            {{submission.get_submission_status_bv_display}}
+        </td>
+    </tr>
+    {% endif %}
+    {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+    
 {% endblock %}
 
 {% block sidebar %}
