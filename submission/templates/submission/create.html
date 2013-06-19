@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load dbfv_extras %}
+
+{% block title %}Neuen Antrag stellen{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {  
+    $('.gym-select').click(function() {
+        gym_id = $(this).data('gym-id');
+        gym_name = $(this).html();
+        console.log(gym_id);
+        //id_gym
+        $('#id_gym').val(gym_id);
+        $('#gym-name').html(gym_name);
+    });
+});
+</script>
+{% endblock %}
+
+{% block content %}
+<form action="{{ form_action }}"
+      method="post"
+      class="form-horizontal"
+      enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="accordion" id="accordion2">
+    {% for state in states_list %}
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse-{{ state.id }}">
+            {{ state }}
+            </a>
+        </div>
+        <div id="collapse-{{ state.id }}" class="accordion-body collapse {% if user.userprofile.state.id == state.id %}in{% endif %}">
+            <div class="accordion-inner">
+
+            {% for gym in state.gym_set.all %}
+                <span id="gym-{{ gym.id }}" class="gym-select" data-gym-id="{{ gym.id }}">{{ gym.name }}</span><br>
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    </div>
+
+    <h4 id="gym-name"></h4>
+    {% if form.gym.errors %}
+        <div class="control-group error">
+            <div class="controls">
+            <span class="help-inline">
+                Bitte wählen Sie ein Studio aus der Liste aus
+            </span>
+            </div>
+        </div>
+    {% endif %}
+    <input type="hidden" name="gym" id="id_gym" value="{{form.gym.value}}">
+    {% table_form_field form.anhang %}
+    {% table_form_submit %}
+
+</form>
+
+{% endblock %}
+
+{% block sidebar %}
+<div class="sidebar-box">
+    <h3>Info</h3>
+    <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
+       eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam
+       voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet
+       clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit
+       amet.</p>
+</div>
+{% endblock %}
