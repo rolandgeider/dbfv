@@ -120,6 +120,9 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 
+    # South, for DB migrations
+    'south',
+
     # reCaptcha support, see https://github.com/praekelt/django-recaptcha
     'captcha',
 
