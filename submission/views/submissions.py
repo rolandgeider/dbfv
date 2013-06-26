@@ -107,7 +107,7 @@ class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
         form.instance.user = self.request.user
 
         # Starterlizenz
-        if self.kwargs['type'] == SUBMISSION_TYPES[0][1]:
+        if self.kwargs['type'] == SUBMISSION_TYPES[0][1].lower():
             form.instance.submission_type = SUBMISSION_TYPES[0][0]
 
         # Kampfrichter
