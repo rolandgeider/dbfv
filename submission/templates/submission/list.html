@@ -25,22 +25,21 @@ $(document).ready(function(){
     <thead>
     <tr>
         {% if user_type != USER_TYPE_USER %}
-        <th>Nr.</th>
+            <th>Nr.</th>
         {% endif %}
         <th>Datum</th>
         <th>Anlage</th>
         <th>Studio</th>
         {% if user_type != USER_TYPE_USER %}
-        <th>Benutzer</th>
+            <th>Benutzer</th>
         {% endif %}
         <th>Typ</th>
-        <th>Status LV</th>
-        <th>Status BV</th>
+        <th>Status</th>
     </tr>
     </thead>
     <tbody>
     {% for submission in submission_list %}
-    {% if submission.submission_status_lv == SUBMISSION_STATUS_EINGEGANGEN or submission.submission_status_bv == SUBMISSION_STATUS_EINGEGANGEN %}
+    {% if submission.submission_status_bv == SUBMISSION_STATUS_EINGEGANGEN %}
     <tr>
         {% if user_type != USER_TYPE_USER %}
         <td>
@@ -54,7 +53,9 @@ $(document).ready(function(){
             <a href="/{{ submission.anhang.url }}">Link</a>
         </td>
         <td>
-            {{submission.gym}}
+            {{submission.gym.name}}
+            <br>
+            ({{submission.gym.state}})
         </td>
         {% if user_type != USER_TYPE_USER %}
         <td>
@@ -63,20 +64,12 @@ $(document).ready(function(){
         {% endif %}
         <td>
             {{submission.submission_type}}
-<!--
-            {{submission.get_submission_type_display}}
--->
-        </td>
-        <td {% if submission.submission_status_lv == SUBMISSION_STATUS_BEWILLIGT %}style="color:green;"
-            {% elif submission.submission_status_lv == SUBMISSION_STATUS_ABGELEHNT %}style="color:red;"{% endif %}>
-            {{submission.get_submission_status_lv_display}}
-
         </td>
         <td {% if submission.submission_status_bv == SUBMISSION_STATUS_BEWILLIGT %}style="color:green;"
             {% elif submission.submission_status_bv == SUBMISSION_STATUS_ABGELEHNT %}style="color:red;"{% endif %}>
             {{submission.get_submission_status_bv_display}}
 
-            {% if user_type == USER_TYPE_BUNDESVERBAND %}<a href="{% url 'submission-edit-status' submission.id %}">[bearbeiten]</a>{% endif %}
+            {% if user_type == USER_TYPE_BUNDESVERBAND %}<br><a href="{% url 'submission-edit-status' submission.id %}">[bearbeiten]</a>{% endif %}
         </td>
     </tr>
     {% endif %}
@@ -86,6 +79,7 @@ $(document).ready(function(){
 {% else %}
     <p>Es liegen momentan keine Anträge vor.</p>
 {% endif %}
+
 
 {% if submission_list %}
 <h3>Geschlossene Anträge</h3>
@@ -102,13 +96,12 @@ $(document).ready(function(){
         <th>Benutzer</th>
         {% endif %}
         <th>Typ</th>
-        <th>Status LV</th>
-        <th>Status BV</th>
+        <th>Status</th>
     </tr>
     </thead>
     <tbody>
     {% for submission in submission_list %}
-    {% if submission.submission_status_lv != SUBMISSION_STATUS_EINGEGANGEN and submission.submission_status_bv != SUBMISSION_STATUS_EINGEGANGEN %}
+    {% if submission.submission_status_bv != SUBMISSION_STATUS_EINGEGANGEN %}
     <tr>
         {% if user_type != USER_TYPE_USER %}
         <td>
@@ -122,7 +115,9 @@ $(document).ready(function(){
             <a href="/{{ submission.anhang.url }}">Link</a>
         </td>
         <td>
-            {{submission.gym}}
+            {{submission.gym.name}}
+            <br>
+            ({{submission.gym.state}})
         </td>
         {% if user_type != USER_TYPE_USER %}
         <td>
@@ -132,13 +127,11 @@ $(document).ready(function(){
         <td>
             {{submission.submission_type}}
         </td>
-        <td {% if submission.submission_status_lv == SUBMISSION_STATUS_BEWILLIGT %}style="color:green;"
-            {% elif submission.submission_status_lv == SUBMISSION_STATUS_ABGELEHNT %}style="color:red;"{% endif %}>
-            {{submission.get_submission_status_lv_display}}
-        </td>
         <td {% if submission.submission_status_bv == SUBMISSION_STATUS_BEWILLIGT %}style="color:green;"
             {% elif submission.submission_status_bv == SUBMISSION_STATUS_ABGELEHNT %}style="color:red;"{% endif %}>
             {{submission.get_submission_status_bv_display}}
+            
+            {% if user_type == USER_TYPE_BUNDESVERBAND %}<br><a href="{% url 'submission-edit-status' submission.id %}">[bearbeiten]</a>{% endif %}
         </td>
     </tr>
     {% endif %}
