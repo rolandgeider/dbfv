@@ -34,7 +34,9 @@ $(document).ready(function(){
             <th>Benutzer</th>
         {% endif %}
         <th>Typ</th>
-        <th>Status</th>
+        {% if user_type == USER_TYPE_BUNDESVERBAND %}
+        <th>Aktionen</th>
+        {% endif %}
     </tr>
     </thead>
     <tbody>
@@ -50,7 +52,7 @@ $(document).ready(function(){
             {{submission.creation_date}}
         </td>
         <td>
-            <a href="/{{ submission.anhang.url }}">Link</a>
+            <a href="/{{ submission.anhang.url }}">Runterladen</a>
         </td>
         <td>
             {{submission.gym.name}}
@@ -65,12 +67,16 @@ $(document).ready(function(){
         <td>
             {{submission.submission_type}}
         </td>
-        <td {% if submission.submission_status_bv == SUBMISSION_STATUS_BEWILLIGT %}style="color:green;"
-            {% elif submission.submission_status_bv == SUBMISSION_STATUS_ABGELEHNT %}style="color:red;"{% endif %}>
-            {{submission.get_submission_status_bv_display}}
-
-            {% if user_type == USER_TYPE_BUNDESVERBAND %}<br><a href="{% url 'submission-edit-status' submission.id %}">[bearbeiten]</a>{% endif %}
+        {% if user_type == USER_TYPE_BUNDESVERBAND %}
+        <td>
+            <a href="{% url 'submission-edit-status' submission.id %}"
+               class="icon-pencil"
+               title="Bearbeiten"></a>
+            <a href="{% url 'submission-edit-status' submission.id %}"
+               class="icon-trash"
+               title="Löschen"></a>
         </td>
+        {% endif %}
     </tr>
     {% endif %}
     {% endfor %}
@@ -97,6 +103,9 @@ $(document).ready(function(){
         {% endif %}
         <th>Typ</th>
         <th>Status</th>
+        {% if user_type == USER_TYPE_BUNDESVERBAND %}
+        <th>Aktionen</th>
+        {% endif %}
     </tr>
     </thead>
     <tbody>
@@ -112,7 +121,7 @@ $(document).ready(function(){
             {{submission.creation_date}}
         </td>
         <td>
-            <a href="/{{ submission.anhang.url }}">Link</a>
+            <a href="/{{ submission.anhang.url }}">Runterladen</a>
         </td>
         <td>
             {{submission.gym.name}}
@@ -127,12 +136,26 @@ $(document).ready(function(){
         <td>
             {{submission.submission_type}}
         </td>
-        <td {% if submission.submission_status_bv == SUBMISSION_STATUS_BEWILLIGT %}style="color:green;"
-            {% elif submission.submission_status_bv == SUBMISSION_STATUS_ABGELEHNT %}style="color:red;"{% endif %}>
+        <td>
+            {% if submission.submission_status_bv == SUBMISSION_STATUS_BEWILLIGT %}
+                <i class="icon-ok"></i>
+            {% elif submission.submission_status_bv == SUBMISSION_STATUS_ABGELEHNT %}
+                <i class="icon-remove"></i>
+            {% else %}
+                <i class="icon-time"></i>
+            {% endif %}
             {{submission.get_submission_status_bv_display}}
-            
-            {% if user_type == USER_TYPE_BUNDESVERBAND %}<br><a href="{% url 'submission-edit-status' submission.id %}">[bearbeiten]</a>{% endif %}
         </td>
+        {% if user_type == USER_TYPE_BUNDESVERBAND %}
+        <td>
+            <a href="{% url 'submission-edit-status' submission.id %}"
+               class="icon-pencil"
+               title="Bearbeiten"></a>
+            <a href="{% url 'submission-edit-status' submission.id %}"
+               class="icon-trash"
+               title="Löschen"></a>
+        </td>
+        {% endif %}
     </tr>
     {% endif %}
     {% endfor %}
