@@ -19,6 +19,8 @@ from django.template.loader import render_to_string
 from django.forms.formsets import BaseFormSet
 
 from submission.models import Submission
+from submission.models import user_type
+
 
 register = template.Library()
 
@@ -100,7 +102,7 @@ def table_form_render(form):
 
 
 @register.simple_tag
-def render_submission_list(submissions, filter_mode, table_id):
+def render_submission_list(submissions, user, filter_mode, table_id):
     context = dict()
     context['SUBMISSION_STATUS_EINGEGANGEN'] = Submission.SUBMISSION_STATUS_EINGEGANGEN
     context['SUBMISSION_STATUS_BEWILLIGT'] = Submission.SUBMISSION_STATUS_BEWILLIGT
@@ -113,5 +115,7 @@ def render_submission_list(submissions, filter_mode, table_id):
         
     context['submission_list'] = submission_list
     context['table_id'] = table_id
+    context['user_type'] = user_type(user)
+
     
     return render_to_string("tags/render_submission_list.html", context)

@@ -22,15 +22,18 @@ $(document).ready(function(){
 {% block content %}
 
 <h3>Laufende Anträge</h3>
-{% render_submission_list submission_list 'open' 'open-submissions' %}
+{% render_submission_list submission_list user 'open' 'open-submissions' %}
 
 
 <h3>Geschlossene Anträge</h3>
-{% render_submission_list submission_list 'closed' 'closed-submissions' %}
-
-
+{% render_submission_list submission_list user 'closed' 'closed-submissions' %}
 
 {% endblock %}
 
 {% block sidebar %}
+<h3>Info</h3>
+<p> Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+    tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+    vero eos et accusam et justo duo dolores et ea rebum.</p>
+
 {% endblock %}
