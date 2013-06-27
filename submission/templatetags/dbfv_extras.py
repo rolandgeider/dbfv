@@ -18,11 +18,7 @@ from django import template
 from django.template.loader import render_to_string
 from django.forms.formsets import BaseFormSet
 
-
-#import submission.models
-#from application.models import antrag_states, Konzept
-#from application.views.fields import InlineBooleanField, FileField
-#from application.views.submission import user_has_state_permission
+from submission.models import Submission
 
 register = template.Library()
 
@@ -100,3 +96,22 @@ def table_form_render(form):
     else:
         context["form"] = form
         return render_to_string("tags/table_form_render.html", context)
+
+
+
+@register.simple_tag
+def render_submission_list(submissions, filter_mode, table_id):
+    context = dict()
+    context['SUBMISSION_STATUS_EINGEGANGEN'] = Submission.SUBMISSION_STATUS_EINGEGANGEN
+    context['SUBMISSION_STATUS_BEWILLIGT'] = Submission.SUBMISSION_STATUS_BEWILLIGT
+    context['SUBMISSION_STATUS_ABGELEHNT'] = Submission.SUBMISSION_STATUS_ABGELEHNT
+
+    if filter_mode == 'open':
+        submission_list = [i for i in submissions if i.submission_status_bv == Submission.SUBMISSION_STATUS_EINGEGANGEN]
+    else:
+        submission_list = [i for i in submissions if i.submission_status_bv != Submission.SUBMISSION_STATUS_EINGEGANGEN]
+        
+    context['submission_list'] = submission_list
+    context['table_id'] = table_id
+    
+    return render_to_string("tags/render_submission_list.html", context)

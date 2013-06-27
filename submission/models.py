@@ -103,21 +103,6 @@ class StateAssociation(models.Model):
         return "Association %s" % self.state.short_name
 
 
-SUBMISSION_TYPES = (
-    ('ST', 'Starterlizenz'),
-    ('KR', 'Kapmfrichter'),
-)
-
-SUBMISSION_STATUS_EINGEGANGEN = '1'
-SUBMISSION_STATUS_BEWILLIGT = '2'
-SUBMISSION_STATUS_ABGELEHNT = '3'
-
-SUBMISSION_STATUS = (
-    (SUBMISSION_STATUS_EINGEGANGEN, 'Eingegangen'),
-    (SUBMISSION_STATUS_BEWILLIGT, 'Bewilligt'),
-    (SUBMISSION_STATUS_ABGELEHNT, 'Abgelehnt'),
-)
-
 
 def attachment_submission_dir(instance, filename):
 
@@ -128,6 +113,21 @@ class Submission(models.Model):
     '''
     Model for a submission
     '''
+    SUBMISSION_TYPES = (
+    ('ST', 'Starterlizenz'),
+    ('KR', 'Kapmfrichter'),
+    )
+
+    SUBMISSION_STATUS_EINGEGANGEN = '1'
+    SUBMISSION_STATUS_BEWILLIGT = '2'
+    SUBMISSION_STATUS_ABGELEHNT = '3'
+
+    SUBMISSION_STATUS = (
+        (SUBMISSION_STATUS_EINGEGANGEN, 'Eingegangen'),
+        (SUBMISSION_STATUS_BEWILLIGT, 'Bewilligt'),
+        (SUBMISSION_STATUS_ABGELEHNT, 'Abgelehnt'),
+    )
+
 
     gym = models.ForeignKey(Gym, verbose_name='Studio')
     anhang = models.FileField(upload_to=attachment_submission_dir,
@@ -135,14 +135,16 @@ class Submission(models.Model):
                               help_text='Das ausgefüllten Antrags-PDF hier hochladen.')
 
     creation_date = models.DateField(_('Creation date'), auto_now_add=True)
-    user = models.ForeignKey(User, verbose_name=_('User'))
-    submission_type = models.CharField(max_length=2, choices=SUBMISSION_TYPES)
-    submission_status_lv = models.CharField(max_length=2,
-                                            choices=SUBMISSION_STATUS,
-                                            default=SUBMISSION_STATUS_EINGEGANGEN)
+    user = models.ForeignKey(User,
+                             verbose_name=_('User'),
+                             editable=False)
+    submission_type = models.CharField(max_length=2,
+                                       choices=SUBMISSION_TYPES,
+                                       editable=False)
     submission_status_bv = models.CharField(max_length=2,
                                             choices=SUBMISSION_STATUS,
-                                            default=SUBMISSION_STATUS_EINGEGANGEN)
+                                            default=SUBMISSION_STATUS_EINGEGANGEN,
+                                            editable=False)
 
     def __unicode__(self):
         '''

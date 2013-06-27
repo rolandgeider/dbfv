@@ -25,9 +25,6 @@ from submission.models import State
 from submission.models import user_type
 from submission.models import USER_TYPE_BUNDESVERBAND
 from submission.models import USER_TYPE_USER
-from submission.models import SUBMISSION_STATUS_EINGEGANGEN
-from submission.models import SUBMISSION_STATUS_BEWILLIGT
-from submission.models import SUBMISSION_TYPES
 
 from submission.views.generic_views import DbfvViewMixin
 from submission.views.generic_views import DbfvFormMixin
@@ -47,8 +44,7 @@ class SubmissionListView(DbfvViewMixin, generic.ListView):
         '''
         Change the queryset depending on the user's rights. The rules are the
         follwing:
-            * A BC user sees all submissions
-            * A LV user sees the submissions for all gyms in his state
+            * A BV user sees all submissions
             * A regular user sees it's own submissions
         '''
 
@@ -56,16 +52,14 @@ class SubmissionListView(DbfvViewMixin, generic.ListView):
             return Submission.objects.all()
         elif user_type(self.request.user) == USER_TYPE_USER:
             return Submission.objects.filter(user=self.request.user)
-        #else:
-        #    pass
+
 
 class SubmissionListYearView(SubmissionListView, generic.dates.YearMixin):
     def get_queryset(self):
         '''
         Change the queryset depending on the user's rights. The rules are the
         follwing:
-            * A BC user sees all submissions
-            * A LV user sees the submissions for all gyms in his state
+            * A BV user sees all submissions
             * A regular user sees it's own submissions
         '''
 
@@ -75,16 +69,6 @@ class SubmissionListYearView(SubmissionListView, generic.dates.YearMixin):
         elif user_type(self.request.user) == USER_TYPE_USER:
             return Submission.objects.filter(user=self.request.user,
                                             creation_date__year=self.get_year())
-        #else:
-        #    pass
-
-class SubmissionForm(ModelForm):
-    class Meta:
-        model = Submission
-        exclude = ('user',
-                   'submission_status_lv',
-                   'submission_status_bv',
-                   'submission_type')
 
 
 class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
@@ -93,7 +77,6 @@ class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
     '''
 
     model = Submission
-    form_class = SubmissionForm
     success_url = reverse_lazy('index')
     permission_required = 'submission.add_submission'
     template_name = 'submission/create.html'
