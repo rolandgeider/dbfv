@@ -34,6 +34,7 @@ $(document).ready(function(){
             <th>Benutzer</th>
         {% endif %}
         <th>Typ</th>
+        <th>Status</th>
         {% if user_type == USER_TYPE_BUNDESVERBAND %}
         <th>Aktionen</th>
         {% endif %}
@@ -68,6 +69,17 @@ $(document).ready(function(){
             {{submission.submission_type}}
         </td>
         {% if user_type == USER_TYPE_BUNDESVERBAND %}
+        <td>
+            {% if submission.submission_status_bv == SUBMISSION_STATUS_BEWILLIGT %}
+                <i class="icon-ok"></i>
+            {% elif submission.submission_status_bv == SUBMISSION_STATUS_ABGELEHNT %}
+                <i class="icon-remove"></i>
+            {% else %}
+                <i class="icon-time"></i>
+            {% endif %}
+            {{submission.get_submission_status_bv_display}}
+        </td>
+        
         <td>
             <a href="{% url 'submission-edit-status' submission.id %}"
                class="icon-pencil"
