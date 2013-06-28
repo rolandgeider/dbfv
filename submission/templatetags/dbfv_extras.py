@@ -20,7 +20,8 @@ from django.forms.formsets import BaseFormSet
 
 from submission.models import Submission
 from submission.models import user_type
-
+from submission.models import USER_TYPE_BUNDESVERBAND
+from submission.models import USER_TYPE_USER
 
 register = template.Library()
 
@@ -116,6 +117,8 @@ def render_submission_list(submissions, user, filter_mode, table_id):
     context['submission_list'] = submission_list
     context['table_id'] = table_id
     context['user_type'] = user_type(user)
+    context['USER_TYPE_BUNDESVERBAND'] = USER_TYPE_BUNDESVERBAND
+    context['USER_TYPE_USER'] = USER_TYPE_USER
 
     
     return render_to_string("tags/render_submission_list.html", context)

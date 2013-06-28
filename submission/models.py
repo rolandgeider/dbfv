@@ -158,7 +158,8 @@ def delete_submission_attachment(sender, instance, **kwargs):
     try:
         os.remove(os.path.join(settings.MEDIA_ROOT, instance.anhang))
     except Exception, e:
-        logger.error("Could not delete attachment", e)
+        pass
+        #logger.error("Could not delete attachment", e)
 
 post_delete.connect(delete_submission_attachment, sender=Submission)
 

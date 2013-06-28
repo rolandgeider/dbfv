@@ -114,6 +114,26 @@ class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
         return context
 
 
+class SubmissionDeleteView(DbfvFormMixin, generic.DeleteView):
+    '''
+    Creates a new submissions
+    '''
+
+    model = Submission
+    success_url = reverse_lazy('submission-list')
+    permission_required = 'submission.delete_submission'
+    template_name = 'delete.html'
+
+    def get_context_data(self, **kwargs):
+        '''
+        Pass the title to the context
+        '''
+        context = super(SubmissionDeleteView, self).get_context_data(**kwargs)
+        context['title'] = u'Antrag {0} löschen?'.format(self.object.id)
+        return context
+
+
+
 class SubmissionUpdateView(DbfvFormMixin, generic.UpdateView):
     '''
     Updates an existing submissions
