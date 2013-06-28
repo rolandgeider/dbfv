@@ -68,7 +68,11 @@ urlpatterns = patterns('submission.views',
     url(r'^bundesland/(?P<pk>\d+)/bearbeiten/$',
         state.StateUpdateView.as_view(),
         name='state-edit'),
+    url(r'^bundesland/(?P<pk>\d+)/loeschen/$',
+        state.StateDeleteView.as_view(),
+        name='state-delete'),
 
+    
     # Bank account
     url(r'^bankkonto/liste/alle/$',
         bank_account.BankAccountListView.as_view(),

@@ -54,3 +54,24 @@ class StateUpdateView(DbfvFormMixin, generic.UpdateView):
     model = State
     success_url = reverse_lazy('state-list')
     permission_required = 'submission.change_state'
+
+
+class StateDeleteView(DbfvFormMixin, generic.DeleteView):
+    '''
+    Deletes a state
+    '''
+
+    model = State
+    success_url = reverse_lazy('state-list')
+    permission_required = 'submission.delete_state'
+    template_name = 'delete.html'
+
+    def get_context_data(self, **kwargs):
+        '''
+        Pass the title to the context
+        '''
+        context = super(StateDeleteView, self).get_context_data(**kwargs)
+        context['title'] = u'Bundesland {0} löschen?'.format(self.object.name)
+        context['delete_message'] = u'Das wird auch alle Anträge und Benutzer im Bundesland entfernen.'
+        return context
+

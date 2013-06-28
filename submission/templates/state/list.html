@@ -11,6 +11,7 @@
         <th>Nr.</th>
         <th>Name</th>
         <th>Kürzel</th>
+        <th>Aktionen</th>
     </tr>
     </thead>
     <tbody>
@@ -20,10 +21,18 @@
             {{state.id}}
         </td>
         <td>
-            <a href="{% url 'state-edit' state.id %}">{{state.name}}</a>
+            {{state.name}}
         </td>
         <td>
             {{state.short_name}}
+        </td>
+        <td>
+            <a href="{% url 'state-edit' state.id %}"
+               class="icon-pencil"
+               title="Bearbeiten"></a>
+            <a href="{% url 'state-delete' state.id %}"
+               class="icon-trash"
+               title="Löschen"></a>
         </td>
     </tr>
     {% endfor %}

@@ -116,7 +116,7 @@ class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
 
 class SubmissionDeleteView(DbfvFormMixin, generic.DeleteView):
     '''
-    Creates a new submissions
+    Deletes a submission
     '''
 
     model = Submission
@@ -131,7 +131,6 @@ class SubmissionDeleteView(DbfvFormMixin, generic.DeleteView):
         context = super(SubmissionDeleteView, self).get_context_data(**kwargs)
         context['title'] = u'Antrag {0} löschen?'.format(self.object.id)
         return context
-
 
 
 class SubmissionUpdateView(DbfvFormMixin, generic.UpdateView):
