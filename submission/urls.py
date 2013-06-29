@@ -57,6 +57,10 @@ urlpatterns = patterns('submission.views',
     url(r'^studio/(?P<pk>\d+)/bearbeiten/$',
         gym.GymUpdateView.as_view(),
         name="gym-edit"),
+    url(r'^studio/(?P<pk>\d+)/loeschen/$',
+        gym.GymDeleteView.as_view(),
+        name="gym-delete"),
+
 
     # States
     url(r'^bundesland/liste/alle/$',

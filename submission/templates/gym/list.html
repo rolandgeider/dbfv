@@ -13,6 +13,7 @@
         <th>Name</th>
         <th>email</th>
         <th>Bundesland</th>
+        <th>Aktionen</th>
     </tr>
     </thead>
     <tbody>
@@ -26,6 +27,14 @@
         </td>
         <td>
             {{gym.state.name}}
+        </td>
+        <td>
+            <a href="{% url 'gym-edit' gym.id %}"
+               class="icon-pencil"
+               title="Bearbeiten"></a>
+            <a href="{% url 'gym-delete' gym.id %}"
+               class="icon-trash"
+               title="Löschen"></a>
         </td>
     </tr>
     {% endfor %}

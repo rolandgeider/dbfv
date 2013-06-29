@@ -16,6 +16,8 @@
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.views import generic
+from django.core.urlresolvers import reverse_lazy
+
 
 from submission.models import Gym
 from submission.views.generic_views import DbfvViewMixin
@@ -59,3 +61,24 @@ class GymUpdateView(DbfvFormMixin, generic.UpdateView):
 
     model = Gym
     permission_required = 'submission.change_gym'
+
+
+class GymDeleteView(DbfvFormMixin, generic.DeleteView):
+    '''
+    Deletes a gym
+    '''
+
+    model = Gym
+    success_url = reverse_lazy('gym-list')
+    permission_required = 'submission.delete_gym'
+    template_name = 'delete.html'
+
+    def get_context_data(self, **kwargs):
+        '''
+        Pass the title to the context
+        '''
+        context = super(StateDeleteView, self).get_context_data(**kwargs)
+        context['title'] = u'Studio {0} löschen?'.format(self.object.name)
+        context['delete_message'] = u'Das wird auch alle Anträge zu diesem Studio entfernen.'
+        return context
+
