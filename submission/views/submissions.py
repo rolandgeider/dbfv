@@ -71,12 +71,19 @@ class SubmissionListYearView(SubmissionListView, generic.dates.YearMixin):
                                             creation_date__year=self.get_year())
 
 
+class SubmissionForm(ModelForm):
+    class Meta:
+        model = Submission
+        exclude = ('submission_status_bv')
+
+
 class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
     '''
     Creates a new submissions
     '''
 
     model = Submission
+    form_class = SubmissionForm
     success_url = reverse_lazy('index')
     permission_required = 'submission.add_submission'
     template_name = 'submission/create.html'
@@ -90,12 +97,12 @@ class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
         form.instance.user = self.request.user
 
         # Starterlizenz
-        if self.kwargs['type'] == SUBMISSION_TYPES[0][1].lower():
-            form.instance.submission_type = SUBMISSION_TYPES[0][0]
+        if self.kwargs['type'] == Submission.SUBMISSION_TYPES[0][1].lower():
+            form.instance.submission_type = Submission.SUBMISSION_TYPES[0][0]
 
         # Kampfrichter
         else:
-            form.instance.submission_type = SUBMISSION_TYPES[1][0]
+            form.instance.submission_type = Submission.SUBMISSION_TYPES[1][0]
 
         self.form_instance = form.instance
 
@@ -143,24 +150,10 @@ class SubmissionUpdateView(DbfvFormMixin, generic.UpdateView):
     permission_required = 'submission.change_submission'
 
 
-class SubmissionFormLV(ModelForm):
-    class Meta:
-        model = Submission
-        exclude = ('user',
-                   'gym',
-                   'anhang',
-                   'submission_status_bv',
-                   'submission_type')
-
-
 class SubmissionFormBV(ModelForm):
     class Meta:
         model = Submission
-        exclude = ('user',
-                   'gym',
-                   'anhang',
-                   'submission_status_lv',
-                   'submission_type')
+        fields = ('submission_status_bv', )
 
 
 class SubmissionUpdateStatusView(DbfvFormMixin, generic.UpdateView):
@@ -169,13 +162,6 @@ class SubmissionUpdateStatusView(DbfvFormMixin, generic.UpdateView):
     '''
 
     model = Submission
+    form_class = SubmissionFormBV
     success_url = reverse_lazy('submission-list')
     permission_required = 'submission.change_submission'
-
-    def get_form_class(self):
-        '''
-        Return the Form class, depending on the user type (LV or BV)
-        '''
-
-        if user_type(self.request.user) == USER_TYPE_BUNDESVERBAND:
-            return SubmissionFormBV

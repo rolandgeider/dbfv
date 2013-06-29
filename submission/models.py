@@ -143,8 +143,7 @@ class Submission(models.Model):
                                        editable=False)
     submission_status_bv = models.CharField(max_length=2,
                                             choices=SUBMISSION_STATUS,
-                                            default=SUBMISSION_STATUS_EINGEGANGEN,
-                                            editable=False)
+                                            default=SUBMISSION_STATUS_EINGEGANGEN)
 
     def __unicode__(self):
         '''
