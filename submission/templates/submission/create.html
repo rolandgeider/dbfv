@@ -5,17 +5,31 @@
 
 {% block scripts %}
 <script>
-$(document).ready(function() {  
-    $('.gym-select').click(function() {
-        gym_id = $(this).data('gym-id');
-        gym_name = $(this).html();
-        console.log(gym_id);
+$(document).ready(function() {
+    $('.gym-select').click(function(e) {
+        e.preventDefault();
+        var gym_id = $(this).data('gym-id');
+        var gym_name = $(this).html();
         //id_gym
         $('#id_gym').val(gym_id);
         $('#gym-name').html(gym_name);
+
+        // Scroll to element
+        $('html, body').animate({
+        scrollTop: $("#gym-name").offset().top
+        }, 1000);
     });
 });
 </script>
+<style>
+.accordion-heading{
+    background-color: #f2f2f2;
+}
+
+.accordion-heading a{
+    color: black;
+}
+</style>
 {% endblock %}
 
 {% block content %}
@@ -37,7 +51,10 @@ $(document).ready(function() {
             <div class="accordion-inner">
 
             {% for gym in state.gym_set.all %}
-                <span id="gym-{{ gym.id }}" class="gym-select" data-gym-id="{{ gym.id }}">{{ gym.name }}</span><br>
+                <a id="gym-{{ gym.id }}"
+                   class="gym-select"
+                   data-gym-id="{{ gym.id }}"
+                   href="#">{{ gym.name }}</a><br>
             {% endfor %}
             </div>
         </div>
@@ -45,7 +62,7 @@ $(document).ready(function() {
     {% endfor %}
     </div>
 
-    <h4 id="gym-name"></h4>
+    <p>Ausgewähltes Studio: <strong><span id="gym-name">-/-</span></strong></p>
     {% if form.gym.errors %}
         <div class="control-group error">
             <div class="controls">
