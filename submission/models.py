@@ -114,8 +114,9 @@ class Submission(models.Model):
     Model for a submission
     '''
     SUBMISSION_TYPES = (
-    ('ST', 'Starterlizenz'),
+    ('ST', 'Starter'),
     ('KR', 'Kapmfrichter'),
+    ('SU', 'Studio'),
     )
 
     SUBMISSION_STATUS_EINGEGANGEN = '1'
@@ -132,7 +133,7 @@ class Submission(models.Model):
     gym = models.ForeignKey(Gym, verbose_name='Studio')
     anhang = models.FileField(upload_to=attachment_submission_dir,
                               verbose_name='Antrag',
-                              help_text='Das ausgefüllten Antrags-PDF hier hochladen.')
+                              help_text='Das ausgefüllte Antrags-PDF hier hochladen.')
 
     creation_date = models.DateField(_('Creation date'), auto_now_add=True)
     user = models.ForeignKey(User,

@@ -77,6 +77,12 @@ class SubmissionForm(ModelForm):
         exclude = ('submission_status_bv')
 
 
+class SubmissionNoFileForm(ModelForm):
+    class Meta:
+        model = Submission
+        exclude = ('submission_status_bv', 'anhang')
+
+
 class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
     '''
     Creates a new submissions
@@ -88,6 +94,23 @@ class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
     permission_required = 'submission.add_submission'
     template_name = 'submission/create.html'
 
+    def get_form_class(self):
+        '''
+        Return the appropriate form depending on submission type
+        '''
+
+        # Starterlizenz
+        if self.kwargs['type'].startswith(Submission.SUBMISSION_TYPES[0][1].lower()):
+            return SubmissionForm
+
+        # Kampfrichter
+        elif self.kwargs['type'].startswith(Submission.SUBMISSION_TYPES[1][1].lower()):
+            return SubmissionNoFileForm
+
+        # Studio
+        else:
+            return SubmissionNoFileForm
+
     def form_valid(self, form):
         '''
         Manually set some values when saving the form
@@ -97,15 +120,18 @@ class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
         form.instance.user = self.request.user
 
         # Starterlizenz
-        if self.kwargs['type'] == Submission.SUBMISSION_TYPES[0][1].lower():
+        if self.kwargs['type'].startswith(Submission.SUBMISSION_TYPES[0][1].lower()):
             form.instance.submission_type = Submission.SUBMISSION_TYPES[0][0]
 
         # Kampfrichter
-        else:
+        elif self.kwargs['type'].startswith(Submission.SUBMISSION_TYPES[1][1].lower()):
             form.instance.submission_type = Submission.SUBMISSION_TYPES[1][0]
 
-        self.form_instance = form.instance
+        # Studio
+        else:
+            form.instance.submission_type = Submission.SUBMISSION_TYPES[2][0]
 
+        self.form_instance = form.instance
         return super(SubmissionCreateView, self).form_valid(form)
 
     def get_success_url(self):

@@ -76,7 +76,7 @@ urlpatterns = patterns('submission.views',
         state.StateDeleteView.as_view(),
         name='state-delete'),
 
-    
+
     # Bank account
     url(r'^bankkonto/liste/alle/$',
         bank_account.BankAccountListView.as_view(),
@@ -98,7 +98,7 @@ urlpatterns = patterns('submission.views',
     url(r'^antrag/liste/(?P<year>\d+)/$',
         submissions.SubmissionListYearView.as_view(),
         name='submission-list'),
-    url(r'^antrag/neu/(?P<type>(starterlizenz|kapmfrichterlizenz))$',
+    url(r'^antrag/neu/(?P<type>(starter|kapmfrichter|studio))lizenz$',
         submissions.SubmissionCreateView.as_view(),
         name='submission-add'),
     url(r'^antrag/(?P<pk>\d+)/bearbeiten/$',
