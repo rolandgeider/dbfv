@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
 
 from django.db import models
 from django.db.models.signals import post_save
@@ -103,6 +104,20 @@ class StateAssociation(models.Model):
         return "Association %s" % self.state.short_name
 
 
+class Country(models.Model):
+    '''
+    Model for a country
+    '''
+
+    # This field is required.
+    name = models.CharField(max_length=20)
+
+    def __unicode__(self):
+        '''
+        Return a more human-readable representation
+        '''
+        return self.name
+
 
 def attachment_submission_dir(instance, filename):
 
@@ -131,6 +146,10 @@ class Submission(models.Model):
 
 
     gym = models.ForeignKey(Gym, verbose_name='Studio')
+    nationality = models.ForeignKey(Country,
+                                    verbose_name=u'Staatsangehörigkeit',
+                                    default=37  # Germany
+                                    )
     anhang = models.FileField(upload_to=attachment_submission_dir,
                               verbose_name='Antrag',
                               help_text='Das ausgefüllte Antrags-PDF hier hochladen.')
