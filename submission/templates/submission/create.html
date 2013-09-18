@@ -11,6 +11,7 @@ $(document).ready(function() {
         var gym_id = $(this).data('gym-id');
         var gym_name = $(this).html();
         //id_gym
+        $('#ajax_id_gym').val(gym_id);
         $('#id_gym').val(gym_id);
         $('#gym-name').html(gym_name);
 
@@ -72,7 +73,7 @@ $(document).ready(function() {
             </div>
         </div>
     {% endif %}
-    <input type="hidden" name="gym" id="id_gym" value="{{form.gym.value}}">
+    <input type="hidden" name="gym" id="ajax_id_gym" value="{{form.gym.value}}">
     {% table_form_render form %}
     {% table_form_submit %}
 
