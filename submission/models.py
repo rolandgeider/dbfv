@@ -163,7 +163,9 @@ class SubmissionStarter(models.Model):
     first_name = models.CharField(_('Vorname'), max_length=30)
     street = models.CharField(_(u'Straße'), max_length=30)
     zip_code = models.IntegerField(_(u'PLZ'), max_length=5)
+    city = models.CharField(_(u'City'), max_length=30)
     tel_number = models.CharField(_(u'Tel. Nr.'), max_length=20)
+    email = models.EmailField(_(u'Email'), max_length=30)
     nationality = models.ForeignKey(Country,
                                     verbose_name=u'Staatsangehörigkeit',
                                     default=37  # Germany
@@ -190,6 +192,13 @@ class SubmissionStarter(models.Model):
         Return a more human-readable representation
         '''
         return "%s - %s" % (self.creation_date, self.user)
+
+    @property
+    def get_name(self):
+        """
+        Returns the name of the participant
+        """
+        return u"{0}, {1}".format(self.last_name, self.first_name)
 
 
 ## Deleting a Submission object also deletes the file from disk

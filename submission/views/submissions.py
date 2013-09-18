@@ -72,6 +72,11 @@ class SubmissionListYearView(SubmissionListView, generic.dates.YearMixin):
                                             creation_date__year=self.get_year())
 
 
+class SubmissionDetailView(DbfvViewMixin, generic.detail.DetailView):
+    login_required = True
+    model = SubmissionStarter
+
+
 class SubmissionForm(ModelForm):
     class Meta:
         model = SubmissionStarter
@@ -126,7 +131,7 @@ class SubmissionDeleteView(DbfvFormMixin, generic.DeleteView):
 
     model = SubmissionStarter
     success_url = reverse_lazy('submission-list')
-    permission_required = 'submission.delete_submission'
+    permission_required = 'submission.delete_submissionstarter'
     template_name = 'delete.html'
 
     def get_context_data(self, **kwargs):
@@ -145,7 +150,7 @@ class SubmissionUpdateView(DbfvFormMixin, generic.UpdateView):
 
     model = SubmissionStarter
     success_url = reverse_lazy('submission-list')
-    permission_required = 'submission.change_submission'
+    permission_required = 'submission.change_submissionstarter'
 
 
 class SubmissionFormBV(ModelForm):
@@ -162,4 +167,4 @@ class SubmissionUpdateStatusView(DbfvFormMixin, generic.UpdateView):
     model = SubmissionStarter
     form_class = SubmissionFormBV
     success_url = reverse_lazy('submission-list')
-    permission_required = 'submission.change_submission'
+    permission_required = 'submission.change_submissionstarter'

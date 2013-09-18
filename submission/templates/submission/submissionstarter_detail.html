@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load dbfv_extras %}
+
+{% block title %}Antrag anzeigen - {{object.get_name}}{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block content %}
+<table class="table">
+    <tr>
+        <th>Geburtsdatum</th>
+        <td>{{object.date_of_birth}}</td>
+        <th>Aktiv seit</th>
+        <td>{{object.active_since}}</td>
+    </tr>
+    <tr>
+        <th>Familienname</th>
+        <td>{{object.last_name}}</td>
+        <th>Vornamename</th>
+        <td>{{object.first_name}}</td>
+    </tr>
+    <tr>
+        <th>Straße</th>
+        <td>{{object.street}}</td>
+        <th>Wohnort</th>
+        <td>{{object.zip_code}}, {{object.city}}</td>
+    </tr>
+    <tr>
+        <th>Tel. Nr.</th>
+        <td>{{object.tel_number}}</td>
+        <th>Email</th>
+        <td><a href="mailto:{{object.email}}">{{object.email}}</a></td>
+    </tr>
+    <tr>
+        <th>Bundesland</th>
+        <td colspan="3">{{object.gym.state.name}}</td>
+    </tr>
+    <tr>
+        <th>Staatsangehörigkeit</th>
+        <td colspan="3">{{object.nationality.name}}</td>
+    </tr>
+    <tr>
+        <th>Größe</th>
+        <td>{{object.height}} cm.</td>
+        <th>Wettkampfgewicht</th>
+        <td>{{object.weight}} kg.</td>
+    </tr>
+    <tr>
+        <th>Kategorie</th>
+        <td colspan="3">{{object.get_category_display}}</td>
+    </tr>
+</table>
+{% endblock %}
+
+{% block sidebar %}
+<div class="sidebar-box">
+    <h3>Optionen</h3>
+    <p><a href="{% url 'submission-edit-status' object.id %}"
+          title="Status bearbeiten">Status bearbeiten</a></p>
+</div>
+{% endblock %}

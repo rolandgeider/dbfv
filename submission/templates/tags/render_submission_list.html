@@ -9,7 +9,6 @@
             <th>Nr.</th>
         {% endif %}
         <th>Datum</th>
-        <th>Anlage</th>
         <th>Studio</th>
         {% if user_type != USER_TYPE_USER %}
             <th>Benutzer</th>
@@ -30,10 +29,7 @@
         </td>
         {% endif %}
         <td>
-            {{submission.creation_date}}
-        </td>
-        <td>
-            <a href="/{{ submission.anhang.url }}">Runterladen</a>
+            {{ submission.creation_date}}
         </td>
         <td>
             {{submission.gym.name}}
@@ -60,9 +56,12 @@
         </td>
         {% if user_type == USER_TYPE_BUNDESVERBAND %}
         <td>
+            <a href="{% url 'submission-view' submission.id %}"
+               class="icon-eye-open"
+               title="Anzeigen"></a>
             <a href="{% url 'submission-edit-status' submission.id %}"
                class="icon-pencil"
-               title="Bearbeiten"></a>
+               title="Status bearbeiten"></a>
             <a href="{% url 'submission-delete' submission.id %}"
                class="icon-trash"
                title="Löschen"></a>
