@@ -48,7 +48,6 @@ class SubmissionListView(DbfvViewMixin, generic.ListView):
             * A regular user sees it's own submissions
         '''
 
-        print user_type(self.request.user)
         if user_type(self.request.user) == USER_TYPE_BUNDESVERBAND:
             return SubmissionStarter.objects.all()
         elif user_type(self.request.user) == USER_TYPE_USER:
@@ -69,7 +68,7 @@ class SubmissionListYearView(SubmissionListView, generic.dates.YearMixin):
             return SubmissionStarter.objects.filter(creation_date__year=self.get_year())
         elif user_type(self.request.user) == USER_TYPE_USER:
             return SubmissionStarter.objects.filter(user=self.request.user,
-                                            creation_date__year=self.get_year())
+                                                    creation_date__year=self.get_year())
 
 
 class SubmissionDetailView(DbfvViewMixin, generic.detail.DetailView):
@@ -81,12 +80,6 @@ class SubmissionForm(ModelForm):
     class Meta:
         model = SubmissionStarter
         exclude = ('submission_status',)
-
-
-class SubmissionNoFileForm(ModelForm):
-    class Meta:
-        model = SubmissionStarter
-        exclude = ('submission_status', 'anhang')
 
 
 class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
@@ -102,12 +95,10 @@ class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
 
     def form_valid(self, form):
         '''
-        Manually set some values when saving the form
+        Manually set the user when saving the form
         '''
 
-        # Set the user
         form.instance.user = self.request.user
-
         self.form_instance = form.instance
         return super(SubmissionCreateView, self).form_valid(form)
 

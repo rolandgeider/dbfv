@@ -19,73 +19,42 @@
 
 <!-- Example row of columns -->
 
-<h2>Antrag stellen</h2>
+<h2>Starterlizenz</h2>
+<p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus
+commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam
+porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+{% if user_type == USER_TYPE_USER %}
+<p><a class="btn btn-success" href="{% url 'submission-add' 'starter' %}">Antrag auf Starterlizenz stellen &raquo;</a></p>
+{% else %}
+<p class="btn btn-danger">Sie dürfen keine Anträge stellen</p>
+{% endif %}
 
 
-
-
+<h2 style="margin-top:1.5em;">Andere Anträge</h2>
 <div class="row-fluid">
-    <div class="span1">
-        <h2>1.</h2>
+    <div class="span6">
+        <h4>Kampfrichterlizenz</h4>
+        <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam.
+        Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus
+        commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+        {% if user_type == USER_TYPE_USER %}
+        <p><a class="btn btn-success" href="{% url 'submission-add' 'kapmfrichter' %}">Antrag auf Kampfrichterlizenz stellen &raquo;</a></p>
+        {% else %}
+        <p class="btn btn-danger">Sie dürfen keine Anträge stellen</p>
+        {% endif %}
     </div>
-    <div class="span11">
-        <h3>Antrag runterladen</h3>
-        <p>Weitere Infos, etc.
-        Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa
-        justo sit amet risus. Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas
-        eget quam. Vestibulum id ligula porta felis euismod semper.
-        </p>
-        <a class="btn btn-success" href="{% static 'files/antrag.pdf' %}">Antrags-PDF runterladen <i class="icon-download-alt icon-white"></i></a>
+    <div class="span6">
+        <h4>Studiolizenz</h4>
+        <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam.
+        Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus
+        commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+        {% if user_type == USER_TYPE_USER %}
+        <p><a class="btn btn-success" href="{% url 'submission-add' 'studio' %}">Antrag auf Kampfrichterlizenz stellen &raquo;</a></p>
+        {% else %}
+        <p class="btn btn-danger">Sie dürfen keine Anträge stellen</p>
+        {% endif %}
     </div>
 </div>
-<hr>
-
-<div class="row-fluid">
-    <div class="span1">
-        <h2>2.</h2>
-    </div>
-    <div class="span11">
-        <h3>Antrag stellen</h3>
-    <div class="row-fluid">
-        <div class="span3">
-            <h4>Starterlizenz</h4>
-            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus
-            commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam
-            porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-            {% if user_type == USER_TYPE_USER %}
-            <p><a class="btn btn-success" href="{% url 'submission-add' 'starter' %}">Antrag auf Starterlizenz stellen &raquo;</a></p>
-            {% else %}
-            <p class="btn btn-danger">Sie dürfen keine Anträge stellen</p>
-            {% endif %}
-        </div>
-        <div class="span3">
-            <h4>Kampfrichterlizenz</h4>
-            <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam.
-            Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus
-            commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-            {% if user_type == USER_TYPE_USER %}
-            <p><a class="btn btn-success" href="{% url 'submission-add' 'kapmfrichter' %}">Antrag auf Kampfrichterlizenz stellen &raquo;</a></p>
-            {% else %}
-            <p class="btn btn-danger">Sie dürfen keine Anträge stellen</p>
-            {% endif %}
-        </div>
-        <div class="span3">
-            <h4>Studiolizenz</h4>
-            <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam.
-            Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus
-            commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-            {% if user_type == USER_TYPE_USER %}
-            <p><a class="btn btn-success" href="{% url 'submission-add' 'studio' %}">Antrag auf Kampfrichterlizenz stellen &raquo;</a></p>
-            {% else %}
-            <p class="btn btn-danger">Sie dürfen keine Anträge stellen</p>
-            {% endif %}
-        </div>
-    </div>
-    </div>
-</div>
-
-
-
 {% endblock %}
 
 

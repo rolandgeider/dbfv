@@ -83,8 +83,10 @@ class Gym(models.Model):
     def get_absolute_url(self):
         return reverse('gym-view', kwargs={'pk': self.id})
 
-    # Metaclass to set some other properties
     class Meta:
+        '''
+        Order first by state name, then by gym name
+        '''
         ordering = ["state__name", "name"]
 
 
@@ -163,7 +165,7 @@ class SubmissionStarter(models.Model):
     first_name = models.CharField(_('Vorname'), max_length=30)
     street = models.CharField(_(u'Straße'), max_length=30)
     zip_code = models.IntegerField(_(u'PLZ'), max_length=5)
-    city = models.CharField(_(u'City'), max_length=30)
+    city = models.CharField(_(u'Ort'), max_length=30)
     tel_number = models.CharField(_(u'Tel. Nr.'), max_length=20)
     email = models.EmailField(_(u'Email'), max_length=30)
     nationality = models.ForeignKey(Country,
