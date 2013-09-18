@@ -73,7 +73,7 @@ $(document).ready(function() {
         </div>
     {% endif %}
     <input type="hidden" name="gym" id="id_gym" value="{{form.gym.value}}">
-    {% table_form_field form.anhang %}
+    {% table_form_render form %}
     {% table_form_submit %}
 
 </form>

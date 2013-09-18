@@ -21,7 +21,8 @@ from submission.models import user_type
 from submission.models import USER_TYPE_BUNDESVERBAND
 from submission.models import USER_TYPE_USER
 
-from submission.models import Submission
+from submission.models import SubmissionStarter
+
 
 def processor(request):
     return {
@@ -33,8 +34,8 @@ def processor(request):
         'USER_TYPE_USER': USER_TYPE_USER,
 
         # Submission stati
-        'SUBMISSION_STATUS_EINGEGANGEN': Submission.SUBMISSION_STATUS_EINGEGANGEN,
-        'SUBMISSION_STATUS_BEWILLIGT': Submission.SUBMISSION_STATUS_BEWILLIGT,
-        'SUBMISSION_STATUS_ABGELEHNT': Submission.SUBMISSION_STATUS_ABGELEHNT,
+        'SUBMISSION_STATUS_EINGEGANGEN': SubmissionStarter.SUBMISSION_STATUS_EINGEGANGEN,
+        'SUBMISSION_STATUS_BEWILLIGT': SubmissionStarter.SUBMISSION_STATUS_BEWILLIGT,
+        'SUBMISSION_STATUS_ABGELEHNT': SubmissionStarter.SUBMISSION_STATUS_ABGELEHNT,
 
     }

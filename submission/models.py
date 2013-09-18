@@ -124,7 +124,7 @@ def attachment_submission_dir(instance, filename):
     return "anlagen/antrag/%s/%s/%s" % (instance.gym.state.short_name, instance.gym_id, filename)
 
 
-class Submission(models.Model):
+class SubmissionStarter(models.Model):
     '''
     Model for a submission
     '''
@@ -143,27 +143,47 @@ class Submission(models.Model):
         (SUBMISSION_STATUS_BEWILLIGT, 'Bewilligt'),
         (SUBMISSION_STATUS_ABGELEHNT, 'Abgelehnt'),
     )
+    SUBMISSION_CATEGORY = (
+        ('1', u'Bodybuilding Frauen/Männer/Junioren/Master'),
+        ('2', u'Frauen Bikini-Fitness'),
+        ('3', u'Figurklasse'),
+        ('4', u'Physique'),
+        ('5', u'Classic-Bodybuilding'),
+        ('6', u'Paare'),
+    )
 
+    # Personal information
+    user = models.ForeignKey(User,
+                             verbose_name=_('User'),
+                             editable=False)
 
-    gym = models.ForeignKey(Gym, verbose_name='Studio')
+    date_of_birth = models.DateField(_('Geburtsdatum'))
+    active_since = models.DateField(_('Aktiv seit'))
+    last_name = models.CharField(_('Familienname'), max_length=30)
+    first_name = models.CharField(_('Vorname'), max_length=30)
+    street = models.CharField(_(u'Straße'), max_length=30)
+    zip_code = models.IntegerField(_(u'PLZ'), max_length=5)
+    tel_number = models.CharField(_(u'Tel. Nr.'), max_length=20)
     nationality = models.ForeignKey(Country,
                                     verbose_name=u'Staatsangehörigkeit',
                                     default=37  # Germany
                                     )
-    anhang = models.FileField(upload_to=attachment_submission_dir,
-                              verbose_name='Antrag',
-                              help_text='Das ausgefüllte Antrags-PDF hier hochladen.')
+    height = models.IntegerField(_(u'Größe (cm)'), max_length=3)
+    weight = models.IntegerField(_(u'Wettkampfgewicht (kg)'), max_length=3)
+    category = models.CharField(_(u'Kategorie'),
+                                max_length=1,
+                                choices=SUBMISSION_CATEGORY)
+
+    # Other fields
+    gym = models.ForeignKey(Gym, verbose_name='Studio')
 
     creation_date = models.DateField(_('Creation date'), auto_now_add=True)
-    user = models.ForeignKey(User,
-                             verbose_name=_('User'),
-                             editable=False)
-    submission_type = models.CharField(max_length=2,
-                                       choices=SUBMISSION_TYPES,
-                                       editable=False)
-    submission_status_bv = models.CharField(max_length=2,
-                                            choices=SUBMISSION_STATUS,
-                                            default=SUBMISSION_STATUS_EINGEGANGEN)
+    #submission_type = models.CharField(max_length=2,
+    #                                   choices=SUBMISSION_TYPES,
+    #                                   editable=False)
+    submission_status = models.CharField(max_length=2,
+                                         choices=SUBMISSION_STATUS,
+                                         default=SUBMISSION_STATUS_EINGEGANGEN)
 
     def __unicode__(self):
         '''
@@ -172,15 +192,15 @@ class Submission(models.Model):
         return "%s - %s" % (self.creation_date, self.user)
 
 
-# Deleting a Submission object also deletes the file from disk
-def delete_submission_attachment(sender, instance, **kwargs):
-    try:
-        os.remove(os.path.join(settings.MEDIA_ROOT, instance.anhang))
-    except Exception, e:
-        pass
-        #logger.error("Could not delete attachment", e)
+## Deleting a Submission object also deletes the file from disk
+#def delete_submission_attachment(sender, instance, **kwargs):
+    #try:
+        #os.remove(os.path.join(settings.MEDIA_ROOT, instance.anhang))
+    #except Exception, e:
+        #pass
+        ##logger.error("Could not delete attachment", e)
 
-post_delete.connect(delete_submission_attachment, sender=Submission)
+#post_delete.connect(delete_submission_attachment, sender=Submission)
 
 
 USER_TYPE_UNKNOWN = -1

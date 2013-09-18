@@ -18,7 +18,7 @@ from django import template
 from django.template.loader import render_to_string
 from django.forms.formsets import BaseFormSet
 
-from submission.models import Submission
+from submission.models import SubmissionStarter
 from submission.models import user_type
 from submission.models import USER_TYPE_BUNDESVERBAND
 from submission.models import USER_TYPE_USER
@@ -101,24 +101,25 @@ def table_form_render(form):
         return render_to_string("tags/table_form_render.html", context)
 
 
-
 @register.simple_tag
 def render_submission_list(submissions, user, filter_mode, table_id):
     context = dict()
-    context['SUBMISSION_STATUS_EINGEGANGEN'] = Submission.SUBMISSION_STATUS_EINGEGANGEN
-    context['SUBMISSION_STATUS_BEWILLIGT'] = Submission.SUBMISSION_STATUS_BEWILLIGT
-    context['SUBMISSION_STATUS_ABGELEHNT'] = Submission.SUBMISSION_STATUS_ABGELEHNT
+    context['SUBMISSION_STATUS_EINGEGANGEN'] = SubmissionStarter.SUBMISSION_STATUS_EINGEGANGEN
+    context['SUBMISSION_STATUS_BEWILLIGT'] = SubmissionStarter.SUBMISSION_STATUS_BEWILLIGT
+    context['SUBMISSION_STATUS_ABGELEHNT'] = SubmissionStarter.SUBMISSION_STATUS_ABGELEHNT
 
-    if filter_mode == 'open':
-        submission_list = [i for i in submissions if i.submission_status_bv == Submission.SUBMISSION_STATUS_EINGEGANGEN]
+    if submissions:
+        if filter_mode == 'open':
+            submission_list = [i for i in submissions if i.submission_status == SubmissionStarter.SUBMISSION_STATUS_EINGEGANGEN]
+        else:
+            submission_list = [i for i in submissions if i.submission_status != SubmissionStarter.SUBMISSION_STATUS_EINGEGANGEN]
     else:
-        submission_list = [i for i in submissions if i.submission_status_bv != Submission.SUBMISSION_STATUS_EINGEGANGEN]
-        
+        submission_list = []
+
     context['submission_list'] = submission_list
     context['table_id'] = table_id
     context['user_type'] = user_type(user)
     context['USER_TYPE_BUNDESVERBAND'] = USER_TYPE_BUNDESVERBAND
     context['USER_TYPE_USER'] = USER_TYPE_USER
 
-    
     return render_to_string("tags/render_submission_list.html", context)

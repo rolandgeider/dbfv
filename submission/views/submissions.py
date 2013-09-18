@@ -20,7 +20,7 @@ from django.views import generic
 from django.core.urlresolvers import reverse_lazy
 from django.forms import ModelForm
 
-from submission.models import Submission
+from submission.models import SubmissionStarter
 from submission.models import State
 from submission.models import user_type
 from submission.models import USER_TYPE_BUNDESVERBAND
@@ -35,7 +35,7 @@ class SubmissionListView(DbfvViewMixin, generic.ListView):
     Shows a list with all submissions
     '''
 
-    model = Submission
+    model = SubmissionStarter
     context_object_name = "submission_list"
     template_name = 'submission/list.html'
     login_required = True
@@ -48,10 +48,11 @@ class SubmissionListView(DbfvViewMixin, generic.ListView):
             * A regular user sees it's own submissions
         '''
 
+        print user_type(self.request.user)
         if user_type(self.request.user) == USER_TYPE_BUNDESVERBAND:
-            return Submission.objects.all()
+            return SubmissionStarter.objects.all()
         elif user_type(self.request.user) == USER_TYPE_USER:
-            return Submission.objects.filter(user=self.request.user)
+            return SubmissionStarter.objects.filter(user=self.request.user)
 
 
 class SubmissionListYearView(SubmissionListView, generic.dates.YearMixin):
@@ -65,22 +66,22 @@ class SubmissionListYearView(SubmissionListView, generic.dates.YearMixin):
 
         # Get queryset from parent class
         if user_type(self.request.user) == USER_TYPE_BUNDESVERBAND:
-            return Submission.objects.filter(creation_date__year=self.get_year())
+            return SubmissionStarter.objects.filter(creation_date__year=self.get_year())
         elif user_type(self.request.user) == USER_TYPE_USER:
-            return Submission.objects.filter(user=self.request.user,
+            return SubmissionStarter.objects.filter(user=self.request.user,
                                             creation_date__year=self.get_year())
 
 
 class SubmissionForm(ModelForm):
     class Meta:
-        model = Submission
-        exclude = ('submission_status_bv')
+        model = SubmissionStarter
+        exclude = ('submission_status',)
 
 
 class SubmissionNoFileForm(ModelForm):
     class Meta:
-        model = Submission
-        exclude = ('submission_status_bv', 'anhang')
+        model = SubmissionStarter
+        exclude = ('submission_status', 'anhang')
 
 
 class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
@@ -88,28 +89,11 @@ class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
     Creates a new submissions
     '''
 
-    model = Submission
+    model = SubmissionStarter
     form_class = SubmissionForm
     success_url = reverse_lazy('index')
-    permission_required = 'submission.add_submission'
+    permission_required = 'submission.add_submissionstarter'
     template_name = 'submission/create.html'
-
-    def get_form_class(self):
-        '''
-        Return the appropriate form depending on submission type
-        '''
-
-        # Starterlizenz
-        if self.kwargs['type'].startswith(Submission.SUBMISSION_TYPES[0][1].lower()):
-            return SubmissionForm
-
-        # Kampfrichter
-        elif self.kwargs['type'].startswith(Submission.SUBMISSION_TYPES[1][1].lower()):
-            return SubmissionNoFileForm
-
-        # Studio
-        else:
-            return SubmissionNoFileForm
 
     def form_valid(self, form):
         '''
@@ -118,18 +102,6 @@ class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
 
         # Set the user
         form.instance.user = self.request.user
-
-        # Starterlizenz
-        if self.kwargs['type'].startswith(Submission.SUBMISSION_TYPES[0][1].lower()):
-            form.instance.submission_type = Submission.SUBMISSION_TYPES[0][0]
-
-        # Kampfrichter
-        elif self.kwargs['type'].startswith(Submission.SUBMISSION_TYPES[1][1].lower()):
-            form.instance.submission_type = Submission.SUBMISSION_TYPES[1][0]
-
-        # Studio
-        else:
-            form.instance.submission_type = Submission.SUBMISSION_TYPES[2][0]
 
         self.form_instance = form.instance
         return super(SubmissionCreateView, self).form_valid(form)
@@ -152,7 +124,7 @@ class SubmissionDeleteView(DbfvFormMixin, generic.DeleteView):
     Deletes a submission
     '''
 
-    model = Submission
+    model = SubmissionStarter
     success_url = reverse_lazy('submission-list')
     permission_required = 'submission.delete_submission'
     template_name = 'delete.html'
@@ -171,15 +143,15 @@ class SubmissionUpdateView(DbfvFormMixin, generic.UpdateView):
     Updates an existing submissions
     '''
 
-    model = Submission
+    model = SubmissionStarter
     success_url = reverse_lazy('submission-list')
     permission_required = 'submission.change_submission'
 
 
 class SubmissionFormBV(ModelForm):
     class Meta:
-        model = Submission
-        fields = ('submission_status_bv', )
+        model = SubmissionStarter
+        fields = ('submission_status', )
 
 
 class SubmissionUpdateStatusView(DbfvFormMixin, generic.UpdateView):
@@ -187,7 +159,7 @@ class SubmissionUpdateStatusView(DbfvFormMixin, generic.UpdateView):
     Updates an existing submissions
     '''
 
-    model = Submission
+    model = SubmissionStarter
     form_class = SubmissionFormBV
     success_url = reverse_lazy('submission-list')
     permission_required = 'submission.change_submission'
