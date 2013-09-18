@@ -12,21 +12,22 @@
     <tr>
         <th>Name</th>
         <th>email</th>
-        <th>Bundesland</th>
         <th>Aktionen</th>
     </tr>
     </thead>
     <tbody>
     {% for gym in gym_list %}
+    {% ifchanged gym.state.name %}
+        <tr>
+            <th colspan="3">{{gym.state.name}}</th>
+        </tr>
+    {% endifchanged %}
     <tr>
         <td>
             <a href="{% url 'gym-view' gym.id %}">{{gym.name}}</a>
         </td>
         <td>
             <a href= "mailto:{{gym.email}}">{{gym.email}}</a>
-        </td>
-        <td>
-            {{gym.state.name}}
         </td>
         <td>
             <a href="{% url 'gym-edit' gym.id %}"
