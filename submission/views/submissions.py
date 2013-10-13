@@ -79,7 +79,7 @@ class SubmissionDetailView(DbfvViewMixin, generic.detail.DetailView):
 class SubmissionForm(ModelForm):
     class Meta:
         model = SubmissionStarter
-        exclude = ('submission_status',)
+        exclude = ('submission_status')
 
 
 class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
@@ -91,7 +91,7 @@ class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
     form_class = SubmissionForm
     success_url = reverse_lazy('index')
     permission_required = 'submission.add_submissionstarter'
-    template_name = 'submission/create.html'
+    template_name = 'submission/starter/create.html'
 
     def form_valid(self, form):
         '''
