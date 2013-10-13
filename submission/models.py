@@ -203,6 +203,56 @@ class SubmissionStarter(models.Model):
         return u"{0}, {1}".format(self.last_name, self.first_name)
 
 
+class SubmissionGym(models.Model):
+    '''
+    Model for a gym submission
+    '''
+
+    SUBMISSION_STATUS_EINGEGANGEN = '1'
+    SUBMISSION_STATUS_BEWILLIGT = '2'
+    SUBMISSION_STATUS_ABGELEHNT = '3'
+
+    SUBMISSION_STATUS = (
+        (SUBMISSION_STATUS_EINGEGANGEN, 'Eingegangen'),
+        (SUBMISSION_STATUS_BEWILLIGT, 'Bewilligt'),
+        (SUBMISSION_STATUS_ABGELEHNT, 'Abgelehnt'),
+    )
+
+    # Personal information
+    user = models.ForeignKey(User,
+                             verbose_name=_('User'),
+                             editable=False)
+
+    state = models.ForeignKey(State,
+                              verbose_name=_(u'Landesverband'))
+    name = models.CharField(verbose_name=_('Name'),
+                            max_length=30,
+                            help_text=_('Name des Studios oder Verein'))
+    founded = models.DateField(_(u'Gegründet am'))
+    street = models.CharField(_(u'Straße'), max_length=30)
+    zip_code = models.IntegerField(_(u'PLZ'), max_length=5)
+    city = models.CharField(_(u'Ort'), max_length=30)
+    tel_number = models.CharField(_(u'Tel. Nr.'), max_length=20)
+    fax_number = models.CharField(_(u'Fax. Nr.'), max_length=20)
+    email = models.EmailField(_(u'Email'), max_length=30)
+    members = models.IntegerField(verbose_name=_(u'Anzahl Mitglieder'),
+                                  max_length=5,
+                                  help_text=_('Dient nur statistischen Zwecken'),
+                                  null=True,
+                                  blank=True)
+
+    # Other fields
+    creation_date = models.DateField(_('Creation date'), auto_now_add=True)
+    submission_status = models.CharField(max_length=2,
+                                         choices=SUBMISSION_STATUS,
+                                         default=SUBMISSION_STATUS_EINGEGANGEN)
+
+    def __unicode__(self):
+        '''
+        Return a more human-readable representation
+        '''
+        return u"Studiolizent {0}".format(self.name)
+
 ## Deleting a Submission object also deletes the file from disk
 #def delete_submission_attachment(sender, instance, **kwargs):
     #try:
@@ -271,3 +321,5 @@ def user_type(user):
         return None
 
     return profile.type
+
+

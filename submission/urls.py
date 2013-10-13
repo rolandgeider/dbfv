@@ -24,6 +24,7 @@ from submission.views import gym
 from submission.views import state
 from submission.views import bank_account
 from submission.views import submissions
+from submission.views import submission_gym
 from submission.views import user
 
 
@@ -91,7 +92,11 @@ urlpatterns = patterns('submission.views',
         bank_account.BankAccountUpdateView.as_view(),
         name='bank-account-edit'),
 
+    #
     # Submissions
+    #
+
+    # Starter
     url(r'^antrag/liste/alle/$',
         submissions.SubmissionListView.as_view(),
         name='submission-list'),
@@ -113,6 +118,29 @@ urlpatterns = patterns('submission.views',
     url(r'^antrag/(?P<pk>\d+)/bearbeiten/status$',
         submissions.SubmissionUpdateStatusView.as_view(),
         name='submission-edit-status'),
+
+    # Gym
+    url(r'^antrag-studio/liste/alle$',
+        submission_gym.SubmissionListView.as_view(),
+        name='submission-studio-list'),
+    url(r'^antrag-studio/liste/(?P<year>\d+)/$',
+        submission_gym.SubmissionListYearView.as_view(),
+        name='submission-studio-list'),
+    url(r'^antrag-studio/neu$',
+        submission_gym.SubmissionCreateView.as_view(),
+        name='submission-studio-add'),
+    url(r'^antrag-studio/(?P<pk>\d+)/bearbeiten$',
+        submission_gym.SubmissionUpdateView.as_view(),
+        name='submission-studio-edit'),
+    url(r'^antrag-studio/(?P<pk>\d+)/anzeigen$',
+        submission_gym.SubmissionDetailView.as_view(),
+        name='submission-studio-view'),
+    url(r'^antrag-studio/(?P<pk>\d+)/loeschen$',
+        submission_gym.SubmissionDeleteView.as_view(),
+        name='submission-studio-delete'),
+    url(r'^antrag-studio/(?P<pk>\d+)/bearbeiten/status$',
+        submission_gym.SubmissionUpdateStatusView.as_view(),
+        name='submission-studio-edit-status'),
 
     # Impressum
     url(r'^impressum$',

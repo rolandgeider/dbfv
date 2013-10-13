@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load staticfiles %} 
+{% load staticfiles %}
 {% load dbfv_extras %}
 
 <!--
@@ -22,10 +22,10 @@
          width="48"
          height="48"
          class="pull-left"
-         alt="{% trans 'Are you sure you want to delete this? This action cannot be undone.' %}">
-    <p>{% trans "Are you sure you want to delete this? This action cannot be undone." %}</p>
+         alt="{% trans 'Sind Sie sicher, dass Sie das löschen wollen?' %}">
+    <p>{% trans "Sind Sie sicher, dass Sie das löschen wollen? Diese Aktion kann nicht rückgängig gemacht werden." %}</p>
     <p>{{ delete_message }}</p>
-    {% table_form_submit 'Ja, löschen' %}
+    {% table_form_submit 'Ja, löschen' 'btn-danger' %}
 </form>
 </div>
 {% endblock %}

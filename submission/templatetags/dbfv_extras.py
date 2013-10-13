@@ -55,14 +55,15 @@ def table_form_errors(form):
 
 
 @register.inclusion_tag('tags/table_form_submit.html')
-def table_form_submit(save_text='Speichern'):
+def table_form_submit(save_text='Speichern', css_classes=''):
     """
     Comfort function that renders a submit button with all necessary HTML
     and CSS
 
     :param save_text: the text to use on the submit button
     """
-    return {'save_text': save_text}
+    return {'save_text': save_text,
+            'css_classes': css_classes}
 
 
 @register.inclusion_tag('tags/table_form_render_fields.html')
@@ -102,7 +103,24 @@ def table_form_render(form):
 
 
 @register.simple_tag
-def render_submission_list(submissions, user, filter_mode, table_id):
+def render_submission_list(submissions, user, filter_mode, table_id, submission_type='starter'):
+    '''
+    Render a table with submissions
+
+    :param submissions: list with submissions
+    :param user: current user
+    :param filter_mode what submissions to list (open, closed, etc.)
+    :param table_id HTML-ID for the table
+    :param submission_type The type of the submission. Allowed values: starter, gym, judge
+    '''
+
+    if submission_type == 'starter':
+        url_fragment = ''
+    elif submission_type == 'gym':
+        url_fragment = '-studio'
+    elif submission_type == 'judge':
+        url_fragment = '-judge'
+
     context = dict()
     context['SUBMISSION_STATUS_EINGEGANGEN'] = SubmissionStarter.SUBMISSION_STATUS_EINGEGANGEN
     context['SUBMISSION_STATUS_BEWILLIGT'] = SubmissionStarter.SUBMISSION_STATUS_BEWILLIGT
@@ -121,5 +139,8 @@ def render_submission_list(submissions, user, filter_mode, table_id):
     context['user_type'] = user_type(user)
     context['USER_TYPE_BUNDESVERBAND'] = USER_TYPE_BUNDESVERBAND
     context['USER_TYPE_USER'] = USER_TYPE_USER
+    context['url_submission_view'] = 'submission{0}-view'.format(url_fragment)
+    context['url_submission_edit'] = 'submission{0}-edit-status'.format(url_fragment)
+    context['url_submission_delete'] = 'submission{0}-delete'.format(url_fragment)
 
     return render_to_string("tags/render_submission_list.html", context)

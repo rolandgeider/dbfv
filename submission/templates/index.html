@@ -49,7 +49,7 @@ porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
         Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus
         commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
         {% if user_type == USER_TYPE_USER %}
-        <p><a class="btn btn-success" href="{% url 'submission-add' 'studio' %}">Antrag auf Kampfrichterlizenz stellen &raquo;</a></p>
+        <p><a class="btn btn-success" href="{% url 'submission-studio-add' %}">Antrag auf Studiolizenz stellen &raquo;</a></p>
         {% else %}
         <p class="btn btn-danger">Sie dürfen keine Anträge stellen</p>
         {% endif %}
@@ -63,10 +63,11 @@ porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
 <div class="sidebar-box">
     <h2>Optionen</h2>
     {% if user_type == USER_TYPE_BUNDESVERBAND %}
-        <p><a class="btn" href="{% url 'state-list' %}">Liste der Bundesländer &raquo;</a></p>
-        <p><a class="btn" href="{% url 'gym-list' %}">Liste der Studios &raquo;</a></p>
-        <p><a class="btn" href="{% url 'bank-account-list' %}">Liste der Konten &raquo;</a></p>
-        <p><a class="btn" href="{% url 'submission-list' %}">Liste der Anträge &raquo;</a></p>
+        <p><a class="btn" href="{% url 'state-list' %}">Bundesländer &raquo;</a></p>
+        <p><a class="btn" href="{% url 'gym-list' %}">Studios &raquo;</a></p>
+        <p><a class="btn" href="{% url 'bank-account-list' %}">Bankonten &raquo;</a></p>
+        <p><a class="btn" href="{% url 'submission-list' %}">Anträge (Starter) &raquo;</a></p>
+        <p><a class="btn" href="{% url 'submission-studio-list' %}">Anträge (Studio) &raquo;</a></p>
     {% elif user_type == USER_TYPE_USER %}
         <p><a class="btn" href="{% url 'submission-list' %}">Liste der Anträge &raquo;</a></p>
     {% endif %}

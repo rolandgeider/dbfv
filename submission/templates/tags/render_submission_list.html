@@ -1,5 +1,3 @@
-{% load url from future %}
-
 
 {% if submission_list %}
 <table class="table table-striped" data-toggle="list" id="{{table_id}}">
@@ -9,11 +7,9 @@
             <th>Nr.</th>
         {% endif %}
         <th>Datum</th>
-        <th>Studio</th>
         {% if user_type != USER_TYPE_USER %}
             <th>Benutzer</th>
         {% endif %}
-        <th>Typ</th>
         <th>Status</th>
         {% if user_type == USER_TYPE_BUNDESVERBAND %}
         <th>Aktionen</th>
@@ -31,38 +27,30 @@
         <td>
             {{ submission.creation_date}}
         </td>
-        <td>
-            {{submission.gym.name}}
-            <br>
-            ({{submission.gym.state}})
-        </td>
         {% if user_type != USER_TYPE_USER %}
         <td>
             {{submission.user}}
         </td>
         {% endif %}
         <td>
-            {{submission.submission_type}}
-        </td>
-        <td>
-            {% if submission.submission_status_bv == SUBMISSION_STATUS_BEWILLIGT %}
-                <i class="icon-ok"></i>
-            {% elif submission.submission_status_bv == SUBMISSION_STATUS_ABGELEHNT %}
-                <i class="icon-remove"></i>
+            {% if submission.submission_status == SUBMISSION_STATUS_BEWILLIGT %}
+                <i class="icon-ok" title="Bewilligt"></i>
+            {% elif submission.submission_status == SUBMISSION_STATUS_ABGELEHNT %}
+                <i class="icon-remove" title="Abgelehnt"></i>
             {% else %}
-                <i class="icon-time"></i>
+                <i class="icon-time" title="In Bearbeitung"></i>
             {% endif %}
             {{submission.get_submission_status_bv_display}}
         </td>
         {% if user_type == USER_TYPE_BUNDESVERBAND %}
         <td>
-            <a href="{% url 'submission-view' submission.id %}"
+            <a href="{% url url_submission_view submission.id %}"
                class="icon-eye-open"
                title="Anzeigen"></a>
-            <a href="{% url 'submission-edit-status' submission.id %}"
+            <a href="{% url url_submission_edit submission.id %}"
                class="icon-pencil"
                title="Status bearbeiten"></a>
-            <a href="{% url 'submission-delete' submission.id %}"
+            <a href="{% url url_submission_delete submission.id %}"
                class="icon-trash"
                title="Löschen"></a>
         </td>
