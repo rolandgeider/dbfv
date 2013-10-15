@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load url from future %}
+
+{% block title %}Manager-Emails{% endblock %}
+
+{% block content %}
+
+{% if email_list %}
+<table class="table table-striped" data-toggle="list">
+    <thead>
+    <tr>
+        <th>Email</th>
+        <th>Aktionen</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for email in email_list %}
+    <tr>
+        <td>
+            <a href= "mailto:{{email.email}}">{{email.email}}</a>
+        </td>
+        <td>
+            <a href="{% url 'email-edit' email.id %}"
+               class="icon-pencil"
+               title="Bearbeiten"></a>
+            <a href="{% url 'email-delete' email.id %}"
+               class="icon-trash"
+               title="Löschen"></a>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+    <p>Es liegen momentan keine Manager-Emails vor.</p>
+{% endif %}
+{% endblock %}
+
+{% block sidebar %}
+<div class="sidebar-box">
+
+    <h4>Info</h4>
+    <p>Emails in dieser Liste werden benachrichtigt, wenn neue Anträge
+eingereicht werden.</p>
+
+    <h4>Aktionen</h4>
+    <p><a href="{% url 'email-add' %}">Email hinzufügen</a></p>
+</div>
+{% endblock %}

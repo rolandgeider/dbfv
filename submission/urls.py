@@ -26,6 +26,7 @@ from submission.views import bank_account
 from submission.views import submissions
 from submission.views import submission_gym
 from submission.views import user
+from submission.views import emails
 
 
 urlpatterns = patterns('submission.views',
@@ -91,6 +92,24 @@ urlpatterns = patterns('submission.views',
     url(r'^bankkonto/(?P<pk>\d+)/bearbeiten/$',
         bank_account.BankAccountUpdateView.as_view(),
         name='bank-account-edit'),
+
+
+    # Emails
+    url(r'^email/liste/alle/$',
+        emails.EmailListView.as_view(),
+        name='email-list'),
+    #url(r'^email/(?P<pk>\d+)/details/$',
+        #emails.EmailDetailView.as_view(),
+        #name='email-view'),
+    url(r'^email/hinzufuegen/$',
+        emails.EmailCreateView.as_view(),
+        name='email-add'),
+    url(r'^email/(?P<pk>\d+)/bearbeiten/$',
+        emails.EmailUpdateView.as_view(),
+        name='email-edit'),
+    url(r'^email/(?P<pk>\d+)/loeschen/$',
+        emails.EmailDeleteView.as_view(),
+        name='email-delete'),
 
     #
     # Submissions

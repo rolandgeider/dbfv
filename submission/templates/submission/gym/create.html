@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load url from future %}
+{% load dbfv_extras %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block content %}
+<p>Ich beantrage hiermit die Aufnahme als ordenliches Mitglied in den
+zuständigen Landesverband.</p>
+
+<p><small>Der Antrag auf Erwerb einer Studiolizenz kann nur genehmigt werden, wenn
+die Auflagen gemäß §1 der Verfahrens- Geschäftordnung des DBFV e.V. erfüllt
+werden. Über die Aufnahme entscheidet der Vorstand des zuständigen Landesverbandes.
+Eine evtl. Ablehnung bedarf keiner Begründung.</small></p>
+<form action="{{ form_action }}"
+      method="post"
+      class="form-horizontal"
+      enctype="multipart/form-data">
+    {% table_form_render_fields form %}
+</form>
+
+{% endblock %}
+
+{% block sidebar %}
+{% endblock %}

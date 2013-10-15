@@ -20,13 +20,12 @@
 <!-- Example row of columns -->
 
 <h2>Starterlizenz</h2>
-<p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus
-commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam
-porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-{% if user_type == USER_TYPE_USER %}
+<p>Beantragen Sie hier die Ausstellung einer IFBB-Starterlizenz.
+Diese berechtigt zur kostenlosen Teilnahme an allen DBFV e.V / IFBB Meisterschaften.</p>
+{% if perms.submission.add_submissionstarter %}
 <p><a class="btn btn-success" href="{% url 'submission-add' 'starter' %}">Antrag auf Starterlizenz stellen &raquo;</a></p>
 {% else %}
-<p class="btn btn-danger">Sie dürfen keine Anträge stellen</p>
+<p class="btn btn-danger">Sie müssen sich anmelden</p>
 {% endif %}
 
 
@@ -37,10 +36,10 @@ porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
         <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam.
         Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus
         commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-        {% if user_type == USER_TYPE_USER %}
+        {% if perms.submission.add_submissiongym %}
         <p><a class="btn btn-success" href="{% url 'submission-add' 'kapmfrichter' %}">Antrag auf Kampfrichterlizenz stellen &raquo;</a></p>
         {% else %}
-        <p class="btn btn-danger">Sie dürfen keine Anträge stellen</p>
+        <p class="btn btn-danger">Sie müssen sich anmelden</p>
         {% endif %}
     </div>
     <div class="span6">
@@ -48,10 +47,10 @@ porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
         <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam.
         Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus
         commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-        {% if user_type == USER_TYPE_USER %}
+        {% if perms.submission.add_submissiongym %}
         <p><a class="btn btn-success" href="{% url 'submission-studio-add' %}">Antrag auf Studiolizenz stellen &raquo;</a></p>
         {% else %}
-        <p class="btn btn-danger">Sie dürfen keine Anträge stellen</p>
+        <p class="btn btn-danger">Sie müssen sich anmelden</p>
         {% endif %}
     </div>
 </div>
@@ -62,14 +61,17 @@ porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
 {% if user.is_authenticated %}
 <div class="sidebar-box">
     <h2>Optionen</h2>
-    {% if user_type == USER_TYPE_BUNDESVERBAND %}
-        <p><a class="btn" href="{% url 'state-list' %}">Bundesländer &raquo;</a></p>
-        <p><a class="btn" href="{% url 'gym-list' %}">Studios &raquo;</a></p>
-        <p><a class="btn" href="{% url 'bank-account-list' %}">Bankonten &raquo;</a></p>
-        <p><a class="btn" href="{% url 'submission-list' %}">Anträge (Starter) &raquo;</a></p>
-        <p><a class="btn" href="{% url 'submission-studio-list' %}">Anträge (Studio) &raquo;</a></p>
-    {% elif user_type == USER_TYPE_USER %}
-        <p><a class="btn" href="{% url 'submission-list' %}">Liste der Anträge &raquo;</a></p>
+    {% if perms.submission.add_manageremail %}
+        <p><a class="btn btn-block" href="{% url 'state-list' %}">Bundesländer &raquo;</a></p>
+        <p><a class="btn btn-block" href="{% url 'gym-list' %}">Studios &raquo;</a></p>
+        <p><a class="btn btn-block" href="{% url 'bank-account-list' %}">Bankonten &raquo;</a></p>
+        <p><a class="btn btn-block" href="{% url 'email-list' %}">Manager Emails &raquo;</a></p>
+
+        <h4>Anträge</h4>
+        <p><a class="btn btn-block" href="{% url 'submission-list' %}">Starterlizenzen &raquo;</a></p>
+        <p><a class="btn btn-block" href="{% url 'submission-studio-list' %}">Studiolizenzen &raquo;</a></p>
+    {% elif perms.submission.add_submissionstarter %}
+        <p><a class="btn btn-block" href="{% url 'submission-list' %}">Liste der Anträge &raquo;</a></p>
     {% endif %}
 
 </div>

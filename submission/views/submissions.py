@@ -100,6 +100,9 @@ class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
 
         form.instance.user = self.request.user
         self.form_instance = form.instance
+
+        # Notify the administrators
+        form.instance.send_emails()
         return super(SubmissionCreateView, self).form_valid(form)
 
     def get_success_url(self):
@@ -140,7 +143,7 @@ class SubmissionUpdateView(DbfvFormMixin, generic.UpdateView):
     '''
 
     model = SubmissionStarter
-    success_url = reverse_lazy('submission-list')
+    #success_url = reverse_lazy('submission-list')
     permission_required = 'submission.change_submissionstarter'
 
 

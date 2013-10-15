@@ -23,6 +23,21 @@ from django.db.models.signals import post_delete
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
+from django.core import mail
+
+
+class ManagerEmail(models.Model):
+    '''
+    Emails to be notified when a new submission is entered
+    '''
+
+    email = models.EmailField(_(u'Email'), max_length=30)
+
+    def __unicode__(self):
+        '''
+        Return a more human-readable representation
+        '''
+        return self.email
 
 
 class BankAccount(models.Model):
@@ -202,6 +217,39 @@ class SubmissionStarter(models.Model):
         """
         return u"{0}, {1}".format(self.last_name, self.first_name)
 
+    def get_absolute_url(self):
+        return reverse('submission-view', kwargs={'pk': self.pk})
+
+    def send_emails(self):
+        '''
+        Send an email to the managers
+        '''
+        for email in ManagerEmail.objects.all():
+            subject = _('Neue Starterlizenz beantragt von {0}, {1}'.format(self.last_name,
+                                                                           self.first_name))
+            message = (_("Eine neue Starterlizenz wurde beantragt\n"
+                         "---------------------------------------\n\n"
+                         "Details:\n"
+                         "* Name: {last_name}\n"
+                         "* Vorname: {first_name}\n"
+                         "* Klasse: {category}\n"
+                         "* Adresse: {street}, {city}, {zip_code}\n"
+                         "* Studio: {gym} ({state})\n\n"
+                         "").format(last_name=self.last_name,
+                                    first_name=self.first_name,
+                                    category=self.get_category_display(),
+                                    street=self.street,
+                                    city=self.city,
+                                    zip_code=self.zip_code,
+                                    gym=self.gym.name,
+                                    state=self.gym.state.name))
+            print message
+            mail.send_mail(subject,
+                           message,
+                           email,
+                           [email],
+                           fail_silently=True)
+
 
 class SubmissionGym(models.Model):
     '''
@@ -321,5 +369,3 @@ def user_type(user):
         return None
 
     return profile.type
-
-
