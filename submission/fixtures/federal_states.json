@@ -1,0 +1,146 @@
+[
+    {
+        "pk": 1, 
+        "model": "submission.state", 
+        "fields": {
+            "short_name": "BW", 
+            "name": "Baden-W\u00fcrttemberg", 
+            "bank_account": 1
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "submission.state", 
+        "fields": {
+            "short_name": "BY", 
+            "name": "Bayern", 
+            "bank_account": 2
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "submission.state", 
+        "fields": {
+            "short_name": "BE", 
+            "name": "Berlin", 
+            "bank_account": 1
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "submission.state", 
+        "fields": {
+            "short_name": "BB", 
+            "name": "Brandenburg", 
+            "bank_account": 1
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "submission.state", 
+        "fields": {
+            "short_name": "HB", 
+            "name": "Bremen", 
+            "bank_account": 1
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "submission.state", 
+        "fields": {
+            "short_name": "HH", 
+            "name": "Hamburg", 
+            "bank_account": 1
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "submission.state", 
+        "fields": {
+            "short_name": "HE", 
+            "name": "Hessen", 
+            "bank_account": 1
+        }
+    }, 
+    {
+        "pk": 8, 
+        "model": "submission.state", 
+        "fields": {
+            "short_name": "MV", 
+            "name": "Mecklenburg-Vorpommern", 
+            "bank_account": 1
+        }
+    }, 
+    {
+        "pk": 9, 
+        "model": "submission.state", 
+        "fields": {
+            "short_name": "NI", 
+            "name": "Niedersachsen", 
+            "bank_account": 1
+        }
+    }, 
+    {
+        "pk": 10, 
+        "model": "submission.state", 
+        "fields": {
+            "short_name": "NW", 
+            "name": "Nordrhein-Westfalen", 
+            "bank_account": 1
+        }
+    }, 
+    {
+        "pk": 11, 
+        "model": "submission.state", 
+        "fields": {
+            "short_name": "RP", 
+            "name": "Rheinland-Pfalz", 
+            "bank_account": 1
+        }
+    }, 
+    {
+        "pk": 12, 
+        "model": "submission.state", 
+        "fields": {
+            "short_name": "SL", 
+            "name": "Saarland", 
+            "bank_account": 1
+        }
+    }, 
+    {
+        "pk": 13, 
+        "model": "submission.state", 
+        "fields": {
+            "short_name": "SN", 
+            "name": "Sachsen", 
+            "bank_account": 1
+        }
+    }, 
+    {
+        "pk": 14, 
+        "model": "submission.state", 
+        "fields": {
+            "short_name": "ST", 
+            "name": "Sachsen-Anhalt", 
+            "bank_account": 1
+        }
+    }, 
+    {
+        "pk": 15, 
+        "model": "submission.state", 
+        "fields": {
+            "short_name": "SH", 
+            "name": "Schleswig-Holstein", 
+            "bank_account": 1
+        }
+    }, 
+    {
+        "pk": 16, 
+        "model": "submission.state", 
+        "fields": {
+            "short_name": "TH", 
+            "name": "Th\u00fcringen", 
+            "bank_account": 1
+        }
+    }
+]
