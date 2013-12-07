@@ -79,7 +79,7 @@ class SubmissionDetailView(DbfvViewMixin, generic.detail.DetailView):
 class SubmissionForm(ModelForm):
     class Meta:
         model = SubmissionStarter
-        exclude = ('submission_status')
+        exclude = ('submission_status',)
 
 
 class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
