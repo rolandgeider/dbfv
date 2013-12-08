@@ -47,7 +47,7 @@
                 <strong>Testsystem!</strong><br>
                 Keine gültigen Anträge stellbar!
             </div>
-            <h1>Antragssystem des DBFV</h1>
+            <h1>Antragssystem des DBFV e.V.</h1>
         </div>
     </div>
 
@@ -67,13 +67,14 @@
                     <li><a href="{% url 'submission-list' %}">Anträge</a></li>
                 {% endif %}
 
-                {% if user_type == USER_TYPE_BUNDESVERBAND %}
+                {% if perms.submission.add_manageremail %}
                     <li class="dropdown">
                         <a href="" class="dropdown-toggle" data-toggle="dropdown">Administration <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li><a href="{% url 'gym-list' %}">Studios</a></li>
                         <li><a href="{% url 'state-list' %}">Bundesländer</a></li>
                         <li><a href="{% url 'bank-account-list' %}">Bankkonten</a></li>
+                        <li><a href="{% url 'email-list' %}">Manager Emails</a></li>
                     </ul>
                     </li>
                 {% endif %}

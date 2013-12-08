@@ -7,25 +7,22 @@
 <!-- Main hero unit for a primary marketing message or call to action -->
 <div class="hero-unit">
     <h1>Willkommen!</h1>
-    <p>Infos, Teilnahmebedingungen, usw..
-    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
-    tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
-    vero eos et accusam et justo duo dolores et ea rebum.</p>
-    <p>
-        <a class="btn btn-primary btn-large">Link 1 &raquo;</a>
-        <a class="btn btn-primary btn-large">Link 2 &raquo;</a>
+    <p>Sie befinden sich auf der DBFV e.V. Internetseite zur Beantragung
+    jeglicher Lizenzen. Bitte wählen Sie die Lizenzart aus und folgen Sie
+    dem Menü.
+    
     </p>
 </div>
 
 <!-- Example row of columns -->
 
 <h2>Starterlizenz</h2>
-<p>Beantragen Sie hier die Ausstellung einer IFBB-Starterlizenz.
-Diese berechtigt zur kostenlosen Teilnahme an allen DBFV e.V / IFBB Meisterschaften.</p>
+<p>Beantragen Sie hier die Ausstellung einer DBFV/IFBB-Starterlizenz.
+Diese berechtigt zur Teilnahme an allen DBFV e.V / IFBB Meisterschaften.</p>
 {% if perms.submission.add_submissionstarter %}
 <p><a class="btn btn-success" href="{% url 'submission-add' 'starter' %}">Antrag auf Starterlizenz stellen &raquo;</a></p>
 {% else %}
-<p class="btn btn-danger">Sie müssen sich anmelden</p>
+<p><a href="{% url 'login' %}" class="btn btn-danger">Sie müssen sich anmelden</a></p>
 {% endif %}
 
 
@@ -39,7 +36,7 @@ Diese berechtigt zur kostenlosen Teilnahme an allen DBFV e.V / IFBB Meisterschaf
         {% if perms.submission.add_submissiongym %}
         <p><a class="btn btn-success" href="{% url 'submission-add' 'kapmfrichter' %}">Antrag auf Kampfrichterlizenz stellen &raquo;</a></p>
         {% else %}
-        <p class="btn btn-danger">Sie müssen sich anmelden</p>
+        <p><a href="{% url 'login' %}" class="btn btn-danger">Sie müssen sich anmelden</a></p>
         {% endif %}
     </div>
     <div class="span6">
@@ -50,7 +47,7 @@ Diese berechtigt zur kostenlosen Teilnahme an allen DBFV e.V / IFBB Meisterschaf
         {% if perms.submission.add_submissiongym %}
         <p><a class="btn btn-success" href="{% url 'submission-studio-add' %}">Antrag auf Studiolizenz stellen &raquo;</a></p>
         {% else %}
-        <p class="btn btn-danger">Sie müssen sich anmelden</p>
+        <p><a href="{% url 'login' %}" class="btn btn-danger">Sie müssen sich anmelden</a></p>
         {% endif %}
     </div>
 </div>
