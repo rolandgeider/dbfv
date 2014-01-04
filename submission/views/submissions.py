@@ -48,7 +48,7 @@ class SubmissionListView(DbfvViewMixin, generic.ListView):
             * A regular user sees it's own submissions
         '''
 
-        queryset = SubmissionStarter.objects.all()
+        queryset = SubmissionStarter.objects.all().order_by('gym__state', 'creation_date')
 
         if user_type(self.request.user) == USER_TYPE_BUNDESVERBAND:
             return queryset
