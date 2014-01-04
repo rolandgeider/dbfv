@@ -188,7 +188,9 @@ class SubmissionStarter(models.Model):
                                     default=37  # Germany
                                     )
     height = models.IntegerField(_(u'Größe (cm)'), max_length=3)
-    weight = models.IntegerField(_(u'Wettkampfgewicht (kg)'), max_length=3)
+    weight = models.DecimalField(_(u'Wettkampfgewicht (kg)'),
+                                 max_digits=5,
+                                 decimal_places=2)
     category = models.CharField(_(u'Kategorie'),
                                 max_length=1,
                                 choices=SUBMISSION_CATEGORY)
@@ -243,7 +245,6 @@ class SubmissionStarter(models.Model):
                                     zip_code=self.zip_code,
                                     gym=self.gym.name,
                                     state=self.gym.state.name))
-            print message
             mail.send_mail(subject,
                            message,
                            email,
