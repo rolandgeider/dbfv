@@ -21,20 +21,16 @@
         <td>{{object.first_name}}</td>
     </tr>
     <tr>
-        <th>Straße</th>
-        <td>{{object.street}}</td>
-        <th>Wohnort</th>
-        <td>{{object.zip_code}}, {{object.city}}</td>
-    </tr>
-    <tr>
         <th>Tel. Nr.</th>
         <td>{{object.tel_number}}</td>
         <th>Email</th>
         <td><a href="mailto:{{object.email}}">{{object.email}}</a></td>
     </tr>
     <tr>
-        <th>Bundesland</th>
-        <td colspan="3">{{object.gym.state.name}}</td>
+        <th>Straße</th>
+        <td>{{object.street}}</td>
+        <th>Wohnort</th>
+        <td>{{object.zip_code}}, {{object.city}}</td>
     </tr>
     <tr>
         <th>Staatsangehörigkeit</th>
@@ -49,6 +45,24 @@
     <tr>
         <th>Kategorie</th>
         <td colspan="3">{{object.get_category_display}}</td>
+    </tr>
+    <tr>
+        <th>Bundesverband</th>
+        <td>{{object.gym.state.name}}</td>
+        <th>Email</th>
+        <td><a href="mailto:{{object.gym.state.email}}">{{object.gym.state.email}}</a></td>
+    </tr>
+    <tr>
+        <th>Studio</th>
+        <td>{{object.gym.name}}</td>
+        <th>Email</th>
+        <td>
+            {% if object.gym.email %}
+                <a href="mailto:{{object.gym.email}}">{{object.gym.email}}</a>
+            {% else %}
+                -/-
+            {% endif %}
+        </td>
     </tr>
 </table>
 {% endblock %}
