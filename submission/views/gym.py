@@ -19,20 +19,34 @@ from django.views import generic
 from django.core.urlresolvers import reverse_lazy
 
 
-from submission.models import Gym
+from submission.models import Gym, State
 from submission.views.generic_views import DbfvViewMixin
 from submission.views.generic_views import DbfvFormMixin
 
 
 class GymListView(DbfvViewMixin, generic.ListView):
     '''
-    Shows a list with all konzepts
+    Shows a list with all gyms
     '''
 
     context_object_name = "gym_list"
     model = Gym
     template_name = 'gym/list.html'
     permission_required = 'submission.change_gym'
+
+    def get_queryset(self):
+        '''
+        Filter by state
+        '''
+        return Gym.objects.filter(state=self.kwargs['state_pk'])
+
+    def get_context_data(self, **kwargs):
+        '''
+        Pass the state to the context
+        '''
+        context = super(GymListView, self).get_context_data(**kwargs)
+        context['state'] = State.objects.get(pk=self.kwargs['state_pk'])
+        return context
 
 
 class GymDetailView(DbfvViewMixin, generic.DetailView):

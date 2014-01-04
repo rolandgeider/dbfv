@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load url from future %}
 
-{% block title %}Studios{% endblock %}
+{% block title %}Studios in {{state.name}}{% endblock %}
 
 {% block content %}
 
@@ -10,6 +10,7 @@
 <table class="table table-striped" data-toggle="list">
     <thead>
     <tr>
+        <th>Nr.</th>
         <th>Name</th>
         <th>email</th>
         <th>Aktionen</th>
@@ -17,17 +18,19 @@
     </thead>
     <tbody>
     {% for gym in gym_list %}
-    {% ifchanged gym.state.name %}
-        <tr>
-            <th colspan="3">{{gym.state.name}}</th>
-        </tr>
-    {% endifchanged %}
     <tr>
+        <td>
+            {{gym.pk}}
+        </td>
         <td>
             <a href="{% url 'gym-view' gym.id %}">{{gym.name}}</a>
         </td>
         <td>
-            <a href= "mailto:{{gym.email}}">{{gym.email}}</a>
+            {% if gym.email %}
+                <a href= "mailto:{{gym.email}}">{{gym.email}}</a>
+            {% else %}
+                -/-
+            {% endif %}
         </td>
         <td>
             <a href="{% url 'gym-edit' gym.id %}"
@@ -49,6 +52,7 @@
 {% block sidebar %}
 <div class="sidebar-box">
     <h5>Aktionen</h5>
+    <p><a href="{% url 'gym-list' %}">Zurück zur Landesliste</a></p>
     <p><a href="{% url 'gym-add' %}">Studio hinzufügen</a></p>
 </div>
 {% endblock %}

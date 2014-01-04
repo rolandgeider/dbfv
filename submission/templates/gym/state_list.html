@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load url from future %}
+
+{% block title %}Studioliste - Bundesländer{% endblock %}
+
+{% block content %}
+{% if state_list %}
+<table class="table table-striped" data-toggle="list">
+    <thead>
+    <tr>
+        <th>Nr.</th>
+        <th>Name</th>
+        <th>Anzahl der Studios</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for state in state_list %}
+    <tr>
+        <td>
+            {{state.id}}
+        </td>
+        <td>
+            <a href="{% url 'gym-list-state' state.pk %}">{{state.name}}</a>
+        </td>
+        <td>
+            {{state.gym_set.count}}
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+    <p>Es liegen momentan keine Bundesländer vor.</p>
+{% endif %}
+{% endblock %}
+
+{% block sidebar %}
+<div class="sidebar-box">
+    <h5>Bundesverbände</h5>
+    <p>Auf ein Bundesverband clicken, um die entsprechenden Studios anzuzeigen.</p>
+</div>
+
+<div class="sidebar-box">
+    <h5>Aktionen</h5>
+    <p><a href="{% url 'gym-add' %}">Studio hinzufügen</a></p>
+</div>
+{% endblock %}
