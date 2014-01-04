@@ -32,7 +32,7 @@ class GymListView(DbfvViewMixin, generic.ListView):
     context_object_name = "gym_list"
     model = Gym
     template_name = 'gym/list.html'
-    login_required = True
+    permission_required = 'submission.change_gym'
 
 
 class GymDetailView(DbfvViewMixin, generic.DetailView):
@@ -42,7 +42,7 @@ class GymDetailView(DbfvViewMixin, generic.DetailView):
 
     model = Gym
     template_name = 'gym/view.html'
-    login_required = True
+    permission_required = 'submission.change_gym'
 
 
 class GymCreateView(DbfvFormMixin, generic.CreateView):
