@@ -14,7 +14,7 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
-
+import datetime
 
 from django.views import generic
 from django.core.urlresolvers import reverse_lazy
@@ -43,32 +43,63 @@ class SubmissionListView(DbfvViewMixin, generic.ListView):
     def get_queryset(self):
         '''
         Change the queryset depending on the user's rights. The rules are the
-        follwing:
+        following:
             * A BV user sees all submissions
             * A regular user sees it's own submissions
         '''
 
+        queryset = SubmissionStarter.objects.all()
+
         if user_type(self.request.user) == USER_TYPE_BUNDESVERBAND:
-            return SubmissionStarter.objects.all()
+            return queryset
         elif user_type(self.request.user) == USER_TYPE_USER:
-            return SubmissionStarter.objects.filter(user=self.request.user)
+            return queryset.filter(user=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        '''
+        Pass a list of all available dates
+        '''
+        year = datetime.date.today().year
+        month = datetime.date.today().month
+
+        context = super(SubmissionListView, self).get_context_data(**kwargs)
+        context['month_list'] = self.get_queryset().dates('creation_date', 'month')
+        context['current_year'] = year
+        context['current_month'] = month
+        context['show_closed'] = False if user_type(self.request.user) == USER_TYPE_BUNDESVERBAND else True
+        return context
 
 
-class SubmissionListYearView(SubmissionListView, generic.dates.YearMixin):
+class SubmissionListMonthView(SubmissionListView, generic.dates.MonthMixin, generic.dates.YearMixin):
+
+    permission_required = 'submission.change_submissionstarter'
+
     def get_queryset(self):
         '''
         Change the queryset depending on the user's rights. The rules are the
-        follwing:
+        following:
             * A BV user sees all submissions
             * A regular user sees it's own submissions
         '''
 
-        # Get queryset from parent class
+        queryset = SubmissionStarter.objects.filter(creation_date__month=self.get_month(),
+                                                    creation_date__year=self.get_year()).order_by('gym__state', 'creation_date')
         if user_type(self.request.user) == USER_TYPE_BUNDESVERBAND:
-            return SubmissionStarter.objects.filter(creation_date__year=self.get_year())
+            return queryset
         elif user_type(self.request.user) == USER_TYPE_USER:
-            return SubmissionStarter.objects.filter(user=self.request.user,
-                                                    creation_date__year=self.get_year())
+            return queryset.filter(user=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        '''
+        Pass a list of all available dates
+        '''
+
+        context = super(SubmissionListView, self).get_context_data(**kwargs)
+        context['month_list'] = SubmissionStarter.objects.all().dates('creation_date', 'month')
+        context['current_year'] = datetime.date.today().year
+        context['current_month'] = datetime.date.today().month
+        context['show_closed'] = True
+        return context
 
 
 class SubmissionDetailView(DbfvViewMixin, generic.detail.DetailView):

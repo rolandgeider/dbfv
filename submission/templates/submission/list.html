@@ -6,17 +6,6 @@
 {% block title %}Anträge{% endblock %}
 
 {% block scripts %}
-<script src="{% static 'js/datatables/media/js/jquery.dataTables.min.js' %}"></script>
-<script>
-$(document).ready(function(){
-    $('#closed-submissions').dataTable( {
-            "oLanguage": {
-                "sUrl": "{% static 'js/datatables-german.json' %}"
-            },
-            "bPaginate": false
-        } );
-});
-</script>
 {% endblock %}
 
 {% block content %}
@@ -24,16 +13,25 @@ $(document).ready(function(){
 <h3>Laufende Anträge</h3>
 {% render_submission_list submission_list user 'open' 'open-submissions' %}
 
-
+{% if show_closed %}
 <h3>Geschlossene Anträge</h3>
 {% render_submission_list submission_list user 'closed' 'closed-submissions' %}
+{% endif %}
+
 
 {% endblock %}
 
 {% block sidebar %}
+{% if perms.submission.change_submissionstarter %}
 <h3>Info</h3>
-<p> Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
-    tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
-    vero eos et accusam et justo duo dolores et ea rebum.</p>
+<p>Clicken Sie auf einen Monat, um die entsprechenden Anträge zu sehen</p>
+
+{% for date in month_list %}
+    {% ifchanged date.year %}
+        <p><strong>{{ date|date:"Y" }}</strong></p>
+    {% endifchanged %}
+    <span><a href="{% url 'submission-list-month' date|date:'Y' date|date:'m' %}">{{date|date:"F"}}</a></span><br>
+{% endfor %}
+{% endif %}
 
 {% endblock %}

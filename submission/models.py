@@ -16,6 +16,7 @@
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import datetime
 
 from django.db import models
 from django.db.models.signals import post_save
@@ -213,6 +214,12 @@ class SubmissionStarter(models.Model):
         Return a more human-readable representation
         '''
         return "%s - %s" % (self.creation_date, self.user)
+
+    class Meta:
+        '''
+        Order first by state name, then by gym name
+        '''
+        ordering = ["creation_date", "gym"]
 
     @property
     def get_name(self):
