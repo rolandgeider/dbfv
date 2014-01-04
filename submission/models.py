@@ -228,25 +228,47 @@ class SubmissionStarter(models.Model):
         '''
         Send an email to the managers
         '''
+
+        # Make a list with all the emails: BV, LV, gym and user
+        email_list = []
         for email in ManagerEmail.objects.all():
-            subject = _('Neue Starterlizenz beantragt von {0}, {1}'.format(self.last_name,
-                                                                           self.first_name))
-            message = (_("Eine neue Starterlizenz wurde beantragt\n"
-                         "---------------------------------------\n\n"
-                         "Details:\n"
-                         "* Name: {last_name}\n"
-                         "* Vorname: {first_name}\n"
-                         "* Klasse: {category}\n"
-                         "* Adresse: {street}, {city}, {zip_code}\n"
-                         "* Studio: {gym} ({state})\n\n"
-                         "").format(last_name=self.last_name,
-                                    first_name=self.first_name,
-                                    category=self.get_category_display(),
-                                    street=self.street,
-                                    city=self.city,
-                                    zip_code=self.zip_code,
-                                    gym=self.gym.name,
-                                    state=self.gym.state.name))
+            email_list.append(email.email)
+
+        if self.gym.email:
+            email_list.append(self.gym.email)
+
+        if self.gym.state.email:
+            email_list.append(self.gym.state.email)
+
+        email_list.append(self.user.email)
+
+        for email in email_list:
+            subject = _(u'Neue Starterlizenz beantragt von {0}, {1}'.format(self.last_name,
+                                                                            self.first_name))
+            message = (_(u"Eine neue Starterlizenz wurde beantragt\n"
+                         u"---------------------------------------\n\n"
+                         u"Details:\n"
+                         u"* Name:                  {last_name}\n"
+                         u"* Vorname:               {first_name}\n"
+                         u"* Geburtsdatum:          {date_of_birth}\n"
+                         u"* Adresse:               {street}, {city}, {zip_code}\n"
+                         u"* Staatsangehörigkeit:   {nationality}\n"
+                         u"* Größe (cm):            {height}\n"
+                         u"* Wettkampfgewicht (kg): {weight}\n"
+                         u"* Klasse:                {category}\n"
+                         u"* Studio:                {gym} ({state})\n\n"
+                         u"").format(last_name=self.last_name,
+                                     first_name=self.first_name,
+                                     date_of_birth=self.date_of_birth,
+                                     category=self.get_category_display(),
+                                     street=self.street,
+                                     height=self.height,
+                                     weight=self.weight,
+                                     nationality=self.nationality,
+                                     city=self.city,
+                                     zip_code=self.zip_code,
+                                     gym=self.gym.name,
+                                     state=self.gym.state.name))
             mail.send_mail(subject,
                            message,
                            email,
