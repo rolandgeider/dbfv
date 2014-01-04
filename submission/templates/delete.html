@@ -18,14 +18,18 @@
       method="post"
       class="form-horizontal">
     {% csrf_token %}
-    <img src="{% static  'img/icons/warning.svg' %}"
-         width="48"
-         height="48"
-         class="pull-left"
-         alt="{% trans 'Sind Sie sicher, dass Sie das löschen wollen?' %}">
-    <p>{% trans "Sind Sie sicher, dass Sie das löschen wollen? Diese Aktion kann nicht rückgängig gemacht werden." %}</p>
-    <p>{{ delete_message }}</p>
-    {% table_form_submit 'Ja, löschen' 'btn-danger' %}
+    <div class="control-group">
+        <div class="controls">
+            <img src="{% static  'img/icons/warning.svg' %}"
+                 width="48"
+                 height="48"
+                 class="pull-left"
+                 alt="{% trans 'Sind Sie sicher, dass Sie das löschen wollen?' %}">
+            <p>{% trans "Sind Sie sicher, dass Sie das löschen wollen? Diese Aktion kann nicht rückgängig gemacht werden." %}</p>
+            <p>{{ delete_message }}</p>
+        </div>
+    </div>
+    {% table_form_submit 'Ja, löschen' 'btn-danger btn-block' %}
 </form>
 </div>
 {% endblock %}
