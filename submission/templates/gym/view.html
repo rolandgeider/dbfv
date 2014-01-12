@@ -22,7 +22,7 @@
     </tr>
     <tr>
         <th>Inhaber</th>
-        <td>{{object.owner}}</td>
+        <td>{{object.owner|default:"-/-"}}</td>
     </tr>
     <tr>
         <th>Bundesland</th>
@@ -30,7 +30,15 @@
     </tr>
     <tr>
         <th>Adresse</th>
-        <td>{{object.zip_code}} {{object.city}}, {{object.street}}</td>
+        <td>
+            {% if not object.zip_code and not object.city and not object.street %}
+                -/-
+            {% else %}
+                {{object.zip_code|default:""}}
+                {{object.city|default:""}},
+                {{object.street|default:""}}
+            {% endif %}
+        </td>
     </tr>
     
 </table>
