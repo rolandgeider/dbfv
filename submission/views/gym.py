@@ -66,6 +66,7 @@ class GymCreateView(DbfvFormMixin, generic.CreateView):
 
     model = Gym
     permission_required = 'submission.add_gym'
+    page_title = 'Studio hinzufügen'
 
 
 class GymUpdateView(DbfvFormMixin, generic.UpdateView):
@@ -75,6 +76,7 @@ class GymUpdateView(DbfvFormMixin, generic.UpdateView):
 
     model = Gym
     permission_required = 'submission.change_gym'
+    page_title = 'Studio bearbeiten'
 
 
 class GymDeleteView(DbfvFormMixin, generic.DeleteView):
