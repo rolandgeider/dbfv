@@ -89,8 +89,29 @@ class Gym(models.Model):
 
     name = models.CharField(verbose_name='Name',
                             max_length=100,)
-    email = models.EmailField(verbose_name='Email', blank=True)
+    email = models.EmailField(verbose_name='Email',
+                              blank=True,
+                              null=True)
     state = models.ForeignKey(State, verbose_name='Bundesland')
+
+    owner = models.CharField(verbose_name='Inhaber',
+                             max_length=100,
+                             blank=True,
+                             null=True)
+    zip_code = models.IntegerField(_(u'PLZ'),
+                                   max_length=5,
+                                   blank=True,
+                                   null=True)
+    city = models.CharField(_(u'Ort'),
+                            max_length=30,
+                            blank=True,
+                            null=True)
+    street = models.CharField(_(u'Straße'),
+                              max_length=30,
+                              blank=True,
+                              null=True)
+    
+    
 
     def __unicode__(self):
         '''

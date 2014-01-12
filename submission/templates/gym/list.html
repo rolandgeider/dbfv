@@ -33,6 +33,9 @@
             {% endif %}
         </td>
         <td>
+            <a href="{% url 'gym-view' gym.id %}"
+               class="icon-eye-open"
+               title="Anzeigen"></a>
             <a href="{% url 'gym-edit' gym.id %}"
                class="icon-pencil"
                title="Bearbeiten"></a>

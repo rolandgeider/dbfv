@@ -8,14 +8,31 @@
 <table class="table table-bordered">
     <tr>
         <th>Name</th>
+        <td>{{object.name}}</td>
+    </tr>
+    <tr>    
         <th>Email</th>
-        <th>Bundesland</th>
+        <td>
+            {% if object.email %}
+                <a href="mailto:{{object.email}}">{{object.email}}</a>
+            {% else %}
+                -/-
+            {% endif %}
+        </td>    
     </tr>
     <tr>
-        <td>{{object.name}}</td>
-        <td>{{object.email}}</td>
+        <th>Inhaber</th>
+        <td>{{object.owner}}</td>
+    </tr>
+    <tr>
+        <th>Bundesland</th>
         <td>{{object.state.name}}</td>
     </tr>
+    <tr>
+        <th>Adresse</th>
+        <td>{{object.zip_code}} {{object.city}}, {{object.street}}</td>
+    </tr>
+    
 </table>
 
 {% endblock %}
