@@ -91,7 +91,7 @@ class GymDeleteView(DbfvFormMixin, generic.DeleteView):
         '''
         Pass the title to the context
         '''
-        context = super(StateDeleteView, self).get_context_data(**kwargs)
+        context = super(GymDeleteView, self).get_context_data(**kwargs)
         context['title'] = u'Studio {0} löschen?'.format(self.object.name)
         context['delete_message'] = u'Das wird auch alle Anträge zu diesem Studio entfernen.'
         return context
