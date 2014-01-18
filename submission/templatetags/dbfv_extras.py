@@ -128,9 +128,11 @@ def render_submission_list(submissions, user, filter_mode, table_id, submission_
 
     if submissions:
         if filter_mode == 'open':
-            submission_list = [i for i in submissions if i.submission_status == SubmissionStarter.SUBMISSION_STATUS_EINGEGANGEN]
+            submission_list = [i for i in submissions if i.submission_status ==
+                               SubmissionStarter.SUBMISSION_STATUS_EINGEGANGEN]
         else:
-            submission_list = [i for i in submissions if i.submission_status != SubmissionStarter.SUBMISSION_STATUS_EINGEGANGEN]
+            submission_list = [i for i in submissions if i.submission_status !=
+                               SubmissionStarter.SUBMISSION_STATUS_EINGEGANGEN]
     else:
         submission_list = []
 

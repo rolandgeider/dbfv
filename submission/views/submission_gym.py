@@ -68,7 +68,7 @@ class SubmissionListYearView(SubmissionListView, generic.dates.YearMixin):
             return SubmissionGym.objects.filter(creation_date__year=self.get_year())
         elif user_type(self.request.user) == USER_TYPE_USER:
             return SubmissionGym.objects.filter(user=self.request.user,
-                                                    creation_date__year=self.get_year())
+                                                creation_date__year=self.get_year())
 
 
 class SubmissionDetailView(DbfvViewMixin, generic.detail.DetailView):

@@ -14,7 +14,7 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
-
+from django.core.exceptions import ValidationError
 
 from django.forms import ModelForm
 from django.forms import EmailField
@@ -44,6 +44,7 @@ class UserEmailForm(ModelForm):
         except Django_User.DoesNotExist:
             return email
         raise ValidationError(_("This email is already used."))
+
 
 class RegistrationForm(UserCreationForm, UserEmailForm):
     state = ModelChoiceField(label=_("Federal state"),

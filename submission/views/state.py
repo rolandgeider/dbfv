@@ -72,6 +72,6 @@ class StateDeleteView(DbfvFormMixin, generic.DeleteView):
         '''
         context = super(StateDeleteView, self).get_context_data(**kwargs)
         context['title'] = u'Bundesland {0} löschen?'.format(self.object.name)
-        context['delete_message'] = u'Das wird auch alle Anträge und Benutzer im Bundesland entfernen.'
+        context['delete_message'] = u'Das wird auch alle Anträge und Benutzer im ' \
+                                    'Bundesland entfernen.'
         return context
-

@@ -110,8 +110,6 @@ class Gym(models.Model):
                               max_length=30,
                               blank=True,
                               null=True)
-    
-    
 
     def __unicode__(self):
         '''
@@ -170,9 +168,9 @@ class SubmissionStarter(models.Model):
     Model for a submission
     '''
     SUBMISSION_TYPES = (
-    ('ST', 'Starter'),
-    ('KR', 'Kapmfrichter'),
-    ('SU', 'Studio'),
+        ('ST', 'Starter'),
+        ('KR', 'Kapmfrichter'),
+        ('SU', 'Studio')
     )
 
     SUBMISSION_STATUS_EINGEGANGEN = '1'
@@ -190,7 +188,7 @@ class SubmissionStarter(models.Model):
         ('3', u'Figurklasse'),
         ('4', u'Physique'),
         ('5', u'Classic-Bodybuilding'),
-        ('6', u'Paare'),
+        ('6', u'Paare')
     )
 
     # Personal information

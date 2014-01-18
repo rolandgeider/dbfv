@@ -70,14 +70,17 @@ class SubmissionListView(DbfvViewMixin, generic.ListView):
         context['month_list'] = self.get_queryset().dates('creation_date', 'month')
         context['current_year'] = year
         context['current_month'] = month
-        context['show_closed'] = False if user_type(self.request.user) == USER_TYPE_BUNDESVERBAND else True
+        context['show_closed'] = False if user_type(self.request.user) == USER_TYPE_BUNDESVERBAND \
+            else True
         context['mailmerge_count'] = SubmissionStarter.objects.filter(mail_merge=False) \
             .filter(submission_status=SubmissionStarter.SUBMISSION_STATUS_BEWILLIGT) \
             .count()
         return context
 
 
-class SubmissionListMonthView(SubmissionListView, generic.dates.MonthMixin, generic.dates.YearMixin):
+class SubmissionListMonthView(SubmissionListView,
+                              generic.dates.MonthMixin,
+                              generic.dates.YearMixin):
     permission_required = 'submission.change_submissionstarter'
 
     def get_queryset(self):
@@ -88,9 +91,9 @@ class SubmissionListMonthView(SubmissionListView, generic.dates.MonthMixin, gene
             * A regular user sees it's own submissions
         '''
 
-        queryset = SubmissionStarter.objects.filter(creation_date__month=self.get_month(),
-                                                    creation_date__year=self.get_year()).order_by('gym__state',
-                                                                                                  'creation_date')
+        queryset = SubmissionStarter.objects.filter(creation_date__month=self.get_month()) \
+            .filter(creation_date__year=self.get_year()) \
+            .order_by('gym__state', 'creation_date')
         if user_type(self.request.user) == USER_TYPE_BUNDESVERBAND:
             return queryset
         elif user_type(self.request.user) == USER_TYPE_USER:
@@ -214,7 +217,7 @@ def export_csv(request, pk):
     today = datetime.date.today()
 
     submission = SubmissionStarter.objects.get(pk=pk)
-    submission.mail_merge=True
+    submission.mail_merge = True
     submission.save()
 
     # Write the CSV file

@@ -97,4 +97,3 @@ class GymDeleteView(DbfvFormMixin, generic.DeleteView):
         context['title'] = u'Studio {0} löschen?'.format(self.object.name)
         context['delete_message'] = u'Das wird auch alle Anträge zu diesem Studio entfernen.'
         return context
-

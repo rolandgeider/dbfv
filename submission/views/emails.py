@@ -73,4 +73,3 @@ class EmailDeleteView(DbfvFormMixin, generic.DeleteView):
         context = super(EmailDeleteView, self).get_context_data(**kwargs)
         context['title'] = u'Email {0} löschen?'.format(self.object.email)
         return context
-
