@@ -229,6 +229,8 @@ class SubmissionStarter(models.Model):
     submission_status = models.CharField(max_length=2,
                                          choices=SUBMISSION_STATUS,
                                          default=SUBMISSION_STATUS_EINGEGANGEN)
+    mail_merge = models.BooleanField(default=False,
+                                     editable=False)
 
     def __unicode__(self):
         '''

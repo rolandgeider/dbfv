@@ -24,14 +24,35 @@
 {% block sidebar %}
 {% if perms.submission.change_submissionstarter %}
 <h3>Info</h3>
-<p>Clicken Sie auf einen Monat, um die entsprechenden Anträge zu sehen</p>
+<div class="well">
+    <h5>Serienbriefexport</h5>
+    {% if mailmerge_count > 0 %}
+        <p>
+            Anträge, die noch nicht für Serienbriefe exportiert wurden
+            <strong>{{mailmerge_count}}</strong>.
+        </p>
+        <p>
+            <a href="{% url 'submission-export-mailmerge-new' %}">Neue Anträge exportieren</a>
+            für Serienbrief in Microsoft Word. Achtung! Die Liste kann nur
+            einmal generiert werden!
+        </p>
 
+    {% else %}
+        <p>
+            Alle Anträge wurden bereits für den Serienbrief exportiert.
+        </p>
+    {% endif %}
+</div>
+
+<div class="well">
+<p>Klicken Sie auf einen Monat, um die entsprechenden Anträge zu sehen</p>
 {% for date in month_list %}
     {% ifchanged date.year %}
         <p><strong>{{ date|date:"Y" }}</strong></p>
     {% endifchanged %}
     <span><a href="{% url 'submission-list-month' date|date:'Y' date|date:'m' %}">{{date|date:"F"}}</a></span><br>
 {% endfor %}
+</div>
 {% endif %}
 
 {% endblock %}

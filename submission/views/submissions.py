@@ -14,11 +14,15 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
+import csv
 import datetime
 
+from django.http.response import HttpResponse, HttpResponseForbidden
 from django.views import generic
 from django.core.urlresolvers import reverse_lazy
 from django.forms import ModelForm
+from submission.helpers import export_submission_mailmerge
+from submission.helpers import MAILMERGE_HEADER
 
 from submission.models import SubmissionStarter
 from submission.models import State
@@ -67,11 +71,13 @@ class SubmissionListView(DbfvViewMixin, generic.ListView):
         context['current_year'] = year
         context['current_month'] = month
         context['show_closed'] = False if user_type(self.request.user) == USER_TYPE_BUNDESVERBAND else True
+        context['mailmerge_count'] = SubmissionStarter.objects.filter(mail_merge=False) \
+            .filter(submission_status=SubmissionStarter.SUBMISSION_STATUS_BEWILLIGT) \
+            .count()
         return context
 
 
 class SubmissionListMonthView(SubmissionListView, generic.dates.MonthMixin, generic.dates.YearMixin):
-
     permission_required = 'submission.change_submissionstarter'
 
     def get_queryset(self):
@@ -83,7 +89,8 @@ class SubmissionListMonthView(SubmissionListView, generic.dates.MonthMixin, gene
         '''
 
         queryset = SubmissionStarter.objects.filter(creation_date__month=self.get_month(),
-                                                    creation_date__year=self.get_year()).order_by('gym__state', 'creation_date')
+                                                    creation_date__year=self.get_year()).order_by('gym__state',
+                                                                                                  'creation_date')
         if user_type(self.request.user) == USER_TYPE_BUNDESVERBAND:
             return queryset
         elif user_type(self.request.user) == USER_TYPE_USER:
@@ -193,3 +200,58 @@ class SubmissionUpdateStatusView(DbfvFormMixin, generic.UpdateView):
     form_class = SubmissionFormBV
     success_url = reverse_lazy('submission-list')
     permission_required = 'submission.change_submissionstarter'
+
+
+def export_csv(request, pk):
+    '''
+    Exports a submission as a CSV file to be imported into an office application
+    '''
+    if not request.user.has_perm('submission.change_submissionstarter'):
+        return HttpResponseForbidden()
+
+    response = HttpResponse(mimetype='text/csv')
+    writer = csv.writer(response, delimiter='\t')
+    today = datetime.date.today()
+
+    submission = SubmissionStarter.objects.get(pk=pk)
+    submission.mail_merge=True
+    submission.save()
+
+    # Write the CSV file
+    writer.writerow(MAILMERGE_HEADER)
+    writer.writerow(export_submission_mailmerge([submission]))
+    filename = 'attachment; filename=Starterlizenz-{0}-{1}-{2}-{3}.csv'.format(submission.pk,
+                                                                               today.year,
+                                                                               today.month,
+                                                                               today.day)
+    response['Content-Disposition'] = filename
+    response['Content-Length'] = len(response.content)
+    return response
+
+
+def export_csv_new(request):
+    '''
+    Exports all submissions that have not been exported for mailmerge
+    '''
+    if not request.user.has_perm('submission.change_submissionstarter'):
+        return HttpResponseForbidden()
+
+    response = HttpResponse(mimetype='text/csv')
+    writer = csv.writer(response, delimiter='\t')
+    today = datetime.date.today()
+
+    submissions = SubmissionStarter.objects.filter(mail_merge=False) \
+        .filter(submission_status=SubmissionStarter.SUBMISSION_STATUS_BEWILLIGT) \
+        .select_related()
+    submissions.update(mail_merge=True)
+
+    # Write the CSV file
+    writer.writerow(MAILMERGE_HEADER)
+    for line in export_submission_mailmerge(submissions):
+        writer.writerow(line)
+    filename = 'attachment; filename=Starterlizenzen-{0}-{1}-{2}.csv'.format(today.year,
+                                                                             today.month,
+                                                                             today.day)
+    response['Content-Disposition'] = filename
+    response['Content-Length'] = len(response.content)
+    return response

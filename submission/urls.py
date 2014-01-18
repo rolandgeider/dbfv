@@ -142,6 +142,12 @@ urlpatterns = patterns('submission.views',
     url(r'^antrag/(?P<pk>\d+)/bearbeiten/status$',
         submissions.SubmissionUpdateStatusView.as_view(),
         name='submission-edit-status'),
+    url(r'^antrag/(?P<pk>\d+)/exportieren/serienbrief$',
+        submissions.export_csv,
+        name='submission-export-mailmerge'),
+    url(r'^antrag/liste/exportieren/serienbrief$',
+        submissions.export_csv_new,
+        name='submission-export-mailmerge-new'),
 
     # Gym
     url(r'^antrag-studio/liste/alle$',

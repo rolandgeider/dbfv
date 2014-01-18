@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load dbfv_extras %}
 
-{% block title %}Starterantrag - {{object.get_name}}{% endblock %}
+{% block title %}Starterantrag {{object.pk}} - {{object.get_name}}{% endblock %}
 
 {% block scripts %}
 {% endblock %}
@@ -15,9 +15,21 @@
     {% elif object.submission_status == '3' %}
         <span class="label label-important">Abgelehnt</span>
     {% endif %}
+
+    {% if perms.submission.change_submissionstarter %}
+        {% if object.mail_merge %}
+            <span class="label label-success">Serienbrief Export</span>
+        {% else %}
+            <span class="label">Kein Serienbrief Export</span>
+        {% endif %}
+    {% endif %}
 </p>
 
 <table class="table">
+    <tr>
+        <th>Antragsnummer</th>
+        <td colspan="3">{{object.pk}}</td>
+    </tr>
     <tr>
         <th>Geburtsdatum</th>
         <td>{{object.date_of_birth}}</td>
@@ -56,8 +68,9 @@
         <th>Kategorie</th>
         <td colspan="3">{{object.get_category_display}}</td>
     </tr>
+    {% if perms.submission.change_submissionstarter %}
     <tr>
-        <th>Bundesverband</th>
+        <th>Landesverband</th>
         <td>{{object.gym.state.name}}</td>
         <th>Email</th>
         <td>
@@ -70,7 +83,7 @@
     </tr>
     <tr>
         <th>Studio</th>
-        <td>{{object.gym.name}}</td>
+        <td><a href="{{object.gym.get_absolute_url}}">{{object.gym.name}}</a></td>
         <th>Email</th>
         <td>
             {% if object.gym.email %}
@@ -80,6 +93,7 @@
             {% endif %}
         </td>
     </tr>
+    {% endif %}
 </table>
 {% endblock %}
 
@@ -89,6 +103,8 @@
     <h3>Optionen</h3>
     <p><a href="{% url 'submission-edit-status' object.id %}"
           title="Status bearbeiten">Status bearbeiten</a></p>
+    <p><a href="{% url 'submission-export-mailmerge' object.id %}"
+          title="Status bearbeiten">Für Serienbrief exportieren</a></p>
 </div>
 {% endif %}
 {% endblock %}
