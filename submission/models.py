@@ -127,22 +127,6 @@ class Gym(models.Model):
         ordering = ["state__name", "name"]
 
 
-class StateAssociation(models.Model):
-    '''
-    Model for a State Association (Landesverband)
-    '''
-
-    state = models.ForeignKey(State, verbose_name='Bundesland')
-    bank_account = models.CharField(verbose_name='Name',
-                                    max_length=100,)
-
-    def __unicode__(self):
-        '''
-        Return a more human-readable representation
-        '''
-        return "Association %s" % self.state.short_name
-
-
 class Country(models.Model):
     '''
     Model for a country
