@@ -48,10 +48,11 @@ class BankAccount(models.Model):
 
     owner_name = models.CharField(verbose_name='Begünstigter',
                                   max_length=100,)
-    account_nr = models.CharField(verbose_name='Kontonummer',
-                                  max_length=9,)
-    bank_nr = models.CharField(verbose_name='BLZ',
-                               max_length=8,)
+    iban = models.CharField(verbose_name='IBAN',
+                            max_length=34,)
+    bic = models.CharField(verbose_name='BIC',
+                           max_length=11,
+                           help_text=u'Nur bei Auslandsüberweisung nötig')
     bank_name = models.CharField(verbose_name='Bankname',
                                  max_length=30,)
 
@@ -174,6 +175,8 @@ class SubmissionStarter(models.Model):
         ('5', u'Classic-Bodybuilding'),
         ('6', u'Paare')
     )
+
+    FEE = 50
 
     # Personal information
     user = models.ForeignKey(User,

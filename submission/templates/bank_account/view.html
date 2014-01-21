@@ -11,19 +11,27 @@ an das folgende Konto:</p>
 <table class="table table-striped" data-toggle="list">
     <tr>
         <th>Betrag</th>
-        <td>50EUR</td>
+        <td>{{fee}}EUR</td>
+    </tr>
+    <tr>
+        <th>Verwendungszweck</th>
+        <td>{{use|safe}}</td>
     </tr>
     <tr>
         <th>Begünstigter</th>
         <td>{{bankaccount.owner_name}}</td>
     </tr>
     <tr>
-        <th>Kontonummer</th>
-        <td>{{bankaccount.account_nr}}</td>
+        <th>IBAN</th>
+        <td>{{bankaccount.iban}}</td>
     </tr>
     <tr>
-        <th>BLZ</th>
-        <td>{{bankaccount.bank_nr}} ({{bankaccount.bank_name}})</td>
+        <th>BIC</th>
+        <td>
+            {{bankaccount.bic}} ({{bankaccount.bank_name}})
+            <br>
+            <p><small>Nur bei Auslandsüberweisung nötig!</small></p>
+        </td>
     </tr>
 </table>
 {% endblock %}

@@ -9,8 +9,8 @@
     <thead>
     <tr>
         <th>Name</th>
-        <th>Kontonr.</th>
-        <th>BLZ</th>
+        <th>IBAN</th>
+        <th>BIC</th>
     </tr>
     </thead>
     <tbody>
@@ -20,10 +20,10 @@
             <a href="{%url 'bank-account-edit' account.id %}">{{account.owner_name}}</a>
         </td>
         <td>
-            {{account.account_nr}}
+            {{account.iban}}
         </td>
         <td>
-            {{account.bank_nr}} ({{account.bank_name}})</a>
+            {{account.bic}} ({{account.bank_name}})</a>
         </td>
     </tr>
     {% endfor %}

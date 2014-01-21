@@ -50,6 +50,15 @@ class BankAccountDetailView(DbfvViewMixin, generic.DetailView):
         '''
         return BankAccount.objects.get(pk=self.request.session['bank-account'])
 
+    def get_context_data(self, **kwargs):
+        '''
+        Set the correct fee
+        '''
+        context = super(BankAccountDetailView, self).get_context_data(**kwargs)
+        context['fee'] = self.request.session['submission-fee']
+        context['use'] = self.request.session['designated-use']
+        return context
+
 
 class BankAccountCreateView(DbfvFormMixin, generic.CreateView):
     '''
