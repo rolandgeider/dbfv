@@ -44,6 +44,12 @@ class BankAccountDetailView(DbfvViewMixin, generic.DetailView):
     template_name = 'bank_account/view.html'
     login_required = True
 
+    def get_object(self):
+        '''
+        Load the account by the ID in the session
+        '''
+        return BankAccount.objects.get(pk=self.request.session['bank-account'])
+
 
 class BankAccountCreateView(DbfvFormMixin, generic.CreateView):
     '''
