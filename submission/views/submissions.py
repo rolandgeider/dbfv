@@ -227,19 +227,19 @@ def export_csv(request, pk):
     writer = csv.writer(response, delimiter='\t')
     today = datetime.date.today()
 
-    submission = SubmissionStarter.objects.get(pk=pk)
-    submission.mail_merge = True
-    submission.save()
+    submission = SubmissionStarter.objects.filter(pk=pk)
 
     # Write the CSV file
     writer.writerow(MAILMERGE_HEADER)
-    writer.writerow(export_submission_mailmerge([submission]))
-    filename = 'attachment; filename=Starterlizenz-{0}-{1}-{2}-{3}.csv'.format(submission.pk,
+    for line in export_submission_mailmerge(submission):
+        writer.writerow(line)
+    filename = 'attachment; filename=Starterlizenz-{0}-{1}-{2}-{3}.csv'.format(pk,
                                                                                today.year,
                                                                                today.month,
                                                                                today.day)
     response['Content-Disposition'] = filename
     response['Content-Length'] = len(response.content)
+    submission.update(mail_merge=True)
     return response
 
 
@@ -257,7 +257,6 @@ def export_csv_new(request):
     submissions = SubmissionStarter.objects.filter(mail_merge=False) \
         .filter(submission_status=SubmissionStarter.SUBMISSION_STATUS_BEWILLIGT) \
         .select_related()
-    submissions.update(mail_merge=True)
 
     # Write the CSV file
     writer.writerow(MAILMERGE_HEADER)
@@ -268,4 +267,5 @@ def export_csv_new(request):
                                                                              today.day)
     response['Content-Disposition'] = filename
     response['Content-Length'] = len(response.content)
+    submissions.update(mail_merge=True)
     return response

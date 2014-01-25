@@ -51,6 +51,7 @@ def export_submission_mailmerge(submission_list):
                submission.zip_code,
                submission.city,
                submission.tel_number,
+               submission.email,
                submission.nationality.name,
                submission.height,
                submission.weight,
