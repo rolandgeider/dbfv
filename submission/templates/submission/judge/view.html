@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load dbfv_extras %}
 
-{% block title %}Studioantrag - {{object.name}}{% endblock %}
+{% block title %}Kampfrichterantrag - {{object.get_name}}{% endblock %}
 
 {% block scripts %}
 {% endblock %}
@@ -23,8 +23,10 @@
         <td colspan="3">{{object.state}}</td>
     </tr>
     <tr>
-        <th>Inhaber</th>
-        <td colspan="3">{{object.user.get_username}}</td>
+        <th>Vorname</th>
+        <td>{{object.first_name}}</td>
+        <th>Nachname</th>
+        <td>{{object.last_name}}</td>
     </tr>
     <tr>
         <th>Straße</th>
@@ -35,25 +37,17 @@
     <tr>
         <th>Tel. Nr.</th>
         <td>{{object.tel_number}}</td>
-        <th>Fax. Nr</th>
-        <td>{{object.fax_number}}</td>
-    </tr>
-    <tr>
         <th>Email</th>
         <td colspan="3"><a href="mailto:{{object.email}}">{{object.email}}</a></td>
-    </tr>
-    <tr>
-        <th>Anzahl Mitglieder</th>
-        <td colspan="3">{{object.members}}</td>
     </tr>
 </table>
 {% endblock %}
 
 {% block sidebar %}
-{% if perms.submission.change_submissiongym %}
+{% if perms.submission.change_submissionjudge %}
 <div class="sidebar-box">
     <h3>Optionen</h3>
-    <p><a href="{% url 'submission-studio-edit-status' object.id %}"
+    <p><a href="{% url 'submission-judge-edit-status' object.id %}"
           title="Status bearbeiten">Status bearbeiten</a></p>
 </div>
 {% endif %}

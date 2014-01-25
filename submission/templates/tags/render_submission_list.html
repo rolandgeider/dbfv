@@ -14,6 +14,7 @@
     </thead>
     <tbody>
     {% for submission in submission_list %}
+    {% if submission_type == 'starter' %}
     {% ifchanged submission.gym.state %}
     <tr>
         <th colspan="5">
@@ -21,6 +22,7 @@
         </th>
     </tr>
     {% endifchanged %}
+    {% endif  %}
     <tr>
         <td>
             {{submission.id}}

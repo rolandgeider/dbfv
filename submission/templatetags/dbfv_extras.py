@@ -103,14 +103,13 @@ def table_form_render(form):
 
 
 @register.simple_tag
-def render_submission_list(submissions, user, filter_mode, table_id, submission_type='starter'):
+def render_submission_list(submissions, user, filter_mode, submission_type='starter'):
     '''
     Render a table with submissions
 
     :param submissions: list with submissions
     :param user: current user
     :param filter_mode what submissions to list (open, closed, etc.)
-    :param table_id HTML-ID for the table
     :param submission_type The type of the submission. Allowed values: starter, gym, judge
     '''
 
@@ -126,18 +125,19 @@ def render_submission_list(submissions, user, filter_mode, table_id, submission_
     context['SUBMISSION_STATUS_BEWILLIGT'] = SubmissionStarter.SUBMISSION_STATUS_BEWILLIGT
     context['SUBMISSION_STATUS_ABGELEHNT'] = SubmissionStarter.SUBMISSION_STATUS_ABGELEHNT
 
+    submission_list = []
     if submissions:
         if filter_mode == 'open':
             submission_list = [i for i in submissions if i.submission_status ==
                                SubmissionStarter.SUBMISSION_STATUS_EINGEGANGEN]
-        else:
+        elif filter_mode == 'closed':
             submission_list = [i for i in submissions if i.submission_status !=
                                SubmissionStarter.SUBMISSION_STATUS_EINGEGANGEN]
-    else:
-        submission_list = []
+        else:
+            submission_list = [i for i in submissions]
 
     context['submission_list'] = submission_list
-    context['table_id'] = table_id
+    context['submission_type'] = submission_type
     context['user_type'] = user_type(user)
     context['USER_TYPE_BUNDESVERBAND'] = USER_TYPE_BUNDESVERBAND
     context['USER_TYPE_USER'] = USER_TYPE_USER

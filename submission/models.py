@@ -341,16 +341,102 @@ class SubmissionGym(models.Model):
         '''
         return u"Studiolizent {0}".format(self.name)
 
-## Deleting a Submission object also deletes the file from disk
-#def delete_submission_attachment(sender, instance, **kwargs):
-    #try:
-        #os.remove(os.path.join(settings.MEDIA_ROOT, instance.anhang))
-    #except Exception, e:
-        #pass
-        ##logger.error("Could not delete attachment", e)
 
-#post_delete.connect(delete_submission_attachment, sender=Submission)
+class SubmissionJudge(models.Model):
+    '''
+    Model for a judge submission
+    '''
 
+    SUBMISSION_STATUS_EINGEGANGEN = '1'
+    SUBMISSION_STATUS_BEWILLIGT = '2'
+    SUBMISSION_STATUS_ABGELEHNT = '3'
+
+    SUBMISSION_STATUS = (
+        (SUBMISSION_STATUS_EINGEGANGEN, 'Eingegangen'),
+        (SUBMISSION_STATUS_BEWILLIGT, 'Bewilligt'),
+        (SUBMISSION_STATUS_ABGELEHNT, 'Abgelehnt'),
+    )
+
+    FEE = 15
+
+
+    user = models.ForeignKey(User,
+                             verbose_name=_('User'),
+                             editable=False)
+    last_name = models.CharField('Familienname', max_length=30)
+    first_name = models.CharField('Vorname', max_length=30)
+    street = models.CharField(u'Straße', max_length=30)
+    zip_code = models.IntegerField(u'PLZ', max_length=5)
+    city = models.CharField(u'Ort', max_length=30)
+    state = models.ForeignKey(State,
+                              verbose_name=u'Landesverband')
+    tel_number = models.CharField(u'Tel. Nr.',
+                                  max_length=20)
+    email = models.EmailField(u'Email',
+                              max_length=30,
+                              null=True,
+                              blank=True)
+
+    # Other fields
+    creation_date = models.DateField(_('Creation date'), auto_now_add=True)
+    submission_status = models.CharField(max_length=2,
+                                         choices=SUBMISSION_STATUS,
+                                         default=SUBMISSION_STATUS_EINGEGANGEN)
+
+    def __unicode__(self):
+        '''
+        Return a more human-readable representation
+        '''
+        return u"Kampfrichterlizent {0}".format(self.name)
+
+    def get_absolute_url(self):
+        return reverse('submission-judge-view', kwargs={'pk': self.pk})
+
+    @property
+    def get_name(self):
+        """
+        Returns the name of the participant
+        """
+        return u"{0}, {1}".format(self.last_name, self.first_name)
+
+    def send_emails(self):
+        '''
+        Send an email to the managers
+        '''
+
+        # Make a list with all the emails: BV, LV, gym and user
+        email_list = []
+        for email in ManagerEmail.objects.all():
+            email_list.append(email.email)
+
+        if self.state.email:
+            email_list.append(self.state.email)
+
+        email_list.append(self.user.email)
+
+        for email in email_list:
+            subject = _(u'Neue Kampfrichterlizenz von {0}, {1}'.format(self.last_name,
+                                                                       self.first_name))
+            message = (_(u"Eine neue Kampfrichterlizenz wurde beantragt\n"
+                         u"--------------------------------------------\n\n"
+                         u"Details:\n"
+                         u"* Name:          {last_name}\n"
+                         u"* Vorname:       {first_name}\n"
+                         u"* Adresse:       {street}, {city}, {zip_code}\n"
+                         u"* Tel. Nr.:      {tel_nr}\n"
+                         u"* Landesverband: {state}\n"
+                         u"").format(last_name=self.last_name,
+                                     first_name=self.first_name,
+                                     tel_nr=self.tel_number,
+                                     street=self.street,
+                                     city=self.city,
+                                     zip_code=self.zip_code,
+                                     state=self.state.name))
+            mail.send_mail(subject,
+                           message,
+                           email,
+                           [email],
+                           fail_silently=True)
 
 USER_TYPE_UNKNOWN = -1
 USER_TYPE_BUNDESVERBAND = 2

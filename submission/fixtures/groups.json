@@ -1,19 +1,5 @@
 [
     {
-        "pk": 1, 
-        "model": "auth.group", 
-        "fields": {
-            "name": "Landesverband", 
-            "permissions": [
-                [
-                    "change_submission", 
-                    "submission", 
-                    "submission"
-                ]
-            ]
-        }
-    }, 
-    {
         "pk": 2, 
         "model": "auth.group", 
         "fields": {
@@ -55,6 +41,21 @@
                     "gym"
                 ], 
                 [
+                    "add_manageremail", 
+                    "submission", 
+                    "manageremail"
+                ], 
+                [
+                    "change_manageremail", 
+                    "submission", 
+                    "manageremail"
+                ], 
+                [
+                    "delete_manageremail", 
+                    "submission", 
+                    "manageremail"
+                ], 
+                [
                     "add_state", 
                     "submission", 
                     "state"
@@ -70,29 +71,34 @@
                     "state"
                 ], 
                 [
-                    "add_stateassociation", 
+                    "change_submissiongym", 
                     "submission", 
-                    "stateassociation"
+                    "submissiongym"
                 ], 
                 [
-                    "change_stateassociation", 
+                    "delete_submissiongym", 
                     "submission", 
-                    "stateassociation"
+                    "submissiongym"
                 ], 
                 [
-                    "delete_stateassociation", 
+                    "change_submissionjudge", 
                     "submission", 
-                    "stateassociation"
+                    "submissionjudge"
                 ], 
                 [
-                    "change_submission", 
+                    "delete_submissionjudge", 
                     "submission", 
-                    "submission"
+                    "submissionjudge"
                 ], 
                 [
-                    "delete_submission", 
+                    "change_submissionstarter", 
                     "submission", 
-                    "submission"
+                    "submissionstarter"
+                ], 
+                [
+                    "delete_submissionstarter", 
+                    "submission", 
+                    "submissionstarter"
                 ]
             ]
         }
@@ -104,9 +110,19 @@
             "name": "User", 
             "permissions": [
                 [
-                    "add_submission", 
+                    "add_submissiongym", 
                     "submission", 
-                    "submission"
+                    "submissiongym"
+                ], 
+                [
+                    "add_submissionjudge", 
+                    "submission", 
+                    "submissionjudge"
+                ], 
+                [
+                    "add_submissionstarter", 
+                    "submission", 
+                    "submissionstarter"
                 ]
             ]
         }

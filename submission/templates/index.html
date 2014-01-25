@@ -34,7 +34,7 @@ Diese berechtigt zur Teilnahme an allen DBFV e.V / IFBB Meisterschaften.</p>
         Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus
         commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
         {% if perms.submission.add_submissiongym %}
-        <p><a class="btn btn-success" href="{% url 'submission-add' 'kapmfrichter' %}">Antrag auf Kampfrichterlizenz stellen &raquo;</a></p>
+        <p><a class="btn btn-success" href="{% url 'submission-judge-add' %}">Antrag auf Kampfrichterlizenz stellen &raquo;</a></p>
         {% else %}
         <p><a href="{% url 'login' %}" class="btn btn-danger">Sie müssen sich anmelden</a></p>
         {% endif %}
@@ -67,6 +67,7 @@ Diese berechtigt zur Teilnahme an allen DBFV e.V / IFBB Meisterschaften.</p>
         <h4>Anträge</h4>
         <p><a class="btn btn-block" href="{% url 'submission-list' %}">Starterlizenzen &raquo;</a></p>
         <p><a class="btn btn-block" href="{% url 'submission-studio-list' %}">Studiolizenzen &raquo;</a></p>
+        <p><a class="btn btn-block" href="{% url 'submission-judge-list' %}">Kampfrichterizenzen &raquo;</a></p>
     {% elif perms.submission.add_submissionstarter %}
         <p><a class="btn btn-block" href="{% url 'submission-list' %}">Liste der Anträge &raquo;</a></p>
     {% endif %}

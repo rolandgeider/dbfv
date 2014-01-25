@@ -3,7 +3,7 @@
 {% load url from future %}
 {% load dbfv_extras %}
 
-{% block title %}Anträge{% endblock %}
+{% block title %}Anträge Starterlizenzen{% endblock %}
 
 {% block scripts %}
 {% endblock %}
@@ -11,11 +11,11 @@
 {% block content %}
 
 <h3>Laufende Anträge</h3>
-{% render_submission_list submission_list user 'open' 'open-submissions' %}
+{% render_submission_list submission_list user 'open' %}
 
 {% if show_closed %}
 <h3>Geschlossene Anträge</h3>
-{% render_submission_list submission_list user 'closed' 'closed-submissions' %}
+{% render_submission_list submission_list user 'closed' %}
 {% endif %}
 
 
