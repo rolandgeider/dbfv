@@ -59,10 +59,12 @@ aus technischen Gründen nicht möglich.</p>
             <div class="accordion-inner">
 
             {% for gym in state.gym_set.all %}
+            {% if gym.is_active %}
                 <a id="gym-{{ gym.id }}"
                    class="gym-select"
                    data-gym-id="{{ gym.id }}"
                    href="#">{{ gym.name }}</a><br>
+            {% endif %}
             {% endfor %}
             </div>
         </div>

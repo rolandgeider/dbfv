@@ -111,6 +111,9 @@ class Gym(models.Model):
                               max_length=30,
                               blank=True,
                               null=True)
+    is_active = models.BooleanField(_('Ist aktiv'),
+                                    default=True)
+
 
     def __unicode__(self):
         '''

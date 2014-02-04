@@ -5,6 +5,18 @@
 {% block title %}Detailseite für Studio{% endblock %}
 
 {% block content %}
+<p>
+    {% if perms.submission.change_gym %}
+        {% if object.is_active %}
+            <span class="label label-success">Aktiv</span>
+        {% else %}
+            <span class="label">Nicht aktiv</span>
+        {% endif %}
+    {% endif %}
+</p>
+
+
+
 <table class="table table-bordered">
     <tr>
         <th>Name</th>

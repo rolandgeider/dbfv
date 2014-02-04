@@ -21,11 +21,13 @@ from django.http.response import HttpResponse, HttpResponseForbidden
 from django.views import generic
 from django.core.urlresolvers import reverse_lazy
 from django.forms import ModelForm
+from django.forms import ModelChoiceField
 from submission.helpers import export_submission_mailmerge
 from submission.helpers import MAILMERGE_HEADER
 
 from submission.models import SubmissionStarter
 from submission.models import State
+from submission.models import Gym
 from submission.models import user_type
 from submission.models import USER_TYPE_BUNDESVERBAND
 from submission.models import USER_TYPE_USER
@@ -118,6 +120,9 @@ class SubmissionDetailView(DbfvViewMixin, generic.detail.DetailView):
 
 
 class SubmissionForm(ModelForm):
+    
+    gym = ModelChoiceField(queryset=Gym.objects.filter(is_active=True))
+    
     class Meta:
         model = SubmissionStarter
         exclude = ('submission_status',)
