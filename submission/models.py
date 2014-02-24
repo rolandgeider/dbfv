@@ -60,7 +60,7 @@ class BankAccount(models.Model):
         '''
         Return a more human-readable representation
         '''
-        return "%s, BLZ: %s" % (self.account_nr, self.bank_nr)
+        return "%s, BIC: %s" % (self.iban, self.bic)
 
 
 class State(models.Model):
