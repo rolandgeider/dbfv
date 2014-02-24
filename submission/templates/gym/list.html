@@ -24,6 +24,9 @@
         </td>
         <td>
             <a href="{% url 'gym-view' gym.id %}">{{gym.name}}</a>
+            {% if gym.is_active %}
+                <span class="label label-success">Aktiv</span>
+            {% endif %}
         </td>
         <td>
             {% if gym.email %}
