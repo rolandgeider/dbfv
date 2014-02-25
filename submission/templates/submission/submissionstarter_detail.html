@@ -68,7 +68,6 @@
         <th>Kategorie</th>
         <td colspan="3">{{object.get_category_display}}</td>
     </tr>
-    {% if perms.submission.change_submissionstarter %}
     <tr>
         <th>Landesverband</th>
         <td>{{object.gym.state.name}}</td>
@@ -83,7 +82,13 @@
     </tr>
     <tr>
         <th>Studio</th>
-        <td><a href="{{object.gym.get_absolute_url}}">{{object.gym.name}}</a></td>
+        <td>
+            {% if perms.submission.change_submissionstarter %}
+                <a href="{{object.gym.get_absolute_url}}">{{object.gym.name}}</a>
+            {% else %}
+                {{object.gym.name}}
+            {% endif %}
+        </td>
         <th>Email</th>
         <td>
             {% if object.gym.email %}
@@ -93,7 +98,6 @@
             {% endif %}
         </td>
     </tr>
-    {% endif %}
 </table>
 {% endblock %}
 
