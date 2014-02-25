@@ -119,7 +119,7 @@ class Gym(models.Model):
         '''
         Return a more human-readable representation
         '''
-        return "%s (%s)" % (self.name, self.state)
+        return u"{0} ({1}, {2})".format(self.name, self.city, self.state)
 
     def get_absolute_url(self):
         return reverse('gym-view', kwargs={'pk': self.id})
