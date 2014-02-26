@@ -155,11 +155,6 @@ class SubmissionStarter(models.Model):
     '''
     Model for a submission
     '''
-    SUBMISSION_TYPES = (
-        ('ST', 'Starter'),
-        ('KR', 'Kapmfrichter'),
-        ('SU', 'Studio')
-    )
 
     SUBMISSION_STATUS_EINGEGANGEN = '1'
     SUBMISSION_STATUS_BEWILLIGT = '2'
@@ -211,9 +206,6 @@ class SubmissionStarter(models.Model):
     gym = models.ForeignKey(Gym, verbose_name='Studio')
 
     creation_date = models.DateField(_('Creation date'), auto_now_add=True)
-    #submission_type = models.CharField(max_length=2,
-    #                                   choices=SUBMISSION_TYPES,
-    #                                   editable=False)
     submission_status = models.CharField(max_length=2,
                                          choices=SUBMISSION_STATUS,
                                          default=SUBMISSION_STATUS_EINGEGANGEN)
