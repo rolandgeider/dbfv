@@ -155,9 +155,9 @@ class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
         '''
         Redirect to bank acount page
         '''
-        bank_account = 2
+        bank_account = 1
         if self.form_instance.gym.state == 10:
-            bank_account = 1
+            bank_account = 2
 
         self.request.session['bank-account'] = bank_account
         self.request.session['submission-fee'] = SubmissionStarter.FEE
