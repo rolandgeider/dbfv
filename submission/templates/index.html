@@ -17,7 +17,8 @@
 <!-- Example row of columns -->
 
 <h2>Starterlizenz</h2>
-<p>Beantragen Sie hier die Ausstellung einer DBFV/IFBB-Starterlizenz.
+<p>Beantragen Sie hier die Ausstellung 
+einer DBFV/IFBB-Starterlizenz.
 Diese berechtigt zur Teilnahme an allen DBFV e.V / IFBB Meisterschaften.</p>
 {% if perms.submission.add_submissionstarter %}
 <p><a class="btn btn-success" href="{% url 'submission-add' 'starter' %}">Antrag auf Starterlizenz stellen &raquo;</a></p>
@@ -25,7 +26,7 @@ Diese berechtigt zur Teilnahme an allen DBFV e.V / IFBB Meisterschaften.</p>
 <p><a href="{% url 'login' %}" class="btn btn-danger">Sie müssen sich anmelden</a></p>
 {% endif %}
 
-
+<!--
 <h2 style="margin-top:1.5em;">Andere Anträge</h2>
 <div class="row-fluid">
     <div class="span6">
@@ -51,6 +52,7 @@ Diese berechtigt zur Teilnahme an allen DBFV e.V / IFBB Meisterschaften.</p>
         {% endif %}
     </div>
 </div>
+-->
 {% endblock %}
 
 
