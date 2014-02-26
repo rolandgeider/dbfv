@@ -166,12 +166,15 @@ class SubmissionStarter(models.Model):
         (SUBMISSION_STATUS_ABGELEHNT, 'Abgelehnt'),
     )
     SUBMISSION_CATEGORY = (
-        ('1', u'Bodybuilding Frauen/Männer/Junioren/Master'),
-        ('2', u'Frauen Bikini-Fitness'),
-        ('3', u'Figurklasse'),
-        ('4', u'Physique'),
-        ('5', u'Classic-Bodybuilding'),
-        ('6', u'Paare')
+        ('1', u'Bikini-Klasse'),
+        ('2', u'Frauen Fitness-Figur-Klasse'),
+        ('3', u'Frauen Bodyklasse'),
+        ('4', u'Frauen Physiqueklasse'),
+        ('5', u'Juniorenklasse'),
+        ('6', u'Classic-Bodybuilding'),
+        ('7', u'Paare'),
+        ('8', u'Männer Physique'),
+        ('9', u'Männer Bodyklasse')
     )
 
     FEE = 50
