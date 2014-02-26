@@ -197,10 +197,6 @@ urlpatterns = patterns('submission.views',
     url(r'^impressum$',
         TemplateView.as_view(template_name="misc/impressum.html"),
         name="impressum"),
-    url(r'^kontakt$',
-        TemplateView.as_view(template_name="misc/kontakt.html"),
-        name="kontakt"),
-
 )
 
 # Password reset is implemented by Django, no need to cook our own soup here
