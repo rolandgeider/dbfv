@@ -137,7 +137,7 @@ class Country(models.Model):
     '''
 
     # This field is required.
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=40)
 
     def __unicode__(self):
         '''
