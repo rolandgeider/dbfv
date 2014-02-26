@@ -156,7 +156,7 @@ class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
         Redirect to bank acount page
         '''
         bank_account = 1
-        if self.form_instance.gym.state == 10:
+        if self.form_instance.gym.state_id == 10:
             bank_account = 2
 
         self.request.session['bank-account'] = bank_account
