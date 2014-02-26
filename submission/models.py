@@ -187,7 +187,7 @@ class SubmissionStarter(models.Model):
                              editable=False)
 
     date_of_birth = models.DateField(_('Geburtsdatum'))
-    active_since = models.DateField(_('Aktiv seit'))
+    active_since = models.CharField(_('Aktiv seit'), max_length=20)
     last_name = models.CharField(_('Familienname'), max_length=30)
     first_name = models.CharField(_('Vorname'), max_length=30)
     street = models.CharField(_(u'Straße'), max_length=30)
