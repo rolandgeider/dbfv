@@ -147,8 +147,6 @@ class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
         form.instance.user = self.request.user
         self.form_instance = form.instance
 
-        # Notify the administrators
-        form.instance.send_emails()
         return super(SubmissionCreateView, self).form_valid(form)
 
     def get_success_url(self):
@@ -158,6 +156,9 @@ class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
         bank_account = 1
         if self.form_instance.gym.state_id == 10:
             bank_account = 2
+
+        # Notify the administrators
+        self.form_instance.send_emails()
 
         self.request.session['bank-account'] = bank_account
         self.request.session['submission-fee'] = SubmissionStarter.FEE

@@ -266,6 +266,7 @@ class SubmissionStarter(models.Model):
             message = (_(u"Eine neue Starterlizenz wurde beantragt\n"
                          u"---------------------------------------\n\n"
                          u"Details:\n"
+                         u"* Antragsnummer:         {antragsnummer}\n"
                          u"* Name:                  {last_name}\n"
                          u"* Vorname:               {first_name}\n"
                          u"* Geburtsdatum:          {date_of_birth}\n"
@@ -275,7 +276,8 @@ class SubmissionStarter(models.Model):
                          u"* Wettkampfgewicht (kg): {weight}\n"
                          u"* Klasse:                {category}\n"
                          u"* Studio:                {gym} ({state})\n\n"
-                         u"").format(last_name=self.last_name,
+                         u"").format(antragsnummer=self.pk,
+                                     last_name=self.last_name,
                                      first_name=self.first_name,
                                      date_of_birth=self.date_of_birth,
                                      category=self.get_category_display(),
