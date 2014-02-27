@@ -252,6 +252,19 @@ class SubmissionStarter(models.Model):
 
         if self.gym.email:
             email_list.append(self.gym.email)
+        # Gym has no email, notify the managers
+        else:
+           for email in ManagerEmail.objects.all():
+                mail.send_mail('Studio hat keine Emailadresse',
+                               u"Eine Starterlizenz wurde für ein Studio beantragt, dass\n"
+                               u"keine Emailadresse im System hinterlegt hat.\n\n"
+                               u"* Nr.:        {studio.pk}\n"
+                               u"* Name:       {studio.name}\n"                              
+                               u"* Bundesland: {studio.state.name}\n".format(studio=self.gym),
+                               email.email,
+                               [email.email],
+                               fail_silently=True)
+
 
         if self.gym.state.email:
             email_list.append(self.gym.state.email)
