@@ -258,32 +258,24 @@ class SubmissionStarter(models.Model):
         for email in email_list:
             subject = _(u'Neue Starterlizenz beantragt von {0}, {1}'.format(self.last_name,
                                                                             self.first_name))
-            message = (_(u"Eine neue Starterlizenz wurde beantragt\n"
-                         u"---------------------------------------\n\n"
-                         u"Details:\n"
-                         u"* Antragsnummer:         {antragsnummer}\n"
-                         u"* Name:                  {last_name}\n"
-                         u"* Vorname:               {first_name}\n"
-                         u"* Geburtsdatum:          {date_of_birth}\n"
-                         u"* Adresse:               {street}, {city}, {zip_code}\n"
-                         u"* Staatsangehörigkeit:   {nationality}\n"
-                         u"* Größe (cm):            {height}\n"
-                         u"* Wettkampfgewicht (kg): {weight}\n"
-                         u"* Klasse:                {category}\n"
-                         u"* Studio:                {gym} ({state})\n\n"
-                         u"").format(antragsnummer=self.pk,
-                                     last_name=self.last_name,
-                                     first_name=self.first_name,
-                                     date_of_birth=self.date_of_birth,
-                                     category=self.get_category_display(),
-                                     street=self.street,
-                                     height=self.height,
-                                     weight=self.weight,
-                                     nationality=self.nationality,
-                                     city=self.city,
-                                     zip_code=self.zip_code,
-                                     gym=self.gym.name,
-                                     state=self.gym.state.name))
+            message = (u"Eine neue Starterlizenz wurde beantragt\n"
+                       u"---------------------------------------\n\n"
+                       u"Details:\n"
+                       u"* Antragsnummer:         {data.pk}\n"
+                       u"* Name:                  {data.last_name}\n"
+                       u"* Vorname:               {data.first_name}\n"
+                       u"* Geburtsdatum:          {data.date_of_birth}\n"
+                       u"* Adresse:               {data.street}, {data.city}, {data.zip_code}\n"
+                       u"* Staatsangehörigkeit:   {data.nationality}\n"
+                       u"* Email:                 {data.email}\n"
+                       u"* Telefon:               {data.tel_number}\n"
+                       u"* Größe (cm):            {data.height}\n"
+                       u"* Wettkampfgewicht (kg): {data.weight}\n"
+                       u"* Klasse:                {category}\n"
+                       u"* Studio:                {data.gym.name} ({data.gym.state.name})\n"
+                       u"                         {data.gym.email}\n\n"
+                       u"".format(category=self.get_category_display(),
+                                     data=self))
             mail.send_mail(subject,
                            message,
                            email,
