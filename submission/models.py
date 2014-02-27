@@ -206,6 +206,9 @@ class SubmissionStarter(models.Model):
                                 choices=SUBMISSION_CATEGORY)
 
     # Other fields
+    submission_last_year = models.BooleanField(u"Im Vorjahr wurde bereits eine Lizenz beantragt",
+                                               default=False)
+
     gym = models.ForeignKey(Gym, verbose_name='Studio')
 
     creation_date = models.DateField(_('Creation date'), auto_now_add=True)
@@ -256,6 +259,7 @@ class SubmissionStarter(models.Model):
         email_list.append(self.user.email)
 
         for email in email_list:
+            lizenz_vorjahr = 'Ja' if self.submission_last_year else 'Nein'
             subject = _(u'Neue Starterlizenz beantragt von {0}, {1}'.format(self.last_name,
                                                                             self.first_name))
             message = (u"Eine neue Starterlizenz wurde beantragt\n"
@@ -272,10 +276,12 @@ class SubmissionStarter(models.Model):
                        u"* Größe (cm):            {data.height}\n"
                        u"* Wettkampfgewicht (kg): {data.weight}\n"
                        u"* Klasse:                {category}\n"
+                       u"* Lizenz im Vorjahr:     {lizenz_vorjahr}\n"
                        u"* Studio:                {data.gym.name} ({data.gym.state.name})\n"
                        u"                         {data.gym.email}\n\n"
                        u"".format(category=self.get_category_display(),
-                                     data=self))
+                                  lizenz_vorjahr=lizenz_vorjahr,
+                                  data=self))
             mail.send_mail(subject,
                            message,
                            email,
