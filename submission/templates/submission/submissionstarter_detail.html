@@ -56,7 +56,9 @@
     </tr>
     <tr>
         <th>Staatsangehörigkeit</th>
-        <td colspan="3">{{object.nationality.name}}</td>
+        <td>{{object.nationality.name}}</td>
+        <th>Lizenz im Vorjahr</th>
+        <td>{{object.submission_last_year|yesno:"Ja,Nein" }}</td>
     </tr>
     <tr>
         <th>Größe</th>

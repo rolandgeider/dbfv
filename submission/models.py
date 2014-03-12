@@ -207,6 +207,9 @@ class SubmissionStarter(models.Model):
                                 choices=SUBMISSION_CATEGORY)
 
     # Other fields
+    submission_last_year = models.BooleanField(u"Im Vorjahr wurde bereits eine Lizenz beantragt",
+                                               default=False)
+
     gym = models.ForeignKey(Gym, verbose_name='Studio')
 
     creation_date = models.DateField(_('Creation date'), auto_now_add=True)
@@ -250,6 +253,19 @@ class SubmissionStarter(models.Model):
 
         if self.gym.email:
             email_list.append(self.gym.email)
+        # Gym has no email, notify the managers
+        else:
+           for email in ManagerEmail.objects.all():
+                mail.send_mail('Studio hat keine Emailadresse',
+                               u"Eine Starterlizenz wurde für ein Studio beantragt, dass\n"
+                               u"keine Emailadresse im System hinterlegt hat.\n\n"
+                               u"* Nr.:        {studio.pk}\n"
+                               u"* Name:       {studio.name}\n"                              
+                               u"* Bundesland: {studio.state.name}\n".format(studio=self.gym),
+                               email.email,
+                               [email.email],
+                               fail_silently=True)
+
 
         if self.gym.state.email:
             email_list.append(self.gym.state.email)
@@ -257,34 +273,29 @@ class SubmissionStarter(models.Model):
         email_list.append(self.user.email)
 
         for email in email_list:
+            lizenz_vorjahr = 'Ja' if self.submission_last_year else 'Nein'
             subject = _(u'Neue Starterlizenz beantragt von {0}, {1}'.format(self.last_name,
                                                                             self.first_name))
-            message = (_(u"Eine neue Starterlizenz wurde beantragt\n"
-                         u"---------------------------------------\n\n"
-                         u"Details:\n"
-                         u"* Antragsnummer:         {antragsnummer}\n"
-                         u"* Name:                  {last_name}\n"
-                         u"* Vorname:               {first_name}\n"
-                         u"* Geburtsdatum:          {date_of_birth}\n"
-                         u"* Adresse:               {street}, {city}, {zip_code}\n"
-                         u"* Staatsangehörigkeit:   {nationality}\n"
-                         u"* Größe (cm):            {height}\n"
-                         u"* Wettkampfgewicht (kg): {weight}\n"
-                         u"* Klasse:                {category}\n"
-                         u"* Studio:                {gym} ({state})\n\n"
-                         u"").format(antragsnummer=self.pk,
-                                     last_name=self.last_name,
-                                     first_name=self.first_name,
-                                     date_of_birth=self.date_of_birth,
-                                     category=self.get_category_display(),
-                                     street=self.street,
-                                     height=self.height,
-                                     weight=self.weight,
-                                     nationality=self.nationality,
-                                     city=self.city,
-                                     zip_code=self.zip_code,
-                                     gym=self.gym.name,
-                                     state=self.gym.state.name))
+            message = (u"Eine neue Starterlizenz wurde beantragt\n"
+                       u"---------------------------------------\n\n"
+                       u"Details:\n"
+                       u"* Antragsnummer:         {data.pk}\n"
+                       u"* Name:                  {data.last_name}\n"
+                       u"* Vorname:               {data.first_name}\n"
+                       u"* Geburtsdatum:          {data.date_of_birth}\n"
+                       u"* Adresse:               {data.street}, {data.city}, {data.zip_code}\n"
+                       u"* Staatsangehörigkeit:   {data.nationality}\n"
+                       u"* Email:                 {data.email}\n"
+                       u"* Telefon:               {data.tel_number}\n"
+                       u"* Größe (cm):            {data.height}\n"
+                       u"* Wettkampfgewicht (kg): {data.weight}\n"
+                       u"* Klasse:                {category}\n"
+                       u"* Lizenz im Vorjahr:     {lizenz_vorjahr}\n"
+                       u"* Studio:                {data.gym.name} ({data.gym.state.name})\n"
+                       u"                         {data.gym.email}\n\n"
+                       u"".format(category=self.get_category_display(),
+                                  lizenz_vorjahr=lizenz_vorjahr,
+                                  data=self))
             mail.send_mail(subject,
                            message,
                            email,
