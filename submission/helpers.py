@@ -31,7 +31,8 @@ MAILMERGE_HEADER = ['ID',
                     'Kategorie',
                     'Studio',
                     'Bundesverband',
-                    'Datum']
+                    'Datum',
+                    'Jahr',]
 
 
 def export_submission_mailmerge(submission_list):
@@ -58,6 +59,7 @@ def export_submission_mailmerge(submission_list):
                submission.get_category_display(),
                submission.gym.name,
                submission.gym.state,
-               submission.creation_date]
+               submission.creation_date,
+               submission.creation_date.year,]
         result.append([unicode(s).encode("utf-8") for s in tmp])
     return result
