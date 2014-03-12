@@ -73,6 +73,7 @@ class State(models.Model):
     short_name = models.CharField(verbose_name='Kürzel',
                                   max_length=3,)
     email = models.EmailField(verbose_name='Email',
+                              max_length=120,
                               blank=True)
     bank_account = models.ForeignKey(BankAccount, verbose_name='Bankkonto')
 
