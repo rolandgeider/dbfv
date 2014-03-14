@@ -8,19 +8,11 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding field 'SubmissionStarter.submission_last_year'
-        db.add_column(u'submission_submissionstarter', 'submission_last_year',
-                      self.gf('django.db.models.fields.BooleanField')(default=False),
-                      keep_default=False)
-
 
         # Changing field 'SubmissionStarter.email'
         db.alter_column(u'submission_submissionstarter', 'email', self.gf('django.db.models.fields.EmailField')(max_length=120))
 
     def backwards(self, orm):
-        # Deleting field 'SubmissionStarter.submission_last_year'
-        db.delete_column(u'submission_submissionstarter', 'submission_last_year')
-
 
         # Changing field 'SubmissionStarter.email'
         db.alter_column(u'submission_submissionstarter', 'email', self.gf('django.db.models.fields.EmailField')(max_length=30))
