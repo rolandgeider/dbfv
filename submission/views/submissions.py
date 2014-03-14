@@ -162,8 +162,8 @@ class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
 
         self.request.session['bank-account'] = bank_account
         self.request.session['submission-fee'] = SubmissionStarter.FEE
-        self.request.session['designated-use'] = 'Starterlizenz {0}<br>\n{1}'.format(self.object.pk,
-                                                                                     self.object.get_name)
+        self.request.session['designated-use'] = u'Starterlizenz {0}<br>\n{1}'.format(self.object.pk,
+                                                                                      self.object.get_name)
         return reverse_lazy('bank-account-view')
 
     def get_context_data(self, **kwargs):
