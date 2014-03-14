@@ -193,7 +193,7 @@ class SubmissionStarter(models.Model):
     zip_code = models.IntegerField(_(u'PLZ'), max_length=5)
     city = models.CharField(_(u'Ort'), max_length=30)
     tel_number = models.CharField(_(u'Tel. Nr.'), max_length=20)
-    email = models.EmailField(_(u'Email'), max_length=30)
+    email = models.EmailField(_(u'Email'), max_length=120)
     nationality = models.ForeignKey(Country,
                                     verbose_name=u'Staatsangehörigkeit',
                                     default=37  # Germany
