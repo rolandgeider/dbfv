@@ -170,6 +170,12 @@ class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
         context['fee'] = SubmissionStarter.FEE
         return context
 
+    def get_initial(self):
+        '''
+        Fill in some data
+        '''
+        return {'email': self.request.user.email}
+
 
 class SubmissionDeleteView(DbfvFormMixin, generic.DeleteView):
     '''
