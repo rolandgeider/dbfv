@@ -151,16 +151,11 @@ class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
 
     def get_success_url(self):
         '''
-        Redirect to bank acount page
+        Redirect to bank acount page and send appropriate emails
         '''
-        bank_account = 1
-        if self.form_instance.gym.state_id == 10:
-            bank_account = 2
-
-        # Notify the administrators
         self.form_instance.send_emails()
 
-        self.request.session['bank-account'] = bank_account
+        self.request.session['bank-account'] = self.form_instance.get_bank_account()
         self.request.session['submission-fee'] = SubmissionStarter.FEE
         self.request.session['designated-use'] = u'Starterlizenz {0}<br>\n{1}'.format(self.object.pk,
                                                                                       self.object.get_name)

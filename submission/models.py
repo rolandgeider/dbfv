@@ -18,6 +18,8 @@
 import os
 import datetime
 
+from django.conf import settings
+from django.template.loader import render_to_string
 from django.db import models
 from django.db.models.signals import post_save
 from django.db.models.signals import post_delete
@@ -241,12 +243,22 @@ class SubmissionStarter(models.Model):
     def get_absolute_url(self):
         return reverse('submission-view', kwargs={'pk': self.pk})
 
+    def get_bank_account(self):
+        '''
+        Returns the correct bank account for this submission
+        '''
+        bank_account = 1
+        if self.gym.state_id == 10:
+            bank_account = 2
+
+        return bank_account
+
     def send_emails(self):
         '''
         Send an email to the managers
         '''
 
-        # Make a list with all the emails: BV, LV, gym and user
+        # Make a list with all the emails: BV, LV and gym
         email_list = []
         for email in ManagerEmail.objects.all():
             email_list.append(email.email)
@@ -262,43 +274,32 @@ class SubmissionStarter(models.Model):
                                u"* Nr.:        {studio.pk}\n"
                                u"* Name:       {studio.name}\n"                              
                                u"* Bundesland: {studio.state.name}\n".format(studio=self.gym),
-                               email.email,
+                               settings.DEFAULT_FROM_EMAIL,
                                [email.email],
                                fail_silently=True)
-
 
         if self.gym.state.email:
             email_list.append(self.gym.state.email)
 
-        email_list.append(self.user.email)
+        email_list.append(self.email)
 
+        context = {}
+        context['submission'] = self
+        context['fee'] = self.FEE
+        context['bankaccount'] = BankAccount.objects.get(pk=self.get_bank_account())
+        subject = u'Neue Starterlizenz beantragt von {0}, {1}'.format(self.last_name,
+                                                                      self.first_name)
         for email in email_list:
-            lizenz_vorjahr = 'Ja' if self.submission_last_year else 'Nein'
-            subject = _(u'Neue Starterlizenz beantragt von {0}, {1}'.format(self.last_name,
-                                                                            self.first_name))
-            message = (u"Eine neue Starterlizenz wurde beantragt\n"
-                       u"---------------------------------------\n\n"
-                       u"Details:\n"
-                       u"* Antragsnummer:         {data.pk}\n"
-                       u"* Name:                  {data.last_name}\n"
-                       u"* Vorname:               {data.first_name}\n"
-                       u"* Geburtsdatum:          {data.date_of_birth}\n"
-                       u"* Adresse:               {data.street}, {data.city}, {data.zip_code}\n"
-                       u"* Staatsangehörigkeit:   {data.nationality}\n"
-                       u"* Email:                 {data.email}\n"
-                       u"* Telefon:               {data.tel_number}\n"
-                       u"* Größe (cm):            {data.height}\n"
-                       u"* Wettkampfgewicht (kg): {data.weight}\n"
-                       u"* Klasse:                {category}\n"
-                       u"* Lizenz im Vorjahr:     {lizenz_vorjahr}\n"
-                       u"* Studio:                {data.gym.name} ({data.gym.state.name})\n"
-                       u"                         {data.gym.email}\n\n"
-                       u"".format(category=self.get_category_display(),
-                                  lizenz_vorjahr=lizenz_vorjahr,
-                                  data=self))
+
+            if email == self.email:
+                context['is_user'] = True
+            else:
+                context['is_user'] = False
+
+            message = render_to_string('submission/starter/email_new_submission.html', context)
             mail.send_mail(subject,
                            message,
-                           email,
+                           settings.DEFAULT_FROM_EMAIL,
                            [email],
                            fail_silently=True)
 
