@@ -30,8 +30,8 @@ from submission.models import State
 
 class UserEmailForm(ModelForm):
     email = EmailField(label=_("Email"),
-                       help_text=_("Completely optional, but needed to reset your password "
-                                   "in case you forget it."),
+                       help_text=u"Wird nur gebraucht, wenn Sie das Passwort vergessen "
+                                 u"und zurücksetzen müssen",
                        required=False)
 
     def clean_email(self):
@@ -47,8 +47,9 @@ class UserEmailForm(ModelForm):
 
 
 class RegistrationForm(UserCreationForm, UserEmailForm):
-    state = ModelChoiceField(label=_("Federal state"),
+    state = ModelChoiceField(label=_("Bundesverband"),
                              queryset=State.objects.all())
     captcha = ReCaptchaField(attrs={'theme': 'clean'},
-                             label=_('Confirmation text'),
-                             help_text=_('As a security measure, please enter the previous words'),)
+                             label=_('Sicherheitscheck'),
+                             help_text=u'Geben Sie bitte die Wörter ein, das dient als '
+                                       u'Sicherheitsmaßname gegen Spam',)
