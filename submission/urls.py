@@ -134,7 +134,7 @@ urlpatterns = patterns('submission.views',
     url(r'^antrag/(?P<pk>\d+)/bearbeiten$',
         submissions.SubmissionUpdateView.as_view(),
         name='submission-edit'),
-    url(r'^antrag/(?P<pk>\d+)/anzeigen$',
+    url(r'^antrag/(?P<pk>\d+)/anzeigen$', # JS!
         submissions.SubmissionDetailView.as_view(),
         name='submission-view'),
     url(r'^antrag/(?P<pk>\d+)/loeschen$',

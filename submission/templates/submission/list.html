@@ -6,6 +6,14 @@
 {% block title %}Anträge Starterlizenzen{% endblock %}
 
 {% block scripts %}
+<script>
+$(document).ready(function() {
+    $('#submission_id_submit').click(function(e) {
+        e.preventDefault();
+        window.location = '/antrag/' + $('#submission_id').val() + '/anzeigen';
+    });
+});
+</script>
 {% endblock %}
 
 {% block content %}
@@ -53,6 +61,16 @@
     <span><a href="{% url 'submission-list-month' date|date:'Y' date|date:'m' %}">{{date|date:"F"}}</a></span><br>
 {% endfor %}
 </div>
+
+<div class="well">
+<form action="">
+    <p>Schnellzugriff</p>
+    <input type="number" id="submission_id" placeholder="Antragsnummer eingeben">
+    <input id="submission_id_submit" class="btn" type="submit" value="Zu Antrag gehen">
+</form>
+</div>
+
+{# end permission check #}
 {% endif %}
 
 {% endblock %}
