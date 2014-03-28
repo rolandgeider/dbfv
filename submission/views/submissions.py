@@ -127,7 +127,6 @@ class SubmissionForm(ModelForm):
         model = SubmissionStarter
         exclude = ('submission_status',)
 
-
 class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
     '''
     Creates a new submissions
@@ -198,13 +197,29 @@ class SubmissionDeleteView(DbfvFormMixin, generic.DeleteView):
 
 class SubmissionUpdateView(DbfvFormMixin, generic.UpdateView):
     '''
-    Updates an existing submissions
+    Updates an exsiting submission
+    
+    The owner user can update his own submission while it is still in the
+    pending state. Once it has been accepted, only the BV can edit it.
     '''
 
     model = SubmissionStarter
-    #success_url = reverse_lazy('submission-list')
-    permission_required = 'submission.change_submissionstarter'
+    form_class = SubmissionForm
+    login_required = True
+    page_title = 'Antrag bearbeiten'
 
+    def dispatch(self, request, *args, **kwargs):
+        '''
+        Check for necessary permissions
+        '''
+        submission = self.get_object()        
+        if not request.user.has_perm('submission.delete_submissionstarter') \
+            and (submission.submission_status != '1'
+                 or submission.user != request.user):
+            return HttpResponseForbidden(u'Sie dürfen dieses Objekt nicht editieren!')
+
+        return super(SubmissionUpdateView, self).dispatch(request, *args, **kwargs)
+    
 
 class SubmissionFormBV(ModelForm):
     class Meta:
