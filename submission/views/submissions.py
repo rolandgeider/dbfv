@@ -118,6 +118,17 @@ class SubmissionDetailView(DbfvViewMixin, generic.detail.DetailView):
     login_required = True
     model = SubmissionStarter
 
+    def dispatch(self, request, *args, **kwargs):
+        '''
+        Check for necessary permissions
+        '''
+        submission = self.get_object()        
+        if not request.user.has_perm('submission.delete_submissionstarter') \
+            and submission.user != request.user:
+            return HttpResponseForbidden()
+
+        return super(SubmissionDetailView, self).dispatch(request, *args, **kwargs)
+    
 
 class SubmissionForm(ModelForm):
     
