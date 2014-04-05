@@ -127,6 +127,11 @@ class SubmissionDetailView(DbfvViewMixin, generic.detail.DetailView):
             and submission.user != request.user:
             return HttpResponseForbidden()
 
+        # Save submission data to the session
+        self.request.session['bank-account'] = submission.get_bank_account()
+        self.request.session['submission-fee'] = SubmissionStarter.FEE
+        self.request.session['designated-use'] = u'Starterlizenz {0}<br>\n{1}'.format(submission.pk,
+                                                                                      submission.get_name)
         return super(SubmissionDetailView, self).dispatch(request, *args, **kwargs)
     
 
