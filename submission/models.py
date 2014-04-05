@@ -496,7 +496,7 @@ def user_profile(user):
         return None
 
     # for authenticated users, look into the profile.
-    return user.get_profile()
+    return user.userprofile
 
 
 def user_type(user):
