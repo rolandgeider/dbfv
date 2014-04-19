@@ -53,12 +53,19 @@ $(document).ready(function() {
 </div>
 
 <div class="well">
-<p>Klicken Sie auf einen Monat, um die entsprechenden Anträge zu sehen</p>
-{% for date in month_list %}
-    {% ifchanged date.year %}
-        <p><strong>{{ date|date:"Y" }}</strong></p>
+<p>Klicken Sie auf einen Monat, um die entsprechenden Anträge zu sehen. Die Zahl in
+Klammern zeigt die Anzahl der Anträge aus dem Monat, die für den Serienbrief
+exportiert wurden.</p>
+
+{% for entry in month_list %}
+    {% ifchanged entry.date.year %}
+        <p><strong>{{ entry.date|date:"Y" }}</strong></p>
     {% endifchanged %}
-    <span><a href="{% url 'submission-list-month' date|date:'Y' date|date:'m' %}">{{date|date:"F"}}</a></span><br>
+    <span>
+        <a href="{% url 'submission-list-month' entry.date|date:'Y' entry.date|date:'m' %}">{{entry.date|date:"F"}}</a>
+    </span>
+    ({{entry.export_count}})
+    <br>
 {% endfor %}
 </div>
 
