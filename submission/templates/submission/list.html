@@ -36,13 +36,16 @@ $(document).ready(function() {
     <h5>Serienbriefexport</h5>
     {% if mailmerge_count > 0 %}
         <p>
-            Anträge, die noch nicht für Serienbriefe exportiert wurden
-            <strong>{{mailmerge_count}}</strong>.
+            Anträge, die noch nicht für Serienbriefe für Microsoft Word exportiert wurden:
+            <strong>{{mailmerge_count}}</strong>
         </p>
         <p>
-            <a href="{% url 'submission-export-mailmerge-new' %}">Neue Anträge exportieren</a>
-            für Serienbrief in Microsoft Word. Achtung! Die Liste kann nur
-            einmal generiert werden!
+            <a href="{% url 'submission-export-mailmerge-new' %}" class="btn btn-block">Neue Anträge exportieren</a>
+
+            <div class="alert alert-error">
+            <strong>Achtung!</strong> Die Liste kann nur
+            einmal generiert werden, Datei sorgfältig aufbewahren.
+            </div>
         </p>
 
     {% else %}
@@ -73,7 +76,7 @@ exportiert wurden.</p>
 <form action="">
     <p>Schnellzugriff</p>
     <input type="number" id="submission_id" placeholder="Antragsnummer eingeben">
-    <input id="submission_id_submit" class="btn" type="submit" value="Zu Antrag gehen">
+    <input id="submission_id_submit" class="btn btn-block" type="submit" value="Zu Antrag gehen">
 </form>
 </div>
 

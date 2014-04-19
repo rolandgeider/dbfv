@@ -16,7 +16,7 @@
     {% for submission in submission_list %}
     {% if submission_type == 'starter' %}
     {% ifchanged submission.gym.state %}
-    <tr>
+    <tr class="info">
         <th colspan="5">
             {{submission.gym.state}}
         </th>

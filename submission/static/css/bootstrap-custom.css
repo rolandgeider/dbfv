@@ -212,3 +212,8 @@ and can't be recognised. */
 input.percent, input.currency {
     text-align: right;
 }
+
+/* Allow row classes to change the background color of headers */
+.table tbody tr.info > th {
+  background-color: #d9edf7;
+}
