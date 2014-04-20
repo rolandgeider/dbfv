@@ -20,18 +20,15 @@ import datetime
 from django.http.response import HttpResponse, HttpResponseForbidden
 from django.views import generic
 from django.core.urlresolvers import reverse_lazy
-from django.forms import ModelForm
-from django.forms import ModelChoiceField
+
+from submission.forms import SubmissionStarterForm, SubmissionStarterFormBV
 from submission.helpers import export_submission_mailmerge
 from submission.helpers import MAILMERGE_HEADER
-
 from submission.models import SubmissionStarter
 from submission.models import State
-from submission.models import Gym
 from submission.models import user_type
 from submission.models import USER_TYPE_BUNDESVERBAND
 from submission.models import USER_TYPE_USER
-
 from submission.views.generic_views import DbfvViewMixin
 from submission.views.generic_views import DbfvFormMixin
 
@@ -146,15 +143,6 @@ class SubmissionDetailView(DbfvViewMixin, generic.detail.DetailView):
         self.request.session['designated-use'] = u'Starterlizenz {0}<br>\n{1}'.format(submission.pk,
                                                                                       submission.get_name)
         return super(SubmissionDetailView, self).dispatch(request, *args, **kwargs)
-    
-
-class SubmissionForm(ModelForm):
-    
-    gym = ModelChoiceField(queryset=Gym.objects.filter(is_active=True))
-    
-    class Meta:
-        model = SubmissionStarter
-        exclude = ('submission_status',)
 
 
 class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
@@ -163,7 +151,7 @@ class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
     '''
 
     model = SubmissionStarter
-    form_class = SubmissionForm
+    form_class = SubmissionStarterForm
     success_url = reverse_lazy('index')
     permission_required = 'submission.add_submissionstarter'
     template_name = 'submission/starter/create.html'
@@ -234,7 +222,7 @@ class SubmissionUpdateView(DbfvFormMixin, generic.UpdateView):
     '''
 
     model = SubmissionStarter
-    form_class = SubmissionForm
+    form_class = SubmissionStarterForm
     login_required = True
     page_title = 'Antrag bearbeiten'
 
@@ -249,12 +237,6 @@ class SubmissionUpdateView(DbfvFormMixin, generic.UpdateView):
             return HttpResponseForbidden(u'Sie dürfen dieses Objekt nicht editieren!')
 
         return super(SubmissionUpdateView, self).dispatch(request, *args, **kwargs)
-    
-
-class SubmissionFormBV(ModelForm):
-    class Meta:
-        model = SubmissionStarter
-        fields = ('submission_status', )
 
 
 class SubmissionUpdateStatusView(DbfvFormMixin, generic.UpdateView):
@@ -263,7 +245,7 @@ class SubmissionUpdateStatusView(DbfvFormMixin, generic.UpdateView):
     '''
 
     model = SubmissionStarter
-    form_class = SubmissionFormBV
+    form_class = SubmissionStarterFormBV
     success_url = reverse_lazy('submission-list')
     permission_required = 'submission.change_submissionstarter'
 

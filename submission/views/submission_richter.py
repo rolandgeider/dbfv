@@ -18,14 +18,13 @@ import datetime
 
 from django.views import generic
 from django.core.urlresolvers import reverse_lazy
-from django.forms import ModelForm
 
+from submission.forms import SubmissionJudgeForm, SubmissionJudgeFormBV
 from submission.models import SubmissionJudge
 from submission.models import State
 from submission.models import user_type
 from submission.models import USER_TYPE_BUNDESVERBAND
 from submission.models import USER_TYPE_USER
-
 from submission.views.generic_views import DbfvViewMixin
 from submission.views.generic_views import DbfvFormMixin
 
@@ -114,19 +113,13 @@ class SubmissionDetailView(DbfvViewMixin, generic.detail.DetailView):
     template_name = 'submission/judge/view.html'
 
 
-class SubmissionForm(ModelForm):
-    class Meta:
-        model = SubmissionJudge
-        exclude = ('submission_status',)
-
-
 class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
     '''
     Creates a new submissions
     '''
 
     model = SubmissionJudge
-    form_class = SubmissionForm
+    form_class = SubmissionJudgeForm
     success_url = reverse_lazy('index')
     permission_required = 'submission.add_submissionjudge'
     page_title = 'Neue Kampfrichterlizenz beantragen'
@@ -194,19 +187,13 @@ class SubmissionUpdateView(DbfvFormMixin, generic.UpdateView):
     permission_required = 'submission.change_submissionjudge'
 
 
-class SubmissionFormBV(ModelForm):
-    class Meta:
-        model = SubmissionJudge
-        fields = ('submission_status', )
-
-
 class SubmissionUpdateStatusView(DbfvFormMixin, generic.UpdateView):
     '''
     Updates an existing submissions
     '''
 
     model = SubmissionJudge
-    form_class = SubmissionFormBV
+    form_class = SubmissionJudgeFormBV
     success_url = reverse_lazy('submission-judge-list')
     permission_required = 'submission.change_submissionjudge'
     page_title = 'Status bearbeiten'

@@ -16,7 +16,7 @@
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
 from django.core.exceptions import ValidationError
 
-from django.forms import ModelForm
+from django.forms import ModelForm, ModelChoiceField
 from django.forms import EmailField
 from django.forms import ModelChoiceField
 from django.contrib.auth.models import User as Django_User
@@ -25,7 +25,7 @@ from django.utils.translation import ugettext as _
 
 from captcha.fields import ReCaptchaField
 
-from submission.models import State
+from submission.models import State, Gym, SubmissionStarter, SubmissionGym, SubmissionJudge
 
 
 class UserEmailForm(ModelForm):
@@ -53,3 +53,42 @@ class RegistrationForm(UserCreationForm, UserEmailForm):
                              label=_('Sicherheitscheck'),
                              help_text=u'Geben Sie bitte die Wörter ein, das dient als '
                                        u'Sicherheitsmaßname gegen Spam',)
+
+
+class SubmissionStarterForm(ModelForm):
+
+    gym = ModelChoiceField(queryset=Gym.objects.filter(is_active=True))
+
+    class Meta:
+        model = SubmissionStarter
+        exclude = ('submission_status',)
+
+
+class SubmissionStarterFormBV(ModelForm):
+    class Meta:
+        model = SubmissionStarter
+        fields = ('submission_status', )
+
+
+class SubmissionGymForm(ModelForm):
+    class Meta:
+        model = SubmissionGym
+        exclude = ('submission_status',)
+
+
+class SubmissionGymFormBV(ModelForm):
+    class Meta:
+        model = SubmissionGym
+        fields = ('submission_status', )
+
+
+class SubmissionJudgeForm(ModelForm):
+    class Meta:
+        model = SubmissionJudge
+        exclude = ('submission_status',)
+
+
+class SubmissionJudgeFormBV(ModelForm):
+    class Meta:
+        model = SubmissionJudge
+        fields = ('submission_status', )
