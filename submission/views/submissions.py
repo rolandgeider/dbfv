@@ -168,7 +168,7 @@ class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
 
     def get_success_url(self):
         '''
-        Redirect to bank acount page and send appropriate emails
+        Redirect to bank account page and send appropriate emails
         '''
         self.form_instance.send_emails()
 

@@ -139,7 +139,7 @@ class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
 
     def get_success_url(self):
         '''
-        Redirect to bank acount page
+        Redirect to bank account page
         '''
 
         self.request.session['bank-account'] = self.form_instance.state.bank_account_id
