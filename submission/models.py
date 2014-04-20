@@ -284,7 +284,7 @@ class SubmissionStarter(AbstractSubmission):
             email_list.append(self.gym.email)
         # Gym has no email, notify the managers
         else:
-           for email in ManagerEmail.objects.all():
+            for email in ManagerEmail.objects.all():
                 mail.send_mail('Studio hat keine Emailadresse',
                                u"Eine Starterlizenz wurde für ein Studio beantragt, dass\n"
                                u"keine Emailadresse im System hinterlegt hat.\n\n"
@@ -326,6 +326,8 @@ class SubmissionGym(AbstractSubmission):
     Model for a gym submission
     '''
 
+    FEE = 30
+
 
     # Personal information
     state = models.ForeignKey(State,
@@ -353,12 +355,54 @@ class SubmissionGym(AbstractSubmission):
         """
         return self.name
 
+    def get_bank_account(self):
+        '''
+        Returns the correct bank account for this submission
+        '''
+        return self.state.bank_account.pk
+
     def __unicode__(self):
         '''
         Return a more human-readable representation
         '''
         return u"Studiolizent {0}".format(self.name)
 
+
+    def send_emails(self):
+        '''
+        Send an email to the managers
+        '''
+
+        # Make a list with all the emails: BV, LV, gym and user
+        email_list = []
+        for email in ManagerEmail.objects.all():
+            email_list.append(email.email)
+
+        if self.state.email:
+            email_list.append(self.state.email)
+
+        email_list.append(self.user.email)
+
+        context = {}
+        context['submission'] = self
+        context['fee'] = self.FEE
+        context['bankaccount'] = BankAccount.objects.get(pk=self.get_bank_account())
+        subject = u'Neue Studiolizenz beantragt von {0}'.format(self.get_name)
+
+        for email in email_list:
+
+            if email == self.email:
+                context['is_user'] = True
+            else:
+                context['is_user'] = False
+
+            message = render_to_string('submission/gym/email_new_submission.html', context)
+
+            mail.send_mail(subject,
+                           message,
+                           settings.DEFAULT_FROM_EMAIL,
+                           [email],
+                           fail_silently=True)
 
 class SubmissionJudge(AbstractSubmission):
     '''
@@ -397,6 +441,12 @@ class SubmissionJudge(AbstractSubmission):
         """
         return u"{0}, {1}".format(self.last_name, self.first_name)
 
+    def get_bank_account(self):
+        '''
+        Returns the correct bank account for this submission
+        '''
+        return self.state.bank_account.pk
+
     def send_emails(self):
         '''
         Send an email to the managers
@@ -412,27 +462,24 @@ class SubmissionJudge(AbstractSubmission):
 
         email_list.append(self.user.email)
 
+        context = {}
+        context['submission'] = self
+        context['fee'] = self.FEE
+        context['bankaccount'] = BankAccount.objects.get(pk=self.get_bank_account())
+        subject = u'Neue Kampfrichterlizenz beantragt von {0}'.format(self.get_name)
+
         for email in email_list:
-            subject = _(u'Neue Kampfrichterlizenz von {0}, {1}'.format(self.last_name,
-                                                                       self.first_name))
-            message = (_(u"Eine neue Kampfrichterlizenz wurde beantragt\n"
-                         u"--------------------------------------------\n\n"
-                         u"Details:\n"
-                         u"* Name:          {last_name}\n"
-                         u"* Vorname:       {first_name}\n"
-                         u"* Adresse:       {street}, {city}, {zip_code}\n"
-                         u"* Tel. Nr.:      {tel_nr}\n"
-                         u"* Landesverband: {state}\n"
-                         u"").format(last_name=self.last_name,
-                                     first_name=self.first_name,
-                                     tel_nr=self.tel_number,
-                                     street=self.street,
-                                     city=self.city,
-                                     zip_code=self.zip_code,
-                                     state=self.state.name))
+
+            if email == self.email:
+                context['is_user'] = True
+            else:
+                context['is_user'] = False
+
+            message = render_to_string('submission/judge/email_new_submission.html', context)
+
             mail.send_mail(subject,
                            message,
-                           email,
+                           settings.DEFAULT_FROM_EMAIL,
                            [email],
                            fail_silently=True)
 

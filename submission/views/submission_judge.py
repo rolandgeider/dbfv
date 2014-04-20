@@ -133,14 +133,14 @@ class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
         form.instance.user = self.request.user
         self.form_instance = form.instance
 
-        # Notify the administrators
-        form.instance.send_emails()
         return super(SubmissionCreateView, self).form_valid(form)
 
     def get_success_url(self):
         '''
         Redirect to bank account page
         '''
+
+        self.form_instance.send_emails()
 
         self.request.session['bank-account'] = self.form_instance.state.bank_account_id
         self.request.session['submission-fee'] = SubmissionJudge.FEE

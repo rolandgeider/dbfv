@@ -98,8 +98,13 @@ class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
         return super(SubmissionCreateView, self).form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy('bank-account-view',
-                            kwargs={'pk': self.form_instance.state.bank_account_id})
+        self.form_instance.send_emails()
+
+        self.request.session['bank-account'] = self.form_instance.get_bank_account()
+        self.request.session['submission-fee'] = SubmissionGym.FEE
+        self.request.session['designated-use'] = u'Studiolizenz {0}<br>\n{1}'.format(self.object.pk,
+                                                                                     self.object.get_name)
+        return reverse_lazy('bank-account-view')
 
     def get_context_data(self, **kwargs):
         '''
