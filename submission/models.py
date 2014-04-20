@@ -339,7 +339,7 @@ class SubmissionGym(AbstractSubmission):
     city = models.CharField(_(u'Ort'), max_length=30)
     tel_number = models.CharField(_(u'Tel. Nr.'), max_length=20)
     fax_number = models.CharField(_(u'Fax. Nr.'), max_length=20)
-    email = models.EmailField(_(u'Email'), max_length=30)
+    email = models.EmailField(_(u'Email'), max_length=120)
     members = models.IntegerField(verbose_name=_(u'Anzahl Mitglieder'),
                                   max_length=5,
                                   help_text=_('Dient nur statistischen Zwecken'),
@@ -377,7 +377,7 @@ class SubmissionJudge(AbstractSubmission):
     tel_number = models.CharField(u'Tel. Nr.',
                                   max_length=20)
     email = models.EmailField(u'Email',
-                              max_length=30,
+                              max_length=120,
                               null=True,
                               blank=True)
 
