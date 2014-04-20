@@ -25,7 +25,7 @@ from submission.views import state
 from submission.views import bank_account
 from submission.views import submissions
 from submission.views import submission_gym
-from submission.views import submission_richter
+from submission.views import submission_judge
 from submission.views import user
 from submission.views import emails
 
@@ -175,22 +175,22 @@ urlpatterns = patterns('submission.views',
     
     # Judge
     url(r'^antrag-kampfrichter/liste/alle$',
-        submission_richter.SubmissionListView.as_view(),
+        submission_judge.SubmissionListView.as_view(),
         name='submission-judge-list'),
     url(r'^antrag-kampfrichter/neu$',
-        submission_richter.SubmissionCreateView.as_view(),
+        submission_judge.SubmissionCreateView.as_view(),
         name='submission-judge-add'),
     url(r'^antrag-kampfrichter/(?P<pk>\d+)/bearbeiten$',
-        submission_richter.SubmissionUpdateView.as_view(),
+        submission_judge.SubmissionUpdateView.as_view(),
         name='submission-judge-edit'),
     url(r'^antrag-kampfrichter/(?P<pk>\d+)/anzeigen$',
-        submission_richter.SubmissionDetailView.as_view(),
+        submission_judge.SubmissionDetailView.as_view(),
         name='submission-judge-view'),
     url(r'^antrag-kampfrichter/(?P<pk>\d+)/loeschen$',
-        submission_richter.SubmissionDeleteView.as_view(),
+        submission_judge.SubmissionDeleteView.as_view(),
         name='submission-judge-delete'),
     url(r'^antrag-kampfrichter/(?P<pk>\d+)/bearbeiten/status$',
-        submission_richter.SubmissionUpdateStatusView.as_view(),
+        submission_judge.SubmissionUpdateStatusView.as_view(),
         name='submission-judge-edit-status'),
 
     # Impressum

@@ -445,7 +445,9 @@ USER_TYPES = ((USER_TYPE_BUNDESVERBAND, u'Bundesverband'),
 
 
 class UserProfile(models.Model):
-    # This field is required.
+    '''
+    Model for a user's profile
+    '''
     user = models.OneToOneField(User)
 
     # User type
@@ -453,7 +455,7 @@ class UserProfile(models.Model):
                                choices=USER_TYPES,
                                default=USER_TYPE_UNKNOWN)
 
-    # Foreign keys
+    # Personal information
     state = models.ForeignKey(State,
                               blank=True,
                               null=True)
