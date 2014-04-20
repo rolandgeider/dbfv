@@ -154,9 +154,14 @@ def attachment_submission_dir(instance, filename):
     return "anlagen/antrag/%s/%s/%s" % (instance.gym.state.short_name, instance.gym_id, filename)
 
 
-class SubmissionStarter(models.Model):
+#
+#
+# Submissions
+#
+#
+class AbstractSubmission(models.Model):
     '''
-    Model for a submission
+    Abstract class with fields common to all submissions types (starter, gym and judge)
     '''
 
     SUBMISSION_STATUS_EINGEGANGEN = '1'
@@ -168,6 +173,27 @@ class SubmissionStarter(models.Model):
         (SUBMISSION_STATUS_BEWILLIGT, 'Bewilligt'),
         (SUBMISSION_STATUS_ABGELEHNT, 'Abgelehnt'),
     )
+
+    user = models.ForeignKey(User,
+                             verbose_name=_('User'),
+                             editable=False)
+    creation_date = models.DateField(_('Creation date'),
+                                     auto_now_add=True)
+    submission_status = models.CharField(max_length=2,
+                                         choices=SUBMISSION_STATUS,
+                                         default=SUBMISSION_STATUS_EINGEGANGEN)
+    mail_merge = models.BooleanField(default=False,
+                                     editable=False)
+
+    class Meta:
+        abstract = True
+
+
+class SubmissionStarter(AbstractSubmission):
+    '''
+    Model for a submission
+    '''
+
     SUBMISSION_CATEGORY = (
         ('1', u'Bikini-Klasse'),
         ('2', u'Frauen Fitness-Figur-Klasse'),
@@ -183,10 +209,6 @@ class SubmissionStarter(models.Model):
     FEE = 50
 
     # Personal information
-    user = models.ForeignKey(User,
-                             verbose_name=_('User'),
-                             editable=False)
-
     date_of_birth = models.DateField(_('Geburtsdatum'))
     active_since = models.CharField(_('Aktiv seit'), max_length=20)
     last_name = models.CharField(_('Familienname'), max_length=30)
@@ -214,12 +236,7 @@ class SubmissionStarter(models.Model):
 
     gym = models.ForeignKey(Gym, verbose_name='Studio')
 
-    creation_date = models.DateField(_('Creation date'), auto_now_add=True)
-    submission_status = models.CharField(max_length=2,
-                                         choices=SUBMISSION_STATUS,
-                                         default=SUBMISSION_STATUS_EINGEGANGEN)
-    mail_merge = models.BooleanField(default=False,
-                                     editable=False)
+
 
     def __unicode__(self):
         '''
@@ -304,26 +321,13 @@ class SubmissionStarter(models.Model):
                            fail_silently=True)
 
 
-class SubmissionGym(models.Model):
+class SubmissionGym(AbstractSubmission):
     '''
     Model for a gym submission
     '''
 
-    SUBMISSION_STATUS_EINGEGANGEN = '1'
-    SUBMISSION_STATUS_BEWILLIGT = '2'
-    SUBMISSION_STATUS_ABGELEHNT = '3'
-
-    SUBMISSION_STATUS = (
-        (SUBMISSION_STATUS_EINGEGANGEN, 'Eingegangen'),
-        (SUBMISSION_STATUS_BEWILLIGT, 'Bewilligt'),
-        (SUBMISSION_STATUS_ABGELEHNT, 'Abgelehnt'),
-    )
 
     # Personal information
-    user = models.ForeignKey(User,
-                             verbose_name=_('User'),
-                             editable=False)
-
     state = models.ForeignKey(State,
                               verbose_name=_(u'Landesverband'))
     name = models.CharField(verbose_name=_('Name'),
@@ -342,11 +346,12 @@ class SubmissionGym(models.Model):
                                   null=True,
                                   blank=True)
 
-    # Other fields
-    creation_date = models.DateField(_('Creation date'), auto_now_add=True)
-    submission_status = models.CharField(max_length=2,
-                                         choices=SUBMISSION_STATUS,
-                                         default=SUBMISSION_STATUS_EINGEGANGEN)
+    @property
+    def get_name(self):
+        """
+        Returns the name of the participant
+        """
+        return self.name
 
     def __unicode__(self):
         '''
@@ -355,27 +360,13 @@ class SubmissionGym(models.Model):
         return u"Studiolizent {0}".format(self.name)
 
 
-class SubmissionJudge(models.Model):
+class SubmissionJudge(AbstractSubmission):
     '''
     Model for a judge submission
     '''
 
-    SUBMISSION_STATUS_EINGEGANGEN = '1'
-    SUBMISSION_STATUS_BEWILLIGT = '2'
-    SUBMISSION_STATUS_ABGELEHNT = '3'
-
-    SUBMISSION_STATUS = (
-        (SUBMISSION_STATUS_EINGEGANGEN, 'Eingegangen'),
-        (SUBMISSION_STATUS_BEWILLIGT, 'Bewilligt'),
-        (SUBMISSION_STATUS_ABGELEHNT, 'Abgelehnt'),
-    )
-
     FEE = 15
 
-
-    user = models.ForeignKey(User,
-                             verbose_name=_('User'),
-                             editable=False)
     last_name = models.CharField('Familienname', max_length=30)
     first_name = models.CharField('Vorname', max_length=30)
     street = models.CharField(u'Straße', max_length=30)
@@ -389,12 +380,6 @@ class SubmissionJudge(models.Model):
                               max_length=30,
                               null=True,
                               blank=True)
-
-    # Other fields
-    creation_date = models.DateField(_('Creation date'), auto_now_add=True)
-    submission_status = models.CharField(max_length=2,
-                                         choices=SUBMISSION_STATUS,
-                                         default=SUBMISSION_STATUS_EINGEGANGEN)
 
     def __unicode__(self):
         '''
