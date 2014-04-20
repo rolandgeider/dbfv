@@ -156,6 +156,7 @@ class SubmissionForm(ModelForm):
         model = SubmissionStarter
         exclude = ('submission_status',)
 
+
 class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
     '''
     Creates a new submissions

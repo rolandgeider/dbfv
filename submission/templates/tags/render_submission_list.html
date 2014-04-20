@@ -6,7 +6,7 @@
         <th>Nr.</th>
         <th>Datum</th>
         {% if user_type == USER_TYPE_BUNDESVERBAND %}
-            <th>Benutzer</th>
+            <th>Name</th>
         {% endif %}
         <th>Status</th>
         <th>Aktionen</th>
@@ -32,7 +32,7 @@
         </td>
         {% if user_type == USER_TYPE_BUNDESVERBAND %}
         <td>
-            {{submission.user}}
+            {{submission.get_name}} ({{submission.user}})
         </td>
         {% endif %}
         <td>
