@@ -183,7 +183,6 @@ class SubmissionUpdateView(DbfvFormMixin, generic.UpdateView):
     '''
 
     model = SubmissionJudge
-    #success_url = reverse_lazy('submission-list')
     permission_required = 'submission.change_submissionjudge'
 
 

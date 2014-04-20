@@ -117,7 +117,6 @@ class Gym(models.Model):
     is_active = models.BooleanField(_('Ist aktiv'),
                                     default=True)
 
-
     def __unicode__(self):
         '''
         Return a more human-readable representation
@@ -236,8 +235,6 @@ class SubmissionStarter(AbstractSubmission):
 
     gym = models.ForeignKey(Gym, verbose_name='Studio')
 
-
-
     def __unicode__(self):
         '''
         Return a more human-readable representation
@@ -289,7 +286,7 @@ class SubmissionStarter(AbstractSubmission):
                                u"Eine Starterlizenz wurde für ein Studio beantragt, dass\n"
                                u"keine Emailadresse im System hinterlegt hat.\n\n"
                                u"* Nr.:        {studio.pk}\n"
-                               u"* Name:       {studio.name}\n"                              
+                               u"* Name:       {studio.name}\n"
                                u"* Bundesland: {studio.state.name}\n".format(studio=self.gym),
                                settings.DEFAULT_FROM_EMAIL,
                                [email.email],
@@ -327,7 +324,6 @@ class SubmissionGym(AbstractSubmission):
     '''
 
     FEE = 30
-
 
     # Personal information
     state = models.ForeignKey(State,
@@ -367,7 +363,6 @@ class SubmissionGym(AbstractSubmission):
         '''
         return u"Studiolizent {0}".format(self.name)
 
-
     def send_emails(self):
         '''
         Send an email to the managers
@@ -403,6 +398,7 @@ class SubmissionGym(AbstractSubmission):
                            settings.DEFAULT_FROM_EMAIL,
                            [email],
                            fail_silently=True)
+
 
 class SubmissionJudge(AbstractSubmission):
     '''

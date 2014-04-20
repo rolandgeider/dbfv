@@ -76,8 +76,6 @@ def registration(request):
             django_login(request, user)
             come_from_register = True
             return HttpResponseRedirect(reverse('index'))
-        #else:
-        #    logger.debug(form.errors)
     else:
         form = RegistrationForm()
 

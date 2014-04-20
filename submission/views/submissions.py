@@ -132,7 +132,7 @@ class SubmissionDetailView(DbfvViewMixin, generic.detail.DetailView):
         '''
         Check for necessary permissions
         '''
-        submission = self.get_object()        
+        submission = self.get_object()
         if not request.user.has_perm('submission.delete_submissionstarter') \
             and submission.user != request.user:
             return HttpResponseForbidden()
@@ -216,7 +216,7 @@ class SubmissionDeleteView(DbfvFormMixin, generic.DeleteView):
 class SubmissionUpdateView(DbfvFormMixin, generic.UpdateView):
     '''
     Updates an exsiting submission
-    
+
     The owner user can update his own submission while it is still in the
     pending state. Once it has been accepted, only the BV can edit it.
     '''
@@ -230,7 +230,7 @@ class SubmissionUpdateView(DbfvFormMixin, generic.UpdateView):
         '''
         Check for necessary permissions
         '''
-        submission = self.get_object()        
+        submission = self.get_object()
         if not request.user.has_perm('submission.delete_submissionstarter') \
             and (submission.submission_status != '1'
                  or submission.user != request.user):

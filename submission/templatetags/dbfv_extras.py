@@ -34,11 +34,6 @@ def table_form_field(field):
     :param field: the field object to render
     """
     context = {"field": field}
- #   if isinstance(field.field, InlineBooleanField):
-#        return render_to_string("tags/table_form_field_checkbox.html", context)
-#    elif isinstance(field.field, FileField):
-#        return render_to_string("tags/table_form_field_file.html", context)
-#    else:
     return render_to_string("tags/table_form_field.html", context)
 
 
