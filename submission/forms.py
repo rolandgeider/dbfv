@@ -43,14 +43,14 @@ class UserEmailForm(ModelForm):
             Django_User.objects.get(email=email)
         except Django_User.DoesNotExist:
             return email
-        raise ValidationError(_("This email is already used."))
+        raise ValidationError(u"Diese Email wird bereits benutzt.")
 
 
 class RegistrationForm(UserCreationForm, UserEmailForm):
     state = ModelChoiceField(label=_("Bundesverband"),
                              queryset=State.objects.all())
     captcha = ReCaptchaField(attrs={'theme': 'clean'},
-                             label=_('Sicherheitscheck'),
+                             label=u'Sicherheitscheck',
                              help_text=u'Geben Sie bitte die Wörter ein, das dient als '
                                        u'Sicherheitsmaßname gegen Spam',)
 
