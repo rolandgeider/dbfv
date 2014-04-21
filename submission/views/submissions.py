@@ -68,7 +68,9 @@ class SubmissionListView(DbfvViewMixin, generic.ListView):
         month_list = []
         for date_obj in self.get_queryset().dates('creation_date', 'month'):
             tmp_count = SubmissionStarter.objects.filter(mail_merge=True)\
-                                                 .filter(creation_date__month=date_obj.month)
+                                                 .filter(creation_date__month=date_obj.month)\
+                                                 .filter(creation_date__year=date_obj.year)
+
             month_list.append({'date': date_obj,
                                'export_count': tmp_count.count()})
         context['month_list'] = month_list
@@ -114,7 +116,8 @@ class SubmissionListMonthView(SubmissionListView,
         month_list = []
         for date_obj in SubmissionStarter.objects.all().dates('creation_date', 'month'):
             tmp_count = SubmissionStarter.objects.filter(mail_merge=True)\
-                                                 .filter(creation_date__month=date_obj.month)
+                                                 .filter(creation_date__month=date_obj.month)\
+                                                 .filter(creation_date__year=date_obj.year)
             month_list.append({'date': date_obj,
                                'export_count': tmp_count.count()})
         context['month_list'] = month_list
