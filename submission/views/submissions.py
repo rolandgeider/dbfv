@@ -152,7 +152,6 @@ class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
 
     model = SubmissionStarter
     form_class = SubmissionStarterForm
-    success_url = reverse_lazy('index')
     permission_required = 'submission.add_submissionstarter'
     template_name = 'submission/starter/create.html'
 

@@ -83,7 +83,6 @@ class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
 
     model = SubmissionGym
     form_class = SubmissionGymForm
-    success_url = reverse_lazy('index')
     permission_required = 'submission.add_submissiongym'
     template_name = 'submission/gym/create.html'
     page_title = 'Antrag auf Erwerb einer Studiolizenz'

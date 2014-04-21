@@ -120,7 +120,6 @@ class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
 
     model = SubmissionJudge
     form_class = SubmissionJudgeForm
-    success_url = reverse_lazy('index')
     permission_required = 'submission.add_submissionjudge'
     page_title = 'Neue Kampfrichterlizenz beantragen'
     template_name = 'submission/judge/create.html'
