@@ -57,7 +57,8 @@ class RegistrationForm(UserCreationForm, UserEmailForm):
 
 class SubmissionStarterForm(ModelForm):
 
-    gym = ModelChoiceField(queryset=Gym.objects.filter(is_active=True))
+    gym = ModelChoiceField(queryset=Gym.objects.filter(is_active=True),
+                           label='Studio')
 
     class Meta:
         model = SubmissionStarter
