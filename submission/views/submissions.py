@@ -40,7 +40,7 @@ class SubmissionListView(DbfvViewMixin, generic.ListView):
 
     model = SubmissionStarter
     context_object_name = "submission_list"
-    template_name = 'submission/list.html'
+    template_name = 'submission/starter/list.html'
     login_required = True
 
     def get_queryset(self):
@@ -128,8 +128,12 @@ class SubmissionListMonthView(SubmissionListView,
 
 
 class SubmissionDetailView(DbfvViewMixin, generic.detail.DetailView):
+    '''
+    Show the detail view of a submission
+    '''
     login_required = True
     model = SubmissionStarter
+    template_name = 'submission/starter/view.html'
 
     def dispatch(self, request, *args, **kwargs):
         '''
