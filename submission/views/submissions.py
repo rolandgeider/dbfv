@@ -29,7 +29,7 @@ from submission.models import State
 from submission.models import user_type
 from submission.models import USER_TYPE_BUNDESVERBAND
 from submission.models import USER_TYPE_USER
-from submission.views.generic_views import DbfvViewMixin
+from submission.views.generic_views import DbfvViewMixin, BaseSubmissionCreateView
 from submission.views.generic_views import DbfvFormMixin
 
 
@@ -137,18 +137,17 @@ class SubmissionDetailView(DbfvViewMixin, generic.detail.DetailView):
         '''
         submission = self.get_object()
         if not request.user.has_perm('submission.delete_submissionstarter') \
-            and submission.user != request.user:
+           and submission.user != request.user:
             return HttpResponseForbidden()
 
         # Save submission data to the session
         self.request.session['bank-account'] = submission.get_bank_account()
         self.request.session['submission-fee'] = SubmissionStarter.FEE
-        self.request.session['designated-use'] = u'Starterlizenz {0}<br>\n{1}'.format(submission.pk,
-                                                                                      submission.get_name)
+        self.request.session['designated-use'] = submission.get_bank_designated_use()
         return super(SubmissionDetailView, self).dispatch(request, *args, **kwargs)
 
 
-class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
+class SubmissionCreateView(BaseSubmissionCreateView):
     '''
     Creates a new submissions
     '''
@@ -158,42 +157,13 @@ class SubmissionCreateView(DbfvFormMixin, generic.CreateView):
     permission_required = 'submission.add_submissionstarter'
     template_name = 'submission/starter/create.html'
 
-    def form_valid(self, form):
-        '''
-        Manually set the user when saving the form
-        '''
-
-        form.instance.user = self.request.user
-        self.form_instance = form.instance
-
-        return super(SubmissionCreateView, self).form_valid(form)
-
-    def get_success_url(self):
-        '''
-        Redirect to bank account page and send appropriate emails
-        '''
-        self.form_instance.send_emails()
-
-        self.request.session['bank-account'] = self.form_instance.get_bank_account()
-        self.request.session['submission-fee'] = SubmissionStarter.FEE
-        self.request.session['designated-use'] = u'Starterlizenz {0}<br>\n{1}'.format(self.object.pk,
-                                                                                      self.object.get_name)
-        return reverse_lazy('bank-account-view')
-
     def get_context_data(self, **kwargs):
         '''
         Pass a list of all states
         '''
         context = super(SubmissionCreateView, self).get_context_data(**kwargs)
         context['states_list'] = State.objects.all()
-        context['fee'] = SubmissionStarter.FEE
         return context
-
-    def get_initial(self):
-        '''
-        Fill in some data
-        '''
-        return {'email': self.request.user.email}
 
 
 class SubmissionDeleteView(DbfvFormMixin, generic.DeleteView):

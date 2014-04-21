@@ -91,12 +91,20 @@ class Gym(models.Model):
     Model for a gym
     '''
 
+    class Meta:
+        '''
+        Order first by state name, then by gym name
+        '''
+        ordering = ["state__name", "name"]
+
+    # Properties
     name = models.CharField(verbose_name='Name',
                             max_length=100,)
     email = models.EmailField(verbose_name='Email',
                               blank=True,
                               null=True)
-    state = models.ForeignKey(State, verbose_name='Bundesland')
+    state = models.ForeignKey(State,
+                              verbose_name='Bundesland')
 
     owner = models.CharField(verbose_name='Inhaber',
                              max_length=100,
@@ -126,12 +134,6 @@ class Gym(models.Model):
     def get_absolute_url(self):
         return reverse('gym-view', kwargs={'pk': self.id})
 
-    class Meta:
-        '''
-        Order first by state name, then by gym name
-        '''
-        ordering = ["state__name", "name"]
-
 
 class Country(models.Model):
     '''
@@ -160,8 +162,15 @@ def attachment_submission_dir(instance, filename):
 #
 class AbstractSubmission(models.Model):
     '''
-    Abstract class with fields common to all submissions types (starter, gym and judge)
+    Abstract class with fields and logic common to all submissions types
+    (starter, gym and judge)
     '''
+
+    class Meta:
+        '''
+        This is an abstract class
+        '''
+        abstract = True
 
     SUBMISSION_STATUS_EINGEGANGEN = '1'
     SUBMISSION_STATUS_BEWILLIGT = '2'
@@ -184,14 +193,78 @@ class AbstractSubmission(models.Model):
     mail_merge = models.BooleanField(default=False,
                                      editable=False)
 
-    class Meta:
-        abstract = True
+    def get_bank_designated_use(self):
+        '''
+        Returns the designated use to be used when doing the bank transfer
+        '''
+        return u'{0} {1}<br>\n{2}'.format(self.get_license_type(), self.pk, self.get_name)
+
+    def get_email_list(self):
+        '''
+        Collects and returns a list with the recipients of notification emails
+        '''
+        raise NotImplementedError('You must implement this method in derived classes')
+
+    def get_email_subject(self):
+        '''
+        Returns the subject for the notification email
+        '''
+        return u'Neue {0} beantragt von {1}'.format(self.get_license_type(), self.get_name)
+
+    def get_email_template(self):
+        '''
+        Returns the template used for the notification email
+        '''
+        raise NotImplementedError('You must implement this method in derived classes')
+
+    def get_license_type(self):
+        '''
+        Returns the name of the license, this is used e.g. in the email subject
+        '''
+        raise NotImplementedError('You must implement this method in derived classes')
+
+    def notification_email_hook(self):
+        '''
+        Hook to perform custom logic after sending the notification emails
+        '''
+        pass
+
+    def send_emails(self):
+        '''
+        Send an email to the managers
+        '''
+        context = {}
+        context['submission'] = self
+        context['fee'] = self.FEE
+        context['bankaccount'] = BankAccount.objects.get(pk=self.get_bank_account())
+        for email in self.get_email_list():
+
+            if email == self.email:
+                context['is_user'] = True
+            else:
+                context['is_user'] = False
+
+            message = render_to_string(self.get_email_template(), context)
+            mail.send_mail(self.get_email_subject(),
+                           message,
+                           settings.DEFAULT_FROM_EMAIL,
+                           [email],
+                           fail_silently=True)
+
+        # Perform custom logic
+        self.notification_email_hook()
 
 
 class SubmissionStarter(AbstractSubmission):
     '''
     Model for a submission
     '''
+
+    class Meta:
+        '''
+        Order first by state name, then by gym name
+        '''
+        ordering = ["creation_date", "gym"]
 
     SUBMISSION_CATEGORY = (
         ('1', u'Bikini-Klasse'),
@@ -209,19 +282,28 @@ class SubmissionStarter(AbstractSubmission):
 
     # Personal information
     date_of_birth = models.DateField(_('Geburtsdatum'))
-    active_since = models.CharField(_('Aktiv seit'), max_length=20)
-    last_name = models.CharField(_('Familienname'), max_length=30)
-    first_name = models.CharField(_('Vorname'), max_length=30)
-    street = models.CharField(_(u'Straße'), max_length=30)
-    zip_code = models.IntegerField(_(u'PLZ'), max_length=5)
-    city = models.CharField(_(u'Ort'), max_length=30)
-    tel_number = models.CharField(_(u'Tel. Nr.'), max_length=20)
-    email = models.EmailField(_(u'Email'), max_length=120)
+    active_since = models.CharField(_('Aktiv seit'),
+                                    max_length=20)
+    last_name = models.CharField(_('Familienname'),
+                                 max_length=30)
+    first_name = models.CharField(_('Vorname'),
+                                  max_length=30)
+    street = models.CharField(_(u'Straße'),
+                              max_length=30)
+    zip_code = models.IntegerField(_(u'PLZ'),
+                                   max_length=5)
+    city = models.CharField(_(u'Ort'),
+                            max_length=30)
+    tel_number = models.CharField(_(u'Tel. Nr.'),
+                                  max_length=20)
+    email = models.EmailField(_(u'Email'),
+                              max_length=120)
     nationality = models.ForeignKey(Country,
                                     verbose_name=u'Staatsangehörigkeit',
                                     default=37  # Germany
                                     )
-    height = models.IntegerField(_(u'Größe (cm)'), max_length=3)
+    height = models.IntegerField(_(u'Größe (cm)'),
+                                 max_length=3)
     weight = models.DecimalField(_(u'Wettkampfgewicht (kg)'),
                                  max_digits=5,
                                  decimal_places=2)
@@ -232,8 +314,8 @@ class SubmissionStarter(AbstractSubmission):
     # Other fields
     submission_last_year = models.BooleanField(u"Im Vorjahr wurde bereits eine Lizenz beantragt",
                                                default=False)
-
-    gym = models.ForeignKey(Gym, verbose_name='Studio')
+    gym = models.ForeignKey(Gym,
+                            verbose_name='Studio')
 
     def __unicode__(self):
         '''
@@ -241,11 +323,8 @@ class SubmissionStarter(AbstractSubmission):
         '''
         return "%s - %s" % (self.creation_date, self.user)
 
-    class Meta:
-        '''
-        Order first by state name, then by gym name
-        '''
-        ordering = ["creation_date", "gym"]
+    def get_absolute_url(self):
+        return reverse('submission-view', kwargs={'pk': self.pk})
 
     @property
     def get_name(self):
@@ -253,9 +332,6 @@ class SubmissionStarter(AbstractSubmission):
         Returns the name of the participant
         """
         return u"{0}, {1}".format(self.last_name, self.first_name)
-
-    def get_absolute_url(self):
-        return reverse('submission-view', kwargs={'pk': self.pk})
 
     def get_bank_account(self):
         '''
@@ -267,55 +343,50 @@ class SubmissionStarter(AbstractSubmission):
 
         return bank_account
 
-    def send_emails(self):
+    def get_license_type(self):
         '''
-        Send an email to the managers
+        Returns the name of the license, this is used e.g. in the email subject
         '''
+        return 'Starterlizenz'
 
-        # Make a list with all the emails: BV, LV and gym
+    def get_email_template(self):
+        '''
+        Returns the template used for the notification email
+        '''
+        return 'submission/starter/email_new_submission.html'
+
+    def get_email_list(self):
+        '''
+        Collects and returns a list with the recipients of notification emails
+        '''
         email_list = []
         for email in ManagerEmail.objects.all():
             email_list.append(email.email)
 
         if self.gym.email:
             email_list.append(self.gym.email)
-        # Gym has no email, notify the managers
-        else:
-            for email in ManagerEmail.objects.all():
-                mail.send_mail('Studio hat keine Emailadresse',
-                               u"Eine Starterlizenz wurde für ein Studio beantragt, dass\n"
-                               u"keine Emailadresse im System hinterlegt hat.\n\n"
-                               u"* Nr.:        {studio.pk}\n"
-                               u"* Name:       {studio.name}\n"
-                               u"* Bundesland: {studio.state.name}\n".format(studio=self.gym),
-                               settings.DEFAULT_FROM_EMAIL,
-                               [email.email],
-                               fail_silently=True)
 
         if self.gym.state.email:
             email_list.append(self.gym.state.email)
 
         email_list.append(self.email)
+        return email_list
 
-        context = {}
-        context['submission'] = self
-        context['fee'] = self.FEE
-        context['bankaccount'] = BankAccount.objects.get(pk=self.get_bank_account())
-        subject = u'Neue Starterlizenz beantragt von {0}, {1}'.format(self.last_name,
-                                                                      self.first_name)
-        for email in email_list:
-
-            if email == self.email:
-                context['is_user'] = True
-            else:
-                context['is_user'] = False
-
-            message = render_to_string('submission/starter/email_new_submission.html', context)
-            mail.send_mail(subject,
-                           message,
-                           settings.DEFAULT_FROM_EMAIL,
-                           [email],
-                           fail_silently=True)
+    def notification_email_hook(self):
+        '''
+        Notify the managers if the selected gym has no email
+        '''
+        if not self.gym.email:
+            for email in ManagerEmail.objects.all():
+                    mail.send_mail('Studio hat keine Emailadresse',
+                                   u"Eine Starterlizenz wurde für ein Studio beantragt, dass\n"
+                                   u"keine Emailadresse im System hinterlegt hat.\n\n"
+                                   u"* Nr.:        {studio.pk}\n"
+                                   u"* Name:       {studio.name}\n"
+                                   u"* Bundesland: {studio.state.name}\n".format(studio=self.gym),
+                                   settings.DEFAULT_FROM_EMAIL,
+                                   [email.email],
+                                   fail_silently=True)
 
 
 class SubmissionGym(AbstractSubmission):
@@ -332,17 +403,29 @@ class SubmissionGym(AbstractSubmission):
                             max_length=30,
                             help_text=_('Name des Studios oder Verein'))
     founded = models.DateField(_(u'Gegründet am'))
-    street = models.CharField(_(u'Straße'), max_length=30)
-    zip_code = models.IntegerField(_(u'PLZ'), max_length=5)
-    city = models.CharField(_(u'Ort'), max_length=30)
-    tel_number = models.CharField(_(u'Tel. Nr.'), max_length=20)
-    fax_number = models.CharField(_(u'Fax. Nr.'), max_length=20)
-    email = models.EmailField(_(u'Email'), max_length=120)
+    street = models.CharField(_(u'Straße'),
+                              max_length=30)
+    zip_code = models.IntegerField(_(u'PLZ'),
+                                   max_length=5)
+    city = models.CharField(_(u'Ort'),
+                            max_length=30)
+    tel_number = models.CharField(_(u'Tel. Nr.'),
+                                  max_length=20)
+    fax_number = models.CharField(_(u'Fax. Nr.'),
+                                  max_length=20)
+    email = models.EmailField(_(u'Email'),
+                              max_length=120)
     members = models.IntegerField(verbose_name=_(u'Anzahl Mitglieder'),
                                   max_length=5,
                                   help_text=_('Dient nur statistischen Zwecken'),
                                   null=True,
                                   blank=True)
+
+    def __unicode__(self):
+        '''
+        Return a more human-readable representation
+        '''
+        return u"Studiolizent {0}".format(self.name)
 
     @property
     def get_name(self):
@@ -357,18 +440,22 @@ class SubmissionGym(AbstractSubmission):
         '''
         return self.state.bank_account.pk
 
-    def __unicode__(self):
+    def get_license_type(self):
         '''
-        Return a more human-readable representation
+        Returns the name of the license, this is used e.g. in the email subject
         '''
-        return u"Studiolizent {0}".format(self.name)
+        return 'Studiolizenz'
 
-    def send_emails(self):
+    def get_email_template(self):
         '''
-        Send an email to the managers
+        Returns the template used for the notification email
         '''
+        return 'submission/gym/email_new_submission.html'
 
-        # Make a list with all the emails: BV, LV, gym and user
+    def get_email_list(self):
+        '''
+        Collects and returns a list with the recipients of notification emails
+        '''
         email_list = []
         for email in ManagerEmail.objects.all():
             email_list.append(email.email)
@@ -376,28 +463,8 @@ class SubmissionGym(AbstractSubmission):
         if self.state.email:
             email_list.append(self.state.email)
 
-        email_list.append(self.user.email)
-
-        context = {}
-        context['submission'] = self
-        context['fee'] = self.FEE
-        context['bankaccount'] = BankAccount.objects.get(pk=self.get_bank_account())
-        subject = u'Neue Studiolizenz beantragt von {0}'.format(self.get_name)
-
-        for email in email_list:
-
-            if email == self.email:
-                context['is_user'] = True
-            else:
-                context['is_user'] = False
-
-            message = render_to_string('submission/gym/email_new_submission.html', context)
-
-            mail.send_mail(subject,
-                           message,
-                           settings.DEFAULT_FROM_EMAIL,
-                           [email],
-                           fail_silently=True)
+        email_list.append(self.email)
+        return email_list
 
 
 class SubmissionJudge(AbstractSubmission):
@@ -407,11 +474,16 @@ class SubmissionJudge(AbstractSubmission):
 
     FEE = 15
 
-    last_name = models.CharField('Familienname', max_length=30)
-    first_name = models.CharField('Vorname', max_length=30)
-    street = models.CharField(u'Straße', max_length=30)
-    zip_code = models.IntegerField(u'PLZ', max_length=5)
-    city = models.CharField(u'Ort', max_length=30)
+    last_name = models.CharField('Familienname',
+                                 max_length=30)
+    first_name = models.CharField('Vorname',
+                                  max_length=30)
+    street = models.CharField(u'Straße',
+                              max_length=30)
+    zip_code = models.IntegerField(u'PLZ',
+                                   max_length=5)
+    city = models.CharField(u'Ort',
+                            max_length=30)
     state = models.ForeignKey(State,
                               verbose_name=u'Landesverband')
     tel_number = models.CharField(u'Tel. Nr.',
@@ -443,12 +515,22 @@ class SubmissionJudge(AbstractSubmission):
         '''
         return self.state.bank_account.pk
 
-    def send_emails(self):
+    def get_license_type(self):
         '''
-        Send an email to the managers
+        Returns the name of the license, this is used e.g. in the email subject
         '''
+        return 'Kampfrichterlizenz'
 
-        # Make a list with all the emails: BV, LV, gym and user
+    def get_email_template(self):
+        '''
+        Returns the template used for the notification email
+        '''
+        return 'submission/judge/email_new_submission.html'
+
+    def get_email_list(self):
+        '''
+        Collects and returns a list with the recipients of notification emails
+        '''
         email_list = []
         for email in ManagerEmail.objects.all():
             email_list.append(email.email)
@@ -456,28 +538,9 @@ class SubmissionJudge(AbstractSubmission):
         if self.state.email:
             email_list.append(self.state.email)
 
-        email_list.append(self.user.email)
+        email_list.append(self.email)
+        return email_list
 
-        context = {}
-        context['submission'] = self
-        context['fee'] = self.FEE
-        context['bankaccount'] = BankAccount.objects.get(pk=self.get_bank_account())
-        subject = u'Neue Kampfrichterlizenz beantragt von {0}'.format(self.get_name)
-
-        for email in email_list:
-
-            if email == self.email:
-                context['is_user'] = True
-            else:
-                context['is_user'] = False
-
-            message = render_to_string('submission/judge/email_new_submission.html', context)
-
-            mail.send_mail(subject,
-                           message,
-                           settings.DEFAULT_FROM_EMAIL,
-                           [email],
-                           fail_silently=True)
 
 USER_TYPE_UNKNOWN = -1
 USER_TYPE_BUNDESVERBAND = 2

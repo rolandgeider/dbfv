@@ -15,9 +15,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
 
+from django.views import generic
 from django.views.generic.base import TemplateResponseMixin
 from django.views.generic.edit import ModelFormMixin
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, reverse_lazy
 
 from django.http import HttpResponseRedirect
 from django.http import HttpResponseForbidden
@@ -57,3 +58,42 @@ class DbfvFormMixin(DbfvViewMixin, ModelFormMixin):
         context['title'] = self.page_title
 
         return context
+
+
+class BaseSubmissionCreateView(DbfvFormMixin, generic.CreateView):
+    '''
+    Creates a new submissions
+    '''
+
+    def form_valid(self, form):
+        '''
+        Manually set the user when saving the form
+        '''
+
+        form.instance.user = self.request.user
+        return super(BaseSubmissionCreateView, self).form_valid(form)
+
+    def get_success_url(self):
+        '''
+        Redirect to bank account page and send appropriate emails
+        '''
+        self.object.send_emails()
+        self.request.session['bank-account'] = self.object.get_bank_account()
+        self.request.session['submission-fee'] = self.model.FEE
+        self.request.session['designated-use'] = self.object.get_bank_designated_use()
+
+        return reverse_lazy('bank-account-view')
+
+    def get_context_data(self, **kwargs):
+        '''
+        Pass a list of all states
+        '''
+        context = super(BaseSubmissionCreateView, self).get_context_data(**kwargs)
+        context['fee'] = self.model.FEE
+        return context
+
+    def get_initial(self):
+        '''
+        Fill in some data
+        '''
+        return {'email': self.request.user.email}
