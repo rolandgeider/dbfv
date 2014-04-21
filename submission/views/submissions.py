@@ -231,7 +231,7 @@ class SubmissionUpdateView(DbfvFormMixin, generic.UpdateView):
         '''
         submission = self.get_object()
         if not request.user.has_perm('submission.delete_submissionstarter') \
-            and (submission.submission_status != '1'
+            and (submission.submission_status != SubmissionStarter.SUBMISSION_STATUS_EINGEGANGEN
                  or submission.user != request.user):
             return HttpResponseForbidden(u'Sie dürfen dieses Objekt nicht editieren!')
 
