@@ -149,6 +149,9 @@ urlpatterns = patterns('submission.views',
     url(r'^antrag/liste/exportieren/serienbrief$',
         submissions.export_csv_new,
         name='submission-export-mailmerge-new'),
+    url(r'^antrag/suchen$',
+        submissions.search,
+        name='submission-search'),
 
     # Gym
     url(r'^antrag-studio/liste/alle$',

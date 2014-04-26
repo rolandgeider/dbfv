@@ -223,6 +223,15 @@ class AbstractSubmission(models.Model):
         '''
         raise NotImplementedError('You must implement this method in derived classes')
 
+    def get_search_json(self):
+        '''
+        Returns the necessary JSON to be used in the search
+        '''
+        return {'id': self.id,
+                'name': self.get_name,
+                'status': self.get_submission_status_display(),
+                'date': self.creation_date.strftime("%d.%m.%Y")}
+
     def notification_email_hook(self):
         '''
         Hook to perform custom logic after sending the notification emails
@@ -387,6 +396,16 @@ class SubmissionStarter(AbstractSubmission):
                                    settings.DEFAULT_FROM_EMAIL,
                                    [email.email],
                                    fail_silently=True)
+
+    def get_search_json(self):
+        '''
+        Returns the necessary JSON to be used in the search
+        '''
+        data = super(SubmissionStarter, self).get_search_json()
+        data['state'] = self.gym.state.name
+        data['category'] = self.get_category_display()
+        data['gym'] = self.gym.name
+        return data
 
 
 class SubmissionGym(AbstractSubmission):

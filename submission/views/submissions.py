@@ -16,10 +16,12 @@
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
 import csv
 import datetime
+import json
 
 from django.http.response import HttpResponse, HttpResponseForbidden
 from django.views import generic
 from django.core.urlresolvers import reverse_lazy
+from django.db.models import Q
 
 from submission.forms import SubmissionStarterForm, SubmissionStarterFormBV
 from submission.helpers import export_submission_mailmerge
@@ -279,3 +281,29 @@ def export_csv_new(request):
     response['Content-Length'] = len(response.content)
     submissions.update(mail_merge=True)
     return response
+
+
+def search(request):
+    '''
+    Search for a submission, return the result as a JSON list
+    '''
+    if not request.user.has_perm('submission.change_submissionstarter'):
+        return HttpResponseForbidden()
+
+    # Perform the search
+    q = request.GET.get('q', '')
+
+    if q:
+        submissions = (SubmissionStarter.objects.filter(Q(first_name__icontains=q) |
+                                                        Q(last_name__icontains=q) |
+                                                        Q(gym__name__icontains=q))
+                                        .distinct())
+        results = []
+        for submission in submissions[:30]:
+            results.append(submission.get_search_json())
+        data = json.dumps(results)
+
+    else:
+        data = []
+
+    return HttpResponse(data, content_type='application/json')

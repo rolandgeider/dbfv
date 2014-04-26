@@ -6,12 +6,48 @@
 {% block title %}Anträge Starterlizenzen{% endblock %}
 
 {% block scripts %}
+<script src="{% static 'js/jquery.tokeninput.js' %}"></script>
 <script>
 $(document).ready(function() {
     $('#submission_id_submit').click(function(e) {
         e.preventDefault();
         window.location = '/antrag/' + $('#submission_id').val() + '/anzeigen';
     });
+
+    // Search
+    $("#term").tokenInput("{% url 'submission-search' %}", {
+                tokenLimit: 1,
+                hintText: "Vor-, Nachname, Studioname",
+                searchingText: "Suche...",
+                minChars: 3,
+                onAdd: function(item){
+                    // Go the submission page
+                    window.location.href = '/antrag/' + item.id + '/anzeigen'
+                    },
+                resultsFormatter: function(item){
+                    var value = "<li>"
+                        + "<table class='narrow noborder'>"
+                        + "<tr>"
+                            + "<td colspan='2'>"
+                                + "<strong>" + item.name + "</strong>, "
+                                + "Nr. " + item.id +  ", "
+                                + item.date + " "
+                            + "</td>"
+                        + "</tr>"
+                        + "<tr>"
+                            + "<td width='50%'>" + item.category + "</td>"
+                            + "<td width='50%'>" + item.status + "</td>"
+                        + "</tr> "
+                        + "<tr>"
+                            + "<td width='50%'>"
+                            + item.gym + "</td>"
+                            + "<td width='50%'>"
+                            + item.state + "</td>"
+                        + "</tr>";
+
+                    return value;
+                    }
+                });
 });
 </script>
 {% endblock %}
@@ -31,6 +67,9 @@ $(document).ready(function() {
 
 {% block sidebar %}
 {% if perms.submission.change_submissionstarter %}
+<h3>Suche</h3>
+<input type="text" id="term" name="term" placeholder="Suchbegriff eingeben" class="no-bootstrap-focus">
+
 <h3>Info</h3>
 <div class="well">
     <h5>Serienbriefexport</h5>
@@ -74,7 +113,7 @@ exportiert wurden.</p>
 
 <div class="well">
 <form action="">
-    <p>Schnellzugriff</p>
+    <h5>Schnellzugriff</h5>
     <input type="number" id="submission_id" placeholder="Antragsnummer eingeben">
     <input id="submission_id_submit" class="btn btn-block" type="submit" value="Zu Antrag gehen">
 </form>
