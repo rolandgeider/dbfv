@@ -52,7 +52,14 @@
             {% endif %}
         </td>
     </tr>
-    
+    {% if object.submissiongym %}
+    <tr>
+        <th>Studiolizenz</th>
+        <td>
+            <a href="{% url 'submission-studio-view' object.submissiongym.pk%}">Antrag {{object.submissiongym.pk}}</a>
+        </td>
+    </tr>
+    {% endif %}
 </table>
 
 {% endblock %}

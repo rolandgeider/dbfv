@@ -443,11 +443,11 @@ class SubmissionGym(AbstractSubmission):
                                   blank=True)
 
     # Other fields
-    gym = models.ForeignKey(Gym,
-                            verbose_name='Studio',
-                            editable=False,
-                            blank=True,
-                            null=True)
+    gym = models.OneToOneField(Gym,
+                               verbose_name='Studio',
+                               editable=False,
+                               blank=True,
+                               null=True)
 
     def __unicode__(self):
         '''
