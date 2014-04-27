@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load dbfv_extras %}
 
-{% block title %}Studioantrag - {{object.name}}{% endblock %}
+{% block title %}Studioantrag {{object.pk}} - {{object.name}}{% endblock %}
 
 {% block scripts %}
 {% endblock %}
@@ -19,12 +19,22 @@
 
 <table class="table">
     <tr>
-        <th>Landesverband</th>
-        <td colspan="3">{{object.state}}</td>
+        <th>Studioname</th>
+        <td>
+            {% if perms.submission.change_submissiongym and object.gym %}
+                <a href="{% url 'gym-view' object.gym.pk %}">{{object.gym.name}}</a>
+            {% else %}
+                {{object.name}}
+            {% endif %}
+        </td>
+        <th>Email</th>
+        <td><a href="mailto:{{object.email}}">{{object.email}}</a></td>
     </tr>
     <tr>
         <th>Inhaber</th>
-        <td colspan="3">{{object.user.get_username}}</td>
+        <td>{{object.user.get_username}}</td>
+        <th>Landesverband</th>
+        <td>{{object.state}}</td>
     </tr>
     <tr>
         <th>Straße</th>
@@ -37,10 +47,6 @@
         <td>{{object.tel_number}}</td>
         <th>Fax. Nr</th>
         <td>{{object.fax_number}}</td>
-    </tr>
-    <tr>
-        <th>Email</th>
-        <td colspan="3"><a href="mailto:{{object.email}}">{{object.email}}</a></td>
     </tr>
     <tr>
         <th>Anzahl Mitglieder</th>

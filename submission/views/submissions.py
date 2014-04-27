@@ -155,7 +155,7 @@ class SubmissionDetailView(DbfvViewMixin, generic.detail.DetailView):
 
 class SubmissionCreateView(BaseSubmissionCreateView):
     '''
-    Creates a new submissions
+    Creates a new submission
     '''
 
     model = SubmissionStarter

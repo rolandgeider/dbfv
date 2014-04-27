@@ -323,8 +323,10 @@ class SubmissionStarter(AbstractSubmission):
     # Other fields
     submission_last_year = models.BooleanField(u"Im Vorjahr wurde bereits eine Lizenz beantragt",
                                                default=False)
+
     gym = models.ForeignKey(Gym,
                             verbose_name='Studio')
+
 
     def __unicode__(self):
         '''
@@ -440,11 +442,21 @@ class SubmissionGym(AbstractSubmission):
                                   null=True,
                                   blank=True)
 
+    # Other fields
+    gym = models.ForeignKey(Gym,
+                            verbose_name='Studio',
+                            editable=False,
+                            blank=True,
+                            null=True)
+
     def __unicode__(self):
         '''
         Return a more human-readable representation
         '''
         return u"Studiolizent {0}".format(self.name)
+
+    def get_absolute_url(self):
+        return reverse('submission-studio-view', kwargs={'pk': self.pk})
 
     @property
     def get_name(self):

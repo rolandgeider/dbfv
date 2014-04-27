@@ -14,13 +14,13 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
-
+from django.http import HttpResponseForbidden
 
 from django.views import generic
 from django.core.urlresolvers import reverse_lazy
 
 from submission.forms import SubmissionGymForm, SubmissionGymFormBV
-from submission.models import SubmissionGym
+from submission.models import SubmissionGym, Gym
 from submission.models import State
 from submission.models import user_type
 from submission.models import USER_TYPE_BUNDESVERBAND
@@ -75,6 +75,21 @@ class SubmissionDetailView(DbfvViewMixin, generic.detail.DetailView):
     model = SubmissionGym
     template_name = 'submission/gym/view.html'
 
+    def dispatch(self, request, *args, **kwargs):
+        '''
+        Check for necessary permissions
+        '''
+        submission = self.get_object()
+        if not request.user.has_perm('submission.delete_submissiongym') \
+           and submission.user != request.user:
+            return HttpResponseForbidden()
+
+        # Save submission data to the session
+        self.request.session['bank-account'] = submission.get_bank_account()
+        self.request.session['submission-fee'] = submission.FEE
+        self.request.session['designated-use'] = submission.get_bank_designated_use()
+        return super(SubmissionDetailView, self).dispatch(request, *args, **kwargs)
+
 
 class SubmissionCreateView(BaseSubmissionCreateView):
     '''
@@ -86,6 +101,30 @@ class SubmissionCreateView(BaseSubmissionCreateView):
     permission_required = 'submission.add_submissiongym'
     template_name = 'submission/gym/create.html'
     page_title = 'Antrag auf Erwerb einer Studiolizenz'
+
+    def get_success_url(self):
+        '''
+        If the form is valid, create a new gym with the form data.
+
+        Performing the logic here because we need access to the submission PK
+        '''
+
+        gym = Gym()
+        gym.name = self.object.name
+        gym.email = self.object.email
+        gym.state = self.object.state
+        gym.owner = ''
+        gym.zip_code = self.object.zip_code
+        gym.city = self.object.city
+        gym.street = self.object.street
+        gym.is_active = False
+        gym.submission = self.object
+        gym.save()
+
+        self.object.gym = gym
+        self.object.save()
+
+        return super(SubmissionCreateView, self).get_success_url()
 
 
 class SubmissionDeleteView(DbfvFormMixin, generic.DeleteView):
@@ -113,7 +152,7 @@ class SubmissionUpdateView(DbfvFormMixin, generic.UpdateView):
     '''
 
     model = SubmissionGym
-    success_url = reverse_lazy('submission-list')
+    success_url = reverse_lazy('submission-studio-list')
     permission_required = 'submission.change_submissiongym'
 
 
@@ -124,5 +163,17 @@ class SubmissionUpdateStatusView(DbfvFormMixin, generic.UpdateView):
 
     model = SubmissionGym
     form_class = SubmissionGymFormBV
-    success_url = reverse_lazy('submission-list')
+    success_url = reverse_lazy('submission-studio-list')
     permission_required = 'submission.change_submissiongym'
+
+    def form_valid(self, form):
+        '''
+        If the submission is accepted, activate the gym
+        '''
+
+        if form.cleaned_data['submission_status'] == SubmissionGym.SUBMISSION_STATUS_BEWILLIGT:
+            gym = form.instance.gym
+            gym.is_active = True
+            gym.save()
+
+        return super(SubmissionUpdateStatusView, self).form_valid(form)
