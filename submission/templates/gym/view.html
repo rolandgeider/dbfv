@@ -62,5 +62,6 @@
     <h5>Aktionen</h5>
     <p><a href="{% url 'gym-edit' object.id %}">Studio bearbeiten</a></p>
     <p><a href="{% url 'gym-list' %}">Zurück zur Übersicht</a></p>
+    <p><a href="{% url 'gym-delete' object.id %}">Studio löschen</a></p>
 </div>
 {% endblock %}

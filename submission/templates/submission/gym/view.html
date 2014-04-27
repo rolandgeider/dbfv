@@ -63,6 +63,8 @@
           title="Status bearbeiten">Status bearbeiten</a></p>
     <p><a href="{% url 'bank-account-view' %}"
               title="Bearbeiten">Kontodaten anzeigen</a></p>
+    <p><a href="{% url 'submission-studio-delete' object.pk %}"
+              title="Bearbeiten">Antrag löschen</a></p>
 </div>
 {% else %}
     {% if object.submission_status == object.SUBMISSION_STATUS_EINGEGANGEN %}

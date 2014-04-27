@@ -49,6 +49,8 @@
     <h3>Optionen</h3>
     <p><a href="{% url 'submission-judge-edit-status' object.id %}"
           title="Status bearbeiten">Status bearbeiten</a></p>
+    <p><a href="{% url 'submission-judge-delete' object.pk %}"
+              title="Bearbeiten">Antrag löschen</a></p>
 </div>
 {% endif %}
 {% endblock %}
