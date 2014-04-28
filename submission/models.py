@@ -327,7 +327,6 @@ class SubmissionStarter(AbstractSubmission):
     gym = models.ForeignKey(Gym,
                             verbose_name='Studio')
 
-
     def __unicode__(self):
         '''
         Return a more human-readable representation

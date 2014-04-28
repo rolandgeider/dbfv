@@ -26,6 +26,8 @@ from submission.models import user_type
 from submission.models import USER_TYPE_BUNDESVERBAND
 from submission.models import USER_TYPE_USER
 from submission.views.generic_views import DbfvViewMixin
+from submission.views.generic_views import BaseSubmissionDeleteView
+from submission.views.generic_views import BaseSubmissionUpdateView
 from submission.views.generic_views import DbfvFormMixin
 from submission.views.generic_views import BaseSubmissionCreateView
 
@@ -126,32 +128,20 @@ class SubmissionCreateView(BaseSubmissionCreateView):
     template_name = 'submission/judge/create.html'
 
 
-class SubmissionDeleteView(DbfvFormMixin, generic.DeleteView):
+class SubmissionDeleteView(BaseSubmissionDeleteView):
     '''
     Deletes a submission
     '''
-
     model = SubmissionJudge
     success_url = reverse_lazy('submission-judge-list')
-    permission_required = 'submission.delete_submissionjudge'
-    template_name = 'delete.html'
-
-    def get_context_data(self, **kwargs):
-        '''
-        Pass the title to the context
-        '''
-        context = super(SubmissionDeleteView, self).get_context_data(**kwargs)
-        context['title'] = u'Antrag {0} löschen?'.format(self.object.id)
-        return context
 
 
-class SubmissionUpdateView(DbfvFormMixin, generic.UpdateView):
+class SubmissionUpdateView(BaseSubmissionUpdateView):
     '''
-    Updates an existing submissions
+    Updates an existing submission
     '''
-
     model = SubmissionJudge
-    permission_required = 'submission.change_submissionjudge'
+    form_class = SubmissionJudgeForm
 
 
 class SubmissionUpdateStatusView(DbfvFormMixin, generic.UpdateView):

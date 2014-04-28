@@ -31,7 +31,10 @@ from submission.models import State
 from submission.models import user_type
 from submission.models import USER_TYPE_BUNDESVERBAND
 from submission.models import USER_TYPE_USER
-from submission.views.generic_views import DbfvViewMixin, BaseSubmissionCreateView
+from submission.views.generic_views import DbfvViewMixin
+from submission.views.generic_views import BaseSubmissionCreateView
+from submission.views.generic_views import BaseSubmissionDeleteView
+from submission.views.generic_views import BaseSubmissionUpdateView
 from submission.views.generic_views import DbfvFormMixin
 
 
@@ -172,49 +175,20 @@ class SubmissionCreateView(BaseSubmissionCreateView):
         return context
 
 
-class SubmissionDeleteView(DbfvFormMixin, generic.DeleteView):
+class SubmissionDeleteView(BaseSubmissionDeleteView):
     '''
     Deletes a submission
     '''
-
     model = SubmissionStarter
     success_url = reverse_lazy('submission-list')
-    permission_required = 'submission.delete_submissionstarter'
-    template_name = 'delete.html'
-
-    def get_context_data(self, **kwargs):
-        '''
-        Pass the title to the context
-        '''
-        context = super(SubmissionDeleteView, self).get_context_data(**kwargs)
-        context['title'] = u'Antrag {0} löschen?'.format(self.object.id)
-        return context
 
 
-class SubmissionUpdateView(DbfvFormMixin, generic.UpdateView):
+class SubmissionUpdateView(BaseSubmissionUpdateView):
     '''
-    Updates an exsiting submission
-
-    The owner user can update his own submission while it is still in the
-    pending state. Once it has been accepted, only the BV can edit it.
+    Updates an existing submission
     '''
-
     model = SubmissionStarter
     form_class = SubmissionStarterForm
-    login_required = True
-    page_title = 'Antrag bearbeiten'
-
-    def dispatch(self, request, *args, **kwargs):
-        '''
-        Check for necessary permissions
-        '''
-        submission = self.get_object()
-        if not request.user.has_perm('submission.delete_submissionstarter') \
-            and (submission.submission_status != SubmissionStarter.SUBMISSION_STATUS_EINGEGANGEN
-                 or submission.user != request.user):
-            return HttpResponseForbidden(u'Sie dürfen dieses Objekt nicht editieren!')
-
-        return super(SubmissionUpdateView, self).dispatch(request, *args, **kwargs)
 
 
 class SubmissionUpdateStatusView(DbfvFormMixin, generic.UpdateView):

@@ -60,6 +60,10 @@ class DbfvFormMixin(DbfvViewMixin, ModelFormMixin):
         return context
 
 
+#
+# Submissions
+#
+
 class BaseSubmissionCreateView(DbfvFormMixin, generic.CreateView):
     '''
     Creates a new submissions
@@ -97,3 +101,44 @@ class BaseSubmissionCreateView(DbfvFormMixin, generic.CreateView):
         Fill in some data
         '''
         return {'email': self.request.user.email}
+
+
+class BaseSubmissionDeleteView(DbfvFormMixin, generic.DeleteView):
+    '''
+    Deletes a submission
+    '''
+
+    permission_required = 'submission.delete_submissiongym'
+    template_name = 'delete.html'
+
+    def get_context_data(self, **kwargs):
+        '''
+        Pass the title to the context
+        '''
+        context = super(BaseSubmissionDeleteView, self).get_context_data(**kwargs)
+        context['title'] = u'Antrag {0} löschen?'.format(self.object.id)
+        return context
+
+
+class BaseSubmissionUpdateView(DbfvFormMixin, generic.UpdateView):
+    '''
+    Updates an existing submission
+
+    The owner user can update his own submission while it is still in the
+    pending state. Once it has been accepted, only the BV can edit it.
+    '''
+
+    login_required = True
+    page_title = 'Antrag bearbeiten'
+
+    def dispatch(self, request, *args, **kwargs):
+        '''
+        Check for necessary permissions
+        '''
+        submission = self.get_object()
+        if not request.user.has_perm('submission.delete_submissionstarter') \
+            and (submission.submission_status != submission.SUBMISSION_STATUS_EINGEGANGEN
+                 or submission.user != request.user):
+            return HttpResponseForbidden(u'Sie dürfen dieses Objekt nicht editieren!')
+
+        return super(BaseSubmissionUpdateView, self).dispatch(request, *args, **kwargs)

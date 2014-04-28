@@ -25,7 +25,10 @@ from submission.models import State
 from submission.models import user_type
 from submission.models import USER_TYPE_BUNDESVERBAND
 from submission.models import USER_TYPE_USER
-from submission.views.generic_views import DbfvViewMixin, BaseSubmissionCreateView
+from submission.views.generic_views import DbfvViewMixin
+from submission.views.generic_views import BaseSubmissionCreateView
+from submission.views.generic_views import BaseSubmissionDeleteView
+from submission.views.generic_views import BaseSubmissionUpdateView
 from submission.views.generic_views import DbfvFormMixin
 
 
@@ -127,33 +130,20 @@ class SubmissionCreateView(BaseSubmissionCreateView):
         return super(SubmissionCreateView, self).get_success_url()
 
 
-class SubmissionDeleteView(DbfvFormMixin, generic.DeleteView):
+class SubmissionDeleteView(BaseSubmissionDeleteView):
     '''
     Deletes a submission
     '''
-
     model = SubmissionGym
     success_url = reverse_lazy('submission-studio-list')
-    permission_required = 'submission.delete_submissiongym'
-    template_name = 'delete.html'
-
-    def get_context_data(self, **kwargs):
-        '''
-        Pass the title to the context
-        '''
-        context = super(SubmissionDeleteView, self).get_context_data(**kwargs)
-        context['title'] = u'Antrag {0} löschen?'.format(self.object.id)
-        return context
 
 
-class SubmissionUpdateView(DbfvFormMixin, generic.UpdateView):
+class SubmissionUpdateView(BaseSubmissionUpdateView):
     '''
-    Updates an existing submissions
+    Updates an existing submission
     '''
-
     model = SubmissionGym
-    success_url = reverse_lazy('submission-studio-list')
-    permission_required = 'submission.change_submissiongym'
+    form_class = SubmissionGymForm
 
 
 class SubmissionUpdateStatusView(DbfvFormMixin, generic.UpdateView):
