@@ -24,14 +24,12 @@ from django.core.urlresolvers import reverse_lazy
 from django.db.models import Q
 
 from submission.forms import SubmissionStarterForm, SubmissionStarterFormBV
-from submission.helpers import export_submission_mailmerge
-from submission.helpers import MAILMERGE_HEADER
 from submission.models import SubmissionStarter
 from submission.models import State
 from submission.models import user_type
 from submission.models import USER_TYPE_BUNDESVERBAND
 from submission.models import USER_TYPE_USER
-from submission.views.generic_views import DbfvViewMixin
+from submission.views.generic_views import DbfvViewMixin, BaseCsvExportView
 from submission.views.generic_views import BaseSubmissionCreateView
 from submission.views.generic_views import BaseSubmissionDeleteView
 from submission.views.generic_views import BaseSubmissionUpdateView
@@ -202,59 +200,26 @@ class SubmissionUpdateStatusView(DbfvFormMixin, generic.UpdateView):
     permission_required = 'submission.change_submissionstarter'
 
 
-def export_csv(request, pk):
+class SubmissionCsvExportView(BaseCsvExportView):
     '''
-    Exports a submission as a CSV file to be imported into an office application
+    Exports all non-exported submissions to use for mail merge
     '''
-    if not request.user.has_perm('submission.change_submissionstarter'):
-        return HttpResponseForbidden()
-
-    response = HttpResponse(mimetype='text/csv')
-    writer = csv.writer(response, delimiter='\t')
-    today = datetime.date.today()
-
-    submission = SubmissionStarter.objects.filter(pk=pk)
-
-    # Write the CSV file
-    writer.writerow(MAILMERGE_HEADER)
-    for line in export_submission_mailmerge(submission):
-        writer.writerow(line)
-    filename = 'attachment; filename=Starterlizenz-{0}-{1}-{2}-{3}.csv'.format(pk,
-                                                                               today.year,
-                                                                               today.month,
-                                                                               today.day)
-    response['Content-Disposition'] = filename
-    response['Content-Length'] = len(response.content)
-    submission.update(mail_merge=True)
-    return response
+    model = SubmissionStarter
 
 
-def export_csv_new(request):
+class SubmissionCsvIndividualExportView(BaseCsvExportView):
     '''
-    Exports all submissions that have not been exported for mailmerge
+    Exports an individual submission to use for mail merge
     '''
-    if not request.user.has_perm('submission.change_submissionstarter'):
-        return HttpResponseForbidden()
 
-    response = HttpResponse(mimetype='text/csv')
-    writer = csv.writer(response, delimiter='\t')
-    today = datetime.date.today()
+    model = SubmissionStarter
+    update_submission_flag = False
 
-    submissions = SubmissionStarter.objects.filter(mail_merge=False) \
-        .filter(submission_status=SubmissionStarter.SUBMISSION_STATUS_BEWILLIGT) \
-        .select_related()
-
-    # Write the CSV file
-    writer.writerow(MAILMERGE_HEADER)
-    for line in export_submission_mailmerge(submissions):
-        writer.writerow(line)
-    filename = 'attachment; filename=Starterlizenzen-{0}-{1}-{2}.csv'.format(today.year,
-                                                                             today.month,
-                                                                             today.day)
-    response['Content-Disposition'] = filename
-    response['Content-Length'] = len(response.content)
-    submissions.update(mail_merge=True)
-    return response
+    def get_submission_list(self):
+        '''
+        Return the current submission to export.
+        '''
+        return self.model.objects.filter(pk=self.kwargs['pk'])
 
 
 def search(request):

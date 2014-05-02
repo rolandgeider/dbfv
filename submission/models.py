@@ -172,6 +172,8 @@ class AbstractSubmission(models.Model):
         '''
         abstract = True
 
+    MAILMERGE_HEADER = []
+
     SUBMISSION_STATUS_EINGEGANGEN = '1'
     SUBMISSION_STATUS_BEWILLIGT = '2'
     SUBMISSION_STATUS_ABGELEHNT = '3'
@@ -217,7 +219,8 @@ class AbstractSubmission(models.Model):
         '''
         raise NotImplementedError('You must implement this method in derived classes')
 
-    def get_license_type(self):
+    @staticmethod
+    def get_license_type():
         '''
         Returns the name of the license, this is used e.g. in the email subject
         '''
@@ -263,6 +266,12 @@ class AbstractSubmission(models.Model):
         # Perform custom logic
         self.notification_email_hook()
 
+    def get_mailmerge_row(self):
+        '''
+        Returns a row for the mailmerge CSV export
+        '''
+        raise NotImplementedError('You must implement this method in derived classes')
+
 
 class SubmissionStarter(AbstractSubmission):
     '''
@@ -274,6 +283,25 @@ class SubmissionStarter(AbstractSubmission):
         Order first by state name, then by gym name
         '''
         ordering = ["creation_date", "gym"]
+
+    MAILMERGE_HEADER = ['ID',
+                        'Vorname',
+                        'Nachname',
+                        'Geburtsdatum',
+                        'Aktiv Seit',
+                        'Straße',
+                        'PLZ',
+                        'Stadt',
+                        'Telefon',
+                        'Email',
+                        'Nationalität',
+                        'Größe',
+                        'Gewicht',
+                        'Kategorie',
+                        'Studio',
+                        'Bundesverband',
+                        'Datum',
+                        'Jahr']
 
     SUBMISSION_CATEGORY = (
         ('1', u'Bikini-Klasse'),
@@ -353,7 +381,8 @@ class SubmissionStarter(AbstractSubmission):
 
         return bank_account
 
-    def get_license_type(self):
+    @staticmethod
+    def get_license_type():
         '''
         Returns the name of the license, this is used e.g. in the email subject
         '''
@@ -407,6 +436,29 @@ class SubmissionStarter(AbstractSubmission):
         data['category'] = self.get_category_display()
         data['gym'] = self.gym.name
         return data
+
+    def get_mailmerge_row(self):
+        '''
+        Returns a row for the mailmerge CSV export
+        '''
+        return [self.pk,
+                self.first_name,
+                self.last_name,
+                self.date_of_birth,
+                self.active_since,
+                self.street,
+                self.zip_code,
+                self.city,
+                self.tel_number,
+                self.email,
+                self.nationality.name,
+                self.height,
+                self.weight,
+                self.get_category_display(),
+                self.gym.name,
+                self.gym.state,
+                self.creation_date,
+                self.creation_date.year]
 
 
 class SubmissionGym(AbstractSubmission):
@@ -470,7 +522,8 @@ class SubmissionGym(AbstractSubmission):
         '''
         return self.state.bank_account.pk
 
-    def get_license_type(self):
+    @staticmethod
+    def get_license_type():
         '''
         Returns the name of the license, this is used e.g. in the email subject
         '''
@@ -501,6 +554,18 @@ class SubmissionJudge(AbstractSubmission):
     '''
     Model for a judge submission
     '''
+
+    MAILMERGE_HEADER = ['ID',
+                        'Vorname',
+                        'Nachname',
+                        'Straße',
+                        'PLZ',
+                        'Stadt',
+                        'Telefon',
+                        'Email',
+                        'Bundesverband',
+                        'Datum',
+                        'Jahr']
 
     FEE = 15
 
@@ -545,7 +610,8 @@ class SubmissionJudge(AbstractSubmission):
         '''
         return self.state.bank_account.pk
 
-    def get_license_type(self):
+    @staticmethod
+    def get_license_type():
         '''
         Returns the name of the license, this is used e.g. in the email subject
         '''
@@ -570,6 +636,22 @@ class SubmissionJudge(AbstractSubmission):
 
         email_list.append(self.email)
         return email_list
+
+    def get_mailmerge_row(self):
+        '''
+        Returns a row for the mailmerge CSV export
+        '''
+        return [self.pk,
+                self.first_name,
+                self.last_name,
+                self.street,
+                self.zip_code,
+                self.city,
+                self.tel_number,
+                self.email,
+                self.state.name,
+                self.creation_date,
+                self.creation_date.year]
 
 
 USER_TYPE_UNKNOWN = -1

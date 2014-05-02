@@ -14,13 +14,14 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
+import csv
+import datetime
 
 from django.views import generic
-from django.views.generic.base import TemplateResponseMixin
+from django.views.generic.base import TemplateResponseMixin, View
 from django.views.generic.edit import ModelFormMixin
 from django.core.urlresolvers import reverse, reverse_lazy
-
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.http import HttpResponseForbidden
 
 
@@ -142,3 +143,70 @@ class BaseSubmissionUpdateView(DbfvFormMixin, generic.UpdateView):
             return HttpResponseForbidden(u'Sie dürfen dieses Objekt nicht editieren!')
 
         return super(BaseSubmissionUpdateView, self).dispatch(request, *args, **kwargs)
+
+
+#
+# CSV Export
+#
+class BaseCsvExportView(View):
+    '''
+    Base view to implement the common CSV export logic
+    '''
+    http_method_names = ['get']
+    update_submission_flag = True
+    model = None
+
+    def dispatch(self, request, *args, **kwargs):
+        '''
+        Check for necessary permissions
+        '''
+        if not request.user.has_perm('submission.change_submissionstarter'):
+            return HttpResponseForbidden()
+
+        return super(BaseCsvExportView, self).dispatch(request, *args, **kwargs)
+
+    def get_submission_list(self):
+        '''
+        Return a list of submissions to export.
+
+        Default: all non-exported submissions
+        '''
+        submissions = self.model.objects.filter(mail_merge=False) \
+                                        .filter(submission_status=self.model.SUBMISSION_STATUS_BEWILLIGT) \
+                                        .select_related()
+
+        return submissions
+
+    def export_submission_mailmerge(self, submission_list):
+        '''
+        Generates a list with starter submission fields to be used in mail merge
+
+        :param submission_list: A list of Submissions
+        '''
+        result = []
+        for submission in submission_list:
+            result.append([unicode(s).encode("utf-8") for s in submission.get_mailmerge_row()])
+        return result
+
+    def get(self, request, *args, **kwargs):
+        response = HttpResponse(mimetype='text/csv')
+        writer = csv.writer(response, delimiter='\t')
+        today = datetime.date.today()
+        submissions = self.get_submission_list()
+
+        # Write the CSV file
+        writer.writerow(self.model.MAILMERGE_HEADER)
+        for line in self.export_submission_mailmerge(submissions):
+            writer.writerow(line)
+
+        # If necessary, update the submission flag
+        if self.update_submission_flag:
+            submissions.update(mail_merge=True)
+
+        filename = 'attachment; filename=Export-{0}-{1}-{2}-{3}.csv'.format(self.model.get_license_type(),
+                                                                            today.year,
+                                                                            today.month,
+                                                                            today.day)
+        response['Content-Disposition'] = filename
+        response['Content-Length'] = len(response.content)
+        return response
