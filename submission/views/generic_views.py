@@ -23,6 +23,7 @@ from django.views.generic.edit import ModelFormMixin
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.http import HttpResponseRedirect, HttpResponse
 from django.http import HttpResponseForbidden
+from submission.models import user_type, USER_TYPE_BUNDESVERBAND
 
 
 class DbfvViewMixin(TemplateResponseMixin):
@@ -118,6 +119,36 @@ class BaseSubmissionDeleteView(DbfvFormMixin, generic.DeleteView):
         '''
         context = super(BaseSubmissionDeleteView, self).get_context_data(**kwargs)
         context['title'] = u'Antrag {0} löschen?'.format(self.object.id)
+        return context
+
+
+class BaseSubmissionListView(DbfvViewMixin, generic.ListView):
+    context_object_name = "submission_list"
+    login_required = True
+
+    def get_context_data(self, **kwargs):
+        '''
+        Pass a list of all available dates
+        '''
+        context = super(BaseSubmissionListView, self).get_context_data(**kwargs)
+
+        # Count how many submissions were exported for each month
+        month_list = []
+        for date_obj in self.get_queryset().dates('creation_date', 'month'):
+            tmp_count = self.model.objects.filter(mail_merge=True)\
+                                          .filter(creation_date__month=date_obj.month)\
+                                          .filter(creation_date__year=date_obj.year)
+
+            month_list.append({'date': date_obj,
+                               'export_count': tmp_count.count()})
+        context['month_list'] = month_list
+        context['current_year'] = datetime.date.today().year
+        context['current_month'] = datetime.date.today().month
+        context['show_closed'] = False if user_type(self.request.user) == USER_TYPE_BUNDESVERBAND \
+            else True
+        context['mailmerge_count'] = self.model.objects.filter(mail_merge=False) \
+            .filter(submission_status=self.model.SUBMISSION_STATUS_BEWILLIGT) \
+            .count()
         return context
 
 

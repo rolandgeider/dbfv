@@ -25,22 +25,20 @@ from submission.models import State
 from submission.models import user_type
 from submission.models import USER_TYPE_BUNDESVERBAND
 from submission.models import USER_TYPE_USER
-from submission.views.generic_views import DbfvViewMixin
+from submission.views.generic_views import DbfvViewMixin, BaseCsvExportView, BaseSubmissionListView
 from submission.views.generic_views import BaseSubmissionDeleteView
 from submission.views.generic_views import BaseSubmissionUpdateView
 from submission.views.generic_views import DbfvFormMixin
 from submission.views.generic_views import BaseSubmissionCreateView
 
 
-class SubmissionListView(DbfvViewMixin, generic.ListView):
+class SubmissionListView(BaseSubmissionListView):
     '''
     Shows a list with all submissions
     '''
 
     model = SubmissionJudge
-    context_object_name = "submission_list"
     template_name = 'submission/judge/list.html'
-    login_required = True
 
     def get_queryset(self):
         '''
@@ -56,24 +54,6 @@ class SubmissionListView(DbfvViewMixin, generic.ListView):
             return queryset
         elif user_type(self.request.user) == USER_TYPE_USER:
             return queryset.filter(user=self.request.user)
-
-    def get_context_data(self, **kwargs):
-        '''
-        Pass a list of all available dates
-        '''
-        year = datetime.date.today().year
-        month = datetime.date.today().month
-
-        context = super(SubmissionListView, self).get_context_data(**kwargs)
-        context['month_list'] = self.get_queryset().dates('creation_date', 'month')
-        context['current_year'] = year
-        context['current_month'] = month
-        context['show_closed'] = False if user_type(self.request.user) == USER_TYPE_BUNDESVERBAND \
-            else True
-        context['mailmerge_count'] = SubmissionJudge.objects\
-            .filter(submission_status=SubmissionJudge.SUBMISSION_STATUS_BEWILLIGT) \
-            .count()
-        return context
 
 
 class SubmissionListMonthView(SubmissionListView,
@@ -154,3 +134,25 @@ class SubmissionUpdateStatusView(DbfvFormMixin, generic.UpdateView):
     success_url = reverse_lazy('submission-judge-list')
     permission_required = 'submission.change_submissionjudge'
     page_title = 'Status bearbeiten'
+
+
+class SubmissionCsvExportView(BaseCsvExportView):
+    '''
+    Exports all non-exported submissions to use for mail merge
+    '''
+    model = SubmissionJudge
+
+
+class SubmissionCsvIndividualExportView(BaseCsvExportView):
+    '''
+    Exports an individual submission to use for mail merge
+    '''
+
+    model = SubmissionJudge
+    update_submission_flag = False
+
+    def get_submission_list(self):
+        '''
+        Return the current submission to export.
+        '''
+        return self.model.objects.filter(pk=self.kwargs['pk'])

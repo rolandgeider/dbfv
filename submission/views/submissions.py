@@ -29,22 +29,20 @@ from submission.models import State
 from submission.models import user_type
 from submission.models import USER_TYPE_BUNDESVERBAND
 from submission.models import USER_TYPE_USER
-from submission.views.generic_views import DbfvViewMixin, BaseCsvExportView
+from submission.views.generic_views import DbfvViewMixin, BaseCsvExportView, BaseSubmissionListView
 from submission.views.generic_views import BaseSubmissionCreateView
 from submission.views.generic_views import BaseSubmissionDeleteView
 from submission.views.generic_views import BaseSubmissionUpdateView
 from submission.views.generic_views import DbfvFormMixin
 
 
-class SubmissionListView(DbfvViewMixin, generic.ListView):
+class SubmissionListView(BaseSubmissionListView):
     '''
     Shows a list with all submissions
     '''
 
     model = SubmissionStarter
-    context_object_name = "submission_list"
     template_name = 'submission/starter/list.html'
-    login_required = True
 
     def get_queryset(self):
         '''
@@ -60,31 +58,6 @@ class SubmissionListView(DbfvViewMixin, generic.ListView):
             return queryset
         elif user_type(self.request.user) == USER_TYPE_USER:
             return queryset.filter(user=self.request.user)
-
-    def get_context_data(self, **kwargs):
-        '''
-        Pass a list of all available dates
-        '''
-        context = super(SubmissionListView, self).get_context_data(**kwargs)
-
-        # Count how many submissions were exported for each month
-        month_list = []
-        for date_obj in self.get_queryset().dates('creation_date', 'month'):
-            tmp_count = SubmissionStarter.objects.filter(mail_merge=True)\
-                                                 .filter(creation_date__month=date_obj.month)\
-                                                 .filter(creation_date__year=date_obj.year)
-
-            month_list.append({'date': date_obj,
-                               'export_count': tmp_count.count()})
-        context['month_list'] = month_list
-        context['current_year'] = datetime.date.today().year
-        context['current_month'] = datetime.date.today().month
-        context['show_closed'] = False if user_type(self.request.user) == USER_TYPE_BUNDESVERBAND \
-            else True
-        context['mailmerge_count'] = SubmissionStarter.objects.filter(mail_merge=False) \
-            .filter(submission_status=SubmissionStarter.SUBMISSION_STATUS_BEWILLIGT) \
-            .count()
-        return context
 
 
 class SubmissionListMonthView(SubmissionListView,
