@@ -635,6 +635,7 @@ class SubmissionJudge(AbstractSubmission):
             email_list.append(self.state.email)
 
         email_list.append(self.email)
+        email_list.append('winie@fitness-maldener.de')
         return email_list
 
     def get_mailmerge_row(self):
