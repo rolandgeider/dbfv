@@ -504,7 +504,7 @@ class SubmissionGym(AbstractSubmission):
         '''
         Return a more human-readable representation
         '''
-        return u"Studiolizent {0}".format(self.name)
+        return u"Studiolizenz {0}".format(self.get_name)
 
     def get_absolute_url(self):
         return reverse('submission-studio-view', kwargs={'pk': self.pk})
@@ -592,7 +592,7 @@ class SubmissionJudge(AbstractSubmission):
         '''
         Return a more human-readable representation
         '''
-        return u"Kampfrichterlizent {0}".format(self.name)
+        return u"Kampfrichterlizenz {0}".format(self.get_name)
 
     def get_absolute_url(self):
         return reverse('submission-judge-view', kwargs={'pk': self.pk})
