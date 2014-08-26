@@ -608,7 +608,11 @@ class SubmissionJudge(AbstractSubmission):
         '''
         Returns the correct bank account for this submission
         '''
-        return self.state.bank_account.pk
+        bank_account = 1
+        if self.state.pk == 10:
+            bank_account = 2
+
+        return bank_account
 
     @staticmethod
     def get_license_type():
