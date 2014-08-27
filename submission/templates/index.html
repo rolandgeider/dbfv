@@ -60,17 +60,19 @@ Diese berechtigt zur Teilnahme an allen DBFV e.V / IFBB Meisterschaften.</p>
 <div class="sidebar-box">
     <h2>Optionen</h2>
     {% if perms.submission.add_manageremail %}
-        <p><a class="btn btn-block" href="{% url 'state-list' %}">Bundesländer &raquo;</a></p>
-        <p><a class="btn btn-block" href="{% url 'gym-list' %}">Studios &raquo;</a></p>
-        <p><a class="btn btn-block" href="{% url 'bank-account-list' %}">Bankonten &raquo;</a></p>
-        <p><a class="btn btn-block" href="{% url 'email-list' %}">Manager Emails &raquo;</a></p>
+        <p><a class="btn btn-block" href="{% url 'state-list' %}">Bundesländer</a></p>
+        <p><a class="btn btn-block" href="{% url 'gym-list' %}">Studios</a></p>
+        <p><a class="btn btn-block" href="{% url 'bank-account-list' %}">Bankonten</a></p>
+        <p><a class="btn btn-block" href="{% url 'email-list' %}">Manager Emails</a></p>
 
         <h4>Anträge</h4>
-        <p><a class="btn btn-block" href="{% url 'submission-list' %}">Starterlizenzen &raquo;</a></p>
-        <p><a class="btn btn-block" href="{% url 'submission-studio-list' %}">Studiolizenzen &raquo;</a></p>
-        <p><a class="btn btn-block" href="{% url 'submission-judge-list' %}">Kampfrichterizenzen &raquo;</a></p>
+        <p><a class="btn btn-block" href="{% url 'submission-list' %}">Starterlizenzen</a></p>
+        <p><a class="btn btn-block" href="{% url 'submission-judge-list' %}">Kampfrichterizenzen</a></p>
+        <p><a class="btn btn-block" href="{% url 'submission-studio-list' %}">Studiolizenzen</a></p>
+        
     {% elif perms.submission.add_submissionstarter %}
-        <p><a class="btn btn-block" href="{% url 'submission-list' %}">Liste der Anträge &raquo;</a></p>
+        <p><a class="btn btn-block" href="{% url 'submission-list' %}">Starterlizenzen</a></p>
+        <p><a class="btn btn-block" href="{% url 'submission-judge-list' %}">Kampfrichterizenzen</a></p>
     {% endif %}
 
 </div>
