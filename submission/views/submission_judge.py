@@ -30,6 +30,7 @@ from submission.views.generic_views import BaseSubmissionDeleteView
 from submission.views.generic_views import BaseSubmissionUpdateView
 from submission.views.generic_views import DbfvFormMixin
 from submission.views.generic_views import BaseSubmissionCreateView
+from submission.views.generic_views import get_overview_context
 
 
 class SubmissionListView(BaseSubmissionListView):
@@ -39,21 +40,19 @@ class SubmissionListView(BaseSubmissionListView):
 
     model = SubmissionJudge
     template_name = 'submission/judge/list.html'
-
-    def get_queryset(self):
+    
+    def get_context_data(self, **kwargs):
         '''
-        Change the queryset depending on the user's rights. The rules are the
-        following:
-            * A BV user sees all submissions
-            * A regular user sees it's own submissions
+        Pass a list of all available dates
         '''
-
+        context = super(SubmissionListView, self).get_context_data(**kwargs)
+        
         queryset = SubmissionJudge.objects.all().order_by('state', 'creation_date')
+        if user_type(self.request.user) == USER_TYPE_USER:
+            queryset = queryset.filter(user=self.request.user)
 
-        if user_type(self.request.user) == USER_TYPE_BUNDESVERBAND:
-            return queryset
-        elif user_type(self.request.user) == USER_TYPE_USER:
-            return queryset.filter(user=self.request.user)
+        context.update(get_overview_context(self.model, queryset, self.request.user))
+        return context
 
 
 class SubmissionListMonthView(SubmissionListView,
