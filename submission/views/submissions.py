@@ -50,7 +50,7 @@ class SubmissionListView(BaseSubmissionListView):
         Pass a list of all available dates
         '''
         context = super(SubmissionListView, self).get_context_data(**kwargs)
-        
+
         queryset = SubmissionStarter.objects.all().order_by('state', 'creation_date')
         if user_type(self.request.user) == USER_TYPE_USER:
             queryset = queryset.filter(user=self.request.user)

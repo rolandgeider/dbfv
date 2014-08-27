@@ -209,7 +209,8 @@ class BaseCsvExportView(View):
         if self.update_submission_flag:
             submissions.update(mail_merge=True)
 
-        filename = 'attachment; filename=Export-{0}-{1}-{2}-{3}.csv'.format(self.model.get_license_type(),
+        license_type = self.model.get_license_type()
+        filename = 'attachment; filename=Export-{0}-{1}-{2}-{3}.csv'.format(license_type,
                                                                             today.year,
                                                                             today.month,
                                                                             today.day)
@@ -241,5 +242,3 @@ def get_overview_context(model_class, queryset, user, **kwargs):
         .filter(submission_status=model_class.SUBMISSION_STATUS_BEWILLIGT) \
         .count()
     print context
-    return context
-
