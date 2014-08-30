@@ -123,7 +123,7 @@ class BaseSubmissionDeleteView(DbfvFormMixin, generic.DeleteView):
 
 
 class BaseSubmissionListView(DbfvViewMixin, generic.ListView):
-    context_object_name = "submission_list"
+    # context_object_name = "submission_list"
     login_required = True
 
 
@@ -234,6 +234,7 @@ def get_overview_context(model_class, queryset, user, **kwargs):
 
         month_list.append({'date': date_obj,
                            'export_count': tmp_count.count()})
+    context['submission_list'] = queryset
     context['month_list'] = month_list
     context['current_year'] = datetime.date.today().year
     context['current_month'] = datetime.date.today().month
@@ -241,4 +242,4 @@ def get_overview_context(model_class, queryset, user, **kwargs):
     context['mailmerge_count'] = model_class.objects.filter(mail_merge=False) \
         .filter(submission_status=model_class.SUBMISSION_STATUS_BEWILLIGT) \
         .count()
-    print context
+    return context
