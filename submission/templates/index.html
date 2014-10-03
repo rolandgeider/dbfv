@@ -30,9 +30,9 @@ Diese berechtigt zur Teilnahme an allen DBFV e.V / IFBB Meisterschaften.</p>
 <div class="row-fluid">
     <div class="span6">
         <h4>Kampfrichterlizenz</h4>
-        <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam.
-        Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus
-        commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+        <p>Nach bestandener Kampfrichterprüfung und bestandenen Probewertungen
+        kann die Kampfrichterlizenz beantragt werden. Ohne Widerspruch des Bundeskampfrichterreferenten
+        wird Ihnen die Kampfrichterlizenz zugeschickt.</p>
         {% if perms.submission.add_submissiongym %}
         <p><a class="btn btn-success" href="{% url 'submission-judge-add' %}">Antrag auf Kampfrichterlizenz stellen &raquo;</a></p>
         {% else %}
@@ -40,6 +40,7 @@ Diese berechtigt zur Teilnahme an allen DBFV e.V / IFBB Meisterschaften.</p>
         {% endif %}
     </div>
     <div class="span6">
+        <!--
         <h4>Studiolizenz</h4>
         <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam.
         Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus
@@ -49,6 +50,7 @@ Diese berechtigt zur Teilnahme an allen DBFV e.V / IFBB Meisterschaften.</p>
         {% else %}
         <p><a href="{% url 'login' %}" class="btn btn-danger">Sie müssen sich anmelden</a></p>
         {% endif %}
+        -->
     </div>
 </div>
 
