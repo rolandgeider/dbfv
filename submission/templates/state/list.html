@@ -35,12 +35,8 @@
             {% endif %}
         </td>
         <td>
-            <a href="{% url 'state-edit' state.id %}"
-               class="icon-pencil"
-               title="Bearbeiten"></a>
-            <a href="{% url 'state-delete' state.id %}"
-               class="icon-trash"
-               title="Löschen"></a>
+            <a href="{% url 'state-edit' state.id %}" title="Bearbeiten"><span class="glyphicon glyphicon-pencil"></span></a>
+            <a href="{% url 'state-delete' state.id %}" title="Löschen"><span class="glyphicon glyphicon-trash"></span></a>
         </td>
     </tr>
     {% endfor %}

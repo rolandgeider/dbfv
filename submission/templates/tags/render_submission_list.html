@@ -37,25 +37,19 @@
         {% endif %}
         <td>
             {% if submission.submission_status == SUBMISSION_STATUS_BEWILLIGT %}
-                <i class="icon-ok" title="Bewilligt"></i>
+                <span class="glyphicon glyphicon-ok" title="Bewilligt"></span>
             {% elif submission.submission_status == SUBMISSION_STATUS_ABGELEHNT %}
-                <i class="icon-remove" title="Abgelehnt"></i>
+                <span class="glyphicon glyphicon-remove" title="Abgelehnt"></span>
             {% else %}
-                <i class="icon-time" title="In Bearbeitung"></i>
+                <span class="glyphicon glyphicon-time" title="In Bearbeitung"></span>
             {% endif %}
             {{submission.get_submission_status_bv_display}}
         </td>
         <td>
-            <a href="{% url url_submission_view submission.id %}"
-               class="icon-eye-open"
-               title="Anzeigen"></a>
+            <a href="{% url url_submission_view submission.id %}" title="Anzeigen"><span class="glyphicon glyphicon-eye-open"></span></a>
         {% if user_type == USER_TYPE_BUNDESVERBAND %}
-            <a href="{% url url_submission_edit submission.id %}"
-               class="icon-pencil"
-               title="Status bearbeiten"></a>
-            <a href="{% url url_submission_delete submission.id %}"
-               class="icon-trash"
-               title="Löschen"></a>
+            <a href="{% url url_submission_edit submission.id %}" title="Status bearbeiten"><span class="glyphicon glyphicon-pencil"></span></a>
+            <a href="{% url url_submission_delete submission.id %}" title="Löschen"><span class="glyphicon glyphicon-trash"></span></a>
         {% endif %}
         </td>
     </tr>

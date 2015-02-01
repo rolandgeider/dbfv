@@ -5,7 +5,7 @@
 
 {% block content %}
 <!-- Main hero unit for a primary marketing message or call to action -->
-<div class="hero-unit">
+<div class="jumbotron">
     <h1>Willkommen!</h1>
     <p>Sie befinden sich auf der DBFV e.V. Internetseite zur Beantragung
     jeglicher Lizenzen. Bitte wählen Sie die Lizenzart aus und folgen Sie
@@ -27,8 +27,8 @@ Diese berechtigt zur Teilnahme an allen DBFV e.V / IFBB Meisterschaften.</p>
 {% endif %}
 
 <h2 style="margin-top:1.5em;">Andere Anträge</h2>
-<div class="row-fluid">
-    <div class="span6">
+<div class="row">
+    <div class="col-md-6">
         <h4>Kampfrichterlizenz</h4>
         <p>Nach bestandener Kampfrichterprüfung und bestandenen Probewertungen
         kann die Kampfrichterlizenz beantragt werden. Ohne Widerspruch des Bundeskampfrichterreferenten
@@ -39,7 +39,7 @@ Diese berechtigt zur Teilnahme an allen DBFV e.V / IFBB Meisterschaften.</p>
         <p><a href="{% url 'login' %}" class="btn btn-danger">Sie müssen sich anmelden</a></p>
         {% endif %}
     </div>
-    <div class="span6">
+    <div class="col-md-6">
         <!--
         <h4>Studiolizenz</h4>
         <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam.
@@ -62,19 +62,19 @@ Diese berechtigt zur Teilnahme an allen DBFV e.V / IFBB Meisterschaften.</p>
 <div class="sidebar-box">
     <h2>Optionen</h2>
     {% if perms.submission.add_manageremail %}
-        <p><a class="btn btn-block" href="{% url 'state-list' %}">Bundesländer</a></p>
-        <p><a class="btn btn-block" href="{% url 'gym-list' %}">Studios</a></p>
-        <p><a class="btn btn-block" href="{% url 'bank-account-list' %}">Bankonten</a></p>
-        <p><a class="btn btn-block" href="{% url 'email-list' %}">Manager Emails</a></p>
+        <p><a class="btn btn-default btn-block" href="{% url 'state-list' %}">Bundesländer</a></p>
+        <p><a class="btn btn-default btn-block" href="{% url 'gym-list' %}">Studios</a></p>
+        <p><a class="btn btn-default btn-block" href="{% url 'bank-account-list' %}">Bankonten</a></p>
+        <p><a class="btn btn-default btn-block" href="{% url 'email-list' %}">Manager Emails</a></p>
 
         <h4>Anträge</h4>
-        <p><a class="btn btn-block" href="{% url 'submission-list' %}">Starterlizenzen</a></p>
-        <p><a class="btn btn-block" href="{% url 'submission-judge-list' %}">Kampfrichterizenzen</a></p>
-        <p><a class="btn btn-block" href="{% url 'submission-studio-list' %}">Studiolizenzen</a></p>
+        <p><a class="btn btn-default btn-block" href="{% url 'submission-list' %}">Starterlizenzen</a></p>
+        <p><a class="btn btn-default btn-block" href="{% url 'submission-judge-list' %}">Kampfrichterizenzen</a></p>
+        <p><a class="btn btn-default btn-block" href="{% url 'submission-studio-list' %}">Studiolizenzen</a></p>
         
     {% elif perms.submission.add_submissionstarter %}
-        <p><a class="btn btn-block" href="{% url 'submission-list' %}">Starterlizenzen</a></p>
-        <p><a class="btn btn-block" href="{% url 'submission-judge-list' %}">Kampfrichterizenzen</a></p>
+        <p><a class="btn btn-default btn-block" href="{% url 'submission-list' %}">Starterlizenzen</a></p>
+        <p><a class="btn btn-default btn-block" href="{% url 'submission-judge-list' %}">Kampfrichterizenzen</a></p>
     {% endif %}
 
 </div>

@@ -36,15 +36,9 @@
             {% endif %}
         </td>
         <td>
-            <a href="{% url 'gym-view' gym.id %}"
-               class="icon-eye-open"
-               title="Anzeigen"></a>
-            <a href="{% url 'gym-edit' gym.id %}"
-               class="icon-pencil"
-               title="Bearbeiten"></a>
-            <a href="{% url 'gym-delete' gym.id %}"
-               class="icon-trash"
-               title="Löschen"></a>
+            <a href="{% url 'gym-view' gym.id %}" title="Anzeigen"><span class="glyphicon glyphicon-eye-open"></span></a>
+            <a href="{% url 'gym-edit' gym.id %}" title="Bearbeiten"><span class="glyphicon glyphicon-pencil"></span></a>
+            <a href="{% url 'gym-delete' gym.id %}" title="Löschen"><span class="glyphicon glyphicon-trash"></span></a>
         </td>
     </tr>
     {% endfor %}

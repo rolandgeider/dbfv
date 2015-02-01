@@ -20,12 +20,8 @@
             <a href= "mailto:{{email.email}}">{{email.email}}</a>
         </td>
         <td>
-            <a href="{% url 'email-edit' email.id %}"
-               class="icon-pencil"
-               title="Bearbeiten"></a>
-            <a href="{% url 'email-delete' email.id %}"
-               class="icon-trash"
-               title="Löschen"></a>
+            <a href="{% url 'email-edit' email.id %}" title="Bearbeiten"><span class="glyphicon glyphicon-pencil"></span></a>
+            <a href="{% url 'email-delete' email.id %}" title="Löschen"><span class="glyphicon glyphicon-trash"></span></a>
         </td>
     </tr>
     {% endfor %}

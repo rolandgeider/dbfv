@@ -1,7 +1,5 @@
-{% load i18n %}
-{% load staticfiles %}
-{% load url from future %}
 <!DOCTYPE html>
+{% load i18n staticfiles %}
 <html lang="en">
 <head>
     <!--
@@ -33,8 +31,9 @@
 </head>
 
 <body>
-    <div class="row-fluid">
-        <div class="span2" id="logo">
+    <div class="container">
+    <div class="row">
+        <div class="col-md-2" id="logo">
             <a href="http://www.dbfv.de"
                 target="_blank">
                 <img src="{% static 'img/DBFV-logo.png' %}"
@@ -43,23 +42,30 @@
                      alt="Logo des DBFV"></a>
         </div>
 
-        <div class="span10">
+        <div class="col-md-10">
             <h1>Antragssystem des DBFV e.V.</h1>
         </div>
     </div>
+    </div>
 
-    <div class="navbar">
-        <div class="navbar-inner">
-            <div class="container">
-                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                </a>
-                <a class="brand" href="{% url 'index' %}">DBFV</a>
+    <div class="navbar navbar-default">
+        <div class="container-fluid">
 
-                <div class="nav-collapse collapse">
-                <ul class="nav">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#dbfv-navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="{% url 'index' %}">DBFV</a>
+            </div>
+
+
+
+            <div class="collapse navbar-collapse" id="dbfv-navbar">
+
+                <ul class="nav navbar-nav">
                 {% if user.is_authenticated %}
                     <li class="dropdown">
                         <a href="" class="dropdown-toggle" data-toggle="dropdown">Anträge <b class="caret"></b></a>
@@ -83,7 +89,7 @@
                 {% endif %}
 
                 </ul>
-                <ul class="nav pull-right">
+                <ul class="nav navbar-nav navbar-right">
 
                     {% if not user.is_anonymous %}
                     <li class="dropdown"><a href="" class="dropdown-toggle" data-toggle="dropdown">Angemeldet als: {{user.username}} <b class="caret"></b></a>
@@ -104,18 +110,19 @@
                     {% endif %}
 
                 </ul>
-                </div>
+            </div>
             </div>
         </div>
+    </div>
     </div>
 
     <div class="container">
         <h2>{% block title %}{% endblock %}</h2>
         <div class="row">
-            <div class="span9">
+            <div class="col-md-9">
                 {% block content %}{% endblock %}
             </div>
-            <div class="span3">
+            <div class="col-md-3">
                 {% block sidebar %}{% endblock %}
             </div>
         </div>
@@ -124,18 +131,20 @@
 <!--
     <footer class="footer navbar navbar-fixed-bottom">
 -->
-    <footer class="footer navbar ">
-          <div class="navbar-inner">
-              <ul class="nav">
-                  <li>
-                      <a href="{% url 'index' %}">Antragssystem DBFV</a>
-                  </li>
-              </ul>
-              <ul class="nav pull-right">
-                  <li><a href="{% url 'impressum' %}">Impressum</a></li>
-              </ul>
-          </div>
-      </footer>
+    <footer class="navbar navbar-default">
+        <div class="container-fluid">
+        <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li>
+                    <a href="{% url 'index' %}">Antragssystem DBFV</a>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="{% url 'impressum' %}">Impressum</a></li>
+            </ul>
+        </div>
+        </div>
+    </footer>
 
     <script src="{% static 'js/jquery.js' %}"></script>
     <script src="{% static 'js/bootstrap.js' %}"></script>
