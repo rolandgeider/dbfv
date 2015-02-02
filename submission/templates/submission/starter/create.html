@@ -10,10 +10,8 @@ $(document).ready(function() {
         e.preventDefault();
         var gym_id = $(this).data('gym-id');
         var gym_name = $(this).html();
-        //id_gym
         $('#ajax_id_gym').val(gym_id);
         $('#id_gym').val(gym_id);
-        //$('#gym-name').html(gym_name);
 
         // Scroll to element
         $('html, body').animate({
@@ -47,31 +45,31 @@ aus technischen Gründen nicht möglich.</p>
     {% csrf_token %}
 
     <h4>1. Studio aus Ihrem Landesverband auswählen</h4>
-    <div class="accordion" id="accordion2">
+    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
     {% for state in states_list %}
-    <div class="accordion-group">
-        <div class="accordion-heading">
-            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse-{{ state.id }}">
-            {{ state }}
-            </a>
-        </div>
-        <div id="collapse-{{ state.id }}" class="accordion-body collapse {% if user.userprofile.state.id == state.id %}in{% endif %}">
-            <div class="accordion-inner">
-
-            {% for gym in state.gym_set.all %}
-            {% if gym.is_active %}
-                <a id="gym-{{ gym.id }}"
-                   class="gym-select"
-                   data-gym-id="{{ gym.id }}"
-                   href="#">{{ gym.name }} ({{ gym.city }})</a><br>
-            {% endif %}
-            {% endfor %}
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="heading{{ state.pk }}">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{ state.pk }}" aria-expanded="true" aria-controls="collapse{{ state.pk }}">
+                        {{ state }}
+                    </a>
+                </h4>
             </div>
-        </div>
-    </div>
+            <div id="collapse{{ state.pk }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading{{ state.pk }}">
+                <div class="panel-body">
+                {% for gym in state.gym_set.all %}
+                {% if gym.is_active %}
+                    <a id="gym-{{ gym.id }}"
+                       class="gym-select"
+                       data-gym-id="{{ gym.id }}"
+                       href="#">{{ gym.name }} ({{ gym.city }})</a><br>
+                {% endif %}
+                {% endfor %}
+                </div>
+            </div>
+      </div>
     {% endfor %}
     </div>
-
 
     <h4 id="header-form2">2. Stammdaten ausfühllen</h4>
 
