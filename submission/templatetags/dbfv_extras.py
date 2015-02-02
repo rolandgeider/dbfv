@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 
 from django import template
+from django.forms.widgets import CheckboxInput, ClearableFileInput
 from django.template.loader import render_to_string
 from django.forms.formsets import BaseFormSet
 
@@ -24,77 +25,6 @@ from submission.models import USER_TYPE_BUNDESVERBAND
 from submission.models import USER_TYPE_USER
 
 register = template.Library()
-
-
-@register.simple_tag
-def table_form_field(field):
-    """
-    Renders a single form field in a <div> with all necessary CSS attributes
-
-    :param field: the field object to render
-    """
-    context = {"field": field}
-    return render_to_string("tags/table_form_field.html", context)
-
-
-@register.inclusion_tag('tags/table_form_errors.html')
-def table_form_errors(form):
-    """
-    Renders the non-field erros of a form with all necessary HTTML and CSS
-    (non-field errors refer to errors that can't be associated to any single
-    field)
-
-    :param form: the form object
-    """
-    return {'form': form}
-
-
-@register.inclusion_tag('tags/table_form_submit.html')
-def table_form_submit(save_text='Speichern', css_classes=''):
-    """
-    Comfort function that renders a submit button with all necessary HTML
-    and CSS
-
-    :param save_text: the text to use on the submit button
-    """
-    return {'save_text': save_text,
-            'css_classes': css_classes}
-
-
-@register.inclusion_tag('tags/table_form_render_fields.html')
-def table_form_render_fields(form, save_text='Speichern'):
-    """
-    Comfort function that renders all fields in a form, as well as the submit
-    button
-
-    Internally it simply calls the other table_form_* functions and will render
-    the fields in the order they were defined. If you want to change this, you
-    need to call table_form_field for each field yourself. This function will
-    also render a hidden field with a CSRF token, so be sure to pass it to the
-    template.
-
-    It is still necessary to enclose its output in <form> tags!
-
-    For more information on the used CSS, please refer to
-    http://twitter.github.com/bootstrap/base-css.html#forms
-
-    :param form: the form to be rendered
-    :param save_text: the text to use on the submit button
-    """
-    return {'form': form,
-            'save_text': save_text}
-
-
-@register.simple_tag
-def table_form_render(form):
-    context = dict()
-    context["has_sections"] = getattr(form, "sections", False)
-    if isinstance(form, BaseFormSet):
-        context["formset"] = form
-        return render_to_string("tags/table_formset_render.html", context)
-    else:
-        context["form"] = form
-        return render_to_string("tags/table_form_render.html", context)
 
 
 @register.simple_tag
@@ -141,3 +71,109 @@ def render_submission_list(submissions, user, filter_mode, submission_type='star
     context['url_submission_delete'] = 'submission{0}-delete'.format(url_fragment)
 
     return render_to_string("tags/render_submission_list.html", context)
+
+
+
+#
+# Form utils
+#
+@register.filter(name='form_field_add_css')
+def form_field_add_css(field, css):
+    '''
+    Adds a CSS class to a form field. This is needed among other places for
+    bootstrap 3, which needs a 'form-control' class in the field itself
+    '''
+    return field.as_widget(attrs={"class": css})
+
+
+@register.filter(name='is_checkbox')
+def is_checkbox(field):
+    '''
+    Tests if a field element is a checkbox, as it needs to be handled slightly different
+
+    :param field: a form field
+    :return: boolen
+    '''
+    return field.field.widget.__class__.__name__ == CheckboxInput().__class__.__name__
+
+
+@register.filter(name='is_fileupload')
+def is_fileupload(field):
+    '''
+    Tests if a field element is a file upload, as it needs to be handled slightly different
+
+    :param field: a form field
+    :return: boolen
+    '''
+    return field.field.widget.__class__.__name__ == ClearableFileInput().__class__.__name__
+
+
+@register.inclusion_tag('tags/render_form_element.html')
+def render_form_field(field):
+    '''
+    Renders a form field with all necessary labels, help texts and labels
+    within 'form-group'.
+
+    See bootstrap documentation for details: http://getbootstrap.com/css/#forms
+    '''
+
+    return {'field': field}
+
+
+@register.inclusion_tag('tags/render_form_submit.html')
+def render_form_submit(save_text='Save', button_class='default'):
+    """
+    Comfort function that renders a submit button with all necessary HTML
+    and CSS
+
+    :param save_text: the text to use on the submit button
+    :param button_class: CSS class to apply to the button, default 'default'
+    """
+    if button_class in ('default',
+                        'primary',
+                        'success',
+                        'info',
+                        'warning',
+                        'danger',
+                        'link'):
+        button_class = button_class
+    else:
+        button_class = 'default'
+
+    return {'save_text': save_text,
+            'button_class': button_class}
+
+
+@register.inclusion_tag('tags/render_form_errors.html')
+def render_form_errors(form):
+    """
+    Renders the non-field errors of a form with all necessary HTML and CSS
+    (non-field errors refer to errors that can't be associated to any single
+    field)
+
+    :param form: the form object
+    """
+    return {'form': form}
+
+
+@register.inclusion_tag('tags/render_form_fields.html')
+def render_form_fields(form, submit_text='Save', show_save=True):
+    '''
+    Comfort function that renders all fields in a form, as well as the submit
+    button
+
+    Internally it simply calls the other table_form_* functions and will render
+    the fields in the order they were defined. If you want to change this, you
+    need to call table_form_field for each field yourself. This function will
+    also render a hidden field with a CSRF token, so be sure to pass it to the
+    template.
+
+    It is still necessary to enclose its output in <form> tags!
+
+    :param form: the form to be rendered
+    :param save_text: the text to use on the submit button
+    '''
+
+    return {'form': form,
+            'show_save': show_save,
+            'submit_text': submit_text}
