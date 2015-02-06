@@ -567,7 +567,7 @@ class SubmissionJudge(AbstractSubmission):
                         'Datum',
                         'Jahr']
 
-    FEE = 15
+    FEE = 20
 
     last_name = models.CharField('Familienname',
                                  max_length=30)
