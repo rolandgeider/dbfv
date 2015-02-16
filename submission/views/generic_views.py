@@ -83,7 +83,7 @@ class BaseSubmissionCreateView(DbfvFormMixin, generic.CreateView):
         '''
         Redirect to bank account page and send appropriate emails
         '''
-        self.object.send_emails()
+        self.object.send_emails(self.extra_data)
         self.request.session['bank-account'] = self.object.get_bank_account()
         self.request.session['submission-fee'] = self.model.FEE
         self.request.session['designated-use'] = self.object.get_bank_designated_use()
