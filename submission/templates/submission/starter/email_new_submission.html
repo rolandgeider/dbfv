@@ -16,6 +16,9 @@ Details:
 * Lizenz im Vorjahr:     {{submission.submission_last_year|yesno:"Ja,Nein"}}
 * Studio:                {{submission.gym.name}} ({{submission.gym.state.name}})
                          {{submission.gym.email}}
+{% if extra_data.championships %}* Meisterschaften:{% for championship in extra_data.championships %}
+    - {{ championship }}{% endfor %}
+{% endif %}
 
 {% if is_user %}
 Bitte überweisen Sie den Teilnahmebeitrag innerhalb von 5 Tagen

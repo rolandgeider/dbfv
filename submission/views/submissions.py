@@ -136,6 +136,20 @@ class SubmissionCreateView(BaseSubmissionCreateView):
     permission_required = 'submission.add_submissionstarter'
     template_name = 'submission/starter/create.html'
 
+    extra_data = []
+
+    def form_valid(self, form):
+        '''
+        Set extra data needed for the email
+        '''
+        def get_option(option):
+            for i in form.fields['championships'].choices:
+                if i[0] == option:
+                    return i[1]
+
+        self.extra_data = {'championships': [get_option(i) for i in form.cleaned_data['championships']]}
+        return super(SubmissionCreateView, self).form_valid(form)
+
     def get_context_data(self, **kwargs):
         '''
         Pass a list of all states

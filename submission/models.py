@@ -16,7 +16,6 @@
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import datetime
 
 from django.conf import settings
 from django.template.loader import render_to_string
@@ -241,7 +240,7 @@ class AbstractSubmission(models.Model):
         '''
         pass
 
-    def send_emails(self):
+    def send_emails(self, extra_data=[]):
         '''
         Send an email to the managers
         '''
@@ -249,6 +248,7 @@ class AbstractSubmission(models.Model):
         context['submission'] = self
         context['fee'] = self.FEE
         context['bankaccount'] = BankAccount.objects.get(pk=self.get_bank_account())
+        context['extra_data'] = extra_data
         for email in self.get_email_list():
 
             if email == self.email:

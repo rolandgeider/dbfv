@@ -6,12 +6,20 @@
 {% block scripts %}
 <script>
 $(document).ready(function() {
+    $('#form-championships').hide();
+
     $('.gym-select').click(function(e) {
         e.preventDefault();
         var gym_id = $(this).data('gym-id');
+        var gym_state = $(this).data('gym-state');
         var gym_name = $(this).html();
+
         $('#ajax_id_gym').val(gym_id);
         $('#id_gym').val(gym_id);
+
+        if (gym_state == 10) {
+            $('#form-championships').show();
+        }
 
         // Scroll to element
         $('html, body').animate({
@@ -62,6 +70,7 @@ aus technischen Gründen nicht möglich.</p>
                     <a id="gym-{{ gym.id }}"
                        class="gym-select"
                        data-gym-id="{{ gym.id }}"
+                       data-gym-state="{{ gym.state.id }}"
                        href="#">{{ gym.name }} ({{ gym.city }})</a><br>
                 {% endif %}
                 {% endfor %}
