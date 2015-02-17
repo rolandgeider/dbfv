@@ -66,7 +66,7 @@ def registration(request):
             g.user_set.add(user)
 
             # Set the user type in the profile
-            profile = user.get_profile()
+            profile = user.userprofile
             profile.type = USER_TYPE_USER
             profile.state = form.cleaned_data['state']
             profile.save()
