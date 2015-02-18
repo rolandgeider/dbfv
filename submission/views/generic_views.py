@@ -197,7 +197,7 @@ class BaseCsvExportView(View):
         return result
 
     def get(self, request, *args, **kwargs):
-        response = HttpResponse(mimetype='text/csv')
+        response = HttpResponse(content_type='text/csv')
         writer = csv.writer(response, delimiter='\t')
         today = datetime.date.today()
         submissions = self.get_submission_list()
