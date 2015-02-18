@@ -71,6 +71,8 @@ class BaseSubmissionCreateView(DbfvFormMixin, generic.CreateView):
     Creates a new submissions
     '''
 
+    extra_data = []
+
     def form_valid(self, form):
         '''
         Manually set the user when saving the form

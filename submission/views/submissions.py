@@ -136,8 +136,6 @@ class SubmissionCreateView(BaseSubmissionCreateView):
     permission_required = 'submission.add_submissionstarter'
     template_name = 'submission/starter/create.html'
 
-    extra_data = []
-
     def form_valid(self, form):
         '''
         Set extra data needed for the email
