@@ -30,8 +30,19 @@ class ChampionshipListView(DbfvViewMixin, generic.ListView):
     model = Championship
     context_object_name = "championship_list"
     template_name = 'championship/list.html'
-    permission_required = 'championship.add_Championship'
+    permission_required = 'championship.add_championship'
     login_required = True
+
+
+class ChampionshipDetailView(DbfvFormMixin, generic.detail.DetailView):
+    '''
+    Details of a championship
+    '''
+
+    model = Championship
+    permission_required = 'championship.change_championship'
+    login_required = True
+    template_name = 'championship/view.html'
 
 
 class ChampionshipCreateView(DbfvFormMixin, generic.CreateView):
@@ -41,7 +52,7 @@ class ChampionshipCreateView(DbfvFormMixin, generic.CreateView):
 
     model = Championship
     success_url = reverse_lazy('championship:championship:list')
-    permission_required = 'championship.add_Championship'
+    permission_required = 'championship.add_championship'
 
 
 class ChampionshipUpdateView(DbfvFormMixin, generic.UpdateView):
@@ -51,7 +62,7 @@ class ChampionshipUpdateView(DbfvFormMixin, generic.UpdateView):
 
     model = Championship
     success_url = reverse_lazy('championship:championship:list')
-    permission_required = 'championship.change_Championship'
+    permission_required = 'championship.change_championship'
 
 
 class ChampionshipDeleteView(DbfvFormMixin, generic.DeleteView):
@@ -61,7 +72,7 @@ class ChampionshipDeleteView(DbfvFormMixin, generic.DeleteView):
 
     model = Championship
     success_url = reverse_lazy('championship:championship:list')
-    permission_required = 'submission.delete_Championship'
+    permission_required = 'submission.delete_championship'
     template_name = 'delete.html'
 
     def get_context_data(self, **kwargs):

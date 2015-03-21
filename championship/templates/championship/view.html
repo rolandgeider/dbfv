@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load dbfv_extras %}
+
+{% block title %}Meisterschaft "{{ object.name }}"{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block content %}
+
+<table class="table">
+    <tr>
+        <th>ID</th>
+        <td>
+            {{ object.pk }}
+        </td>
+    </tr>
+    <tr>
+        <th>Name</th>
+        <td>{{ object.name }}</td>
+    </tr>
+    <tr>
+        <th>Datum</th>
+        <td>{{ object.date }}</td>
+    </tr>
+    <tr>
+        <th>Bundesland</th>
+        <td>{{ object.state }}</td>
+    </tr>
+    <tr>
+        <th>Kategorien</th>
+        <td>
+            <ul>
+            {% for category in object.category_set.all %}
+                <li>
+                    {{ category }}
+                    <a href="{% url 'championship:category:edit' category.id %}" title="Bearbeiten"><span class="glyphicon glyphicon-pencil"></span></a>
+                    <a href="{% url 'championship:category:delete' category.id %}" title="Löschen"><span class="glyphicon glyphicon-trash"></span></a>
+                </li>
+            {% empty %}
+                <em>Keine Kategorien vorhanden</em>
+            {% endfor %}
+            </ul>
+
+            <p>
+                <a href="{% url 'championship:category:add' championship.id %}" title="Hinzufügen" class="btn btn-default btn-xs">
+                    Hinzufügen
+                    <span class="glyphicon glyphicon-plus"></span>
+                </a>
+            </p>
+        </td>
+    </tr>
+</table>
+{% endblock %}
+
+{% block sidebar %}
+<div class="sidebar-box">
+    <h4>Optionen</h4>
+    <p>
+        <a href="{% url 'championship:championship:edit' object.id %}" title="Bearbeiten">Bearbeiten</a>
+    </p>
+
+    <p>
+        <a href="{% url 'championship:championship:delete' object.id %}" title="Löschen">Löschen</a>
+    </p>
+</div>
+{% endblock %}
+

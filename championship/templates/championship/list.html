@@ -26,8 +26,7 @@
             {{championship.state.name}}
         </td>
         <td>
-            <a href="{% url 'championship:championship:edit' championship.id %}" title="Bearbeiten"><span class="glyphicon glyphicon-pencil"></span></a>
-            <a href="{% url 'championship:championship:delete' championship.id %}" title="Löschen"><span class="glyphicon glyphicon-trash"></span></a>
+            <a href="{% url 'championship:championship:view' championship.id %}" title="Öffnen"><span class="glyphicon glyphicon-eye-open"></span></a>
         </td>
     </tr>
     {% endfor %}

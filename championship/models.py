@@ -52,3 +52,33 @@ class Championship(models.Model):
         Return a more human-readable representation
         '''
         return u'{0} ({1})'.format(self.name, formats.date_format(self.date, "SHORT_DATE_FORMAT"))
+
+
+class Category(models.Model):
+    '''
+    Category in a Championship
+    '''
+    class Meta:
+        '''
+        Configure other properties
+        '''
+        ordering = ["name"]
+
+    championship = models.ForeignKey(Championship,
+                                     verbose_name='Meistershaft',
+                                     editable=False)
+    '''
+    Championship this category belongs to
+    '''
+
+    name = models.CharField(verbose_name='Name',
+                            max_length=50)
+    '''
+    The category's name
+    '''
+
+    def __unicode__(self):
+        '''
+        Return a more human-readable representation
+        '''
+        return u'{0}'.format(self.name)

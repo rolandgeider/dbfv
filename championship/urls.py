@@ -17,9 +17,10 @@
 from django.conf.urls import patterns, url, include
 
 from championship.views import championships
+from championship.views import categories
 
 
-# sub patterns for workout sessions
+# sub patterns for championships
 patterns_championship = patterns('',
 
     url(r'^liste/alle$',
@@ -28,17 +29,31 @@ patterns_championship = patterns('',
     url(r'^hinzufuegen$',
         championships.ChampionshipCreateView.as_view(),
         name='add'),
-    url(r'^(?P<pk>\d+)/bearbeiten/$',
+    url(r'^(?P<pk>\d+)/anzeigen$',
+        championships.ChampionshipDetailView.as_view(),
+        name='view'),
+    url(r'^(?P<pk>\d+)/bearbeiten$',
         championships.ChampionshipUpdateView.as_view(),
         name='edit'),
-    url(r'^(?P<pk>\d+)/loeschen/$',
+    url(r'^(?P<pk>\d+)/loeschen$',
         championships.ChampionshipDeleteView.as_view(),
         name='delete'),
 )
 
+# sub patterns for categories
+patterns_categories = patterns('',
+    url(r'^hinzufuegen/meisterschaft-(?P<championship_pk>\d+)$',
+        categories.CategoryCreateView.as_view(),
+        name='add'),
+    url(r'^(?P<pk>\d+)/bearbeiten$',
+        categories.CategoryUpdateView.as_view(),
+        name='edit'),
+    url(r'^(?P<pk>\d+)/loeschen$',
+        categories.CategoryDeleteView.as_view(),
+        name='delete'),
+)
+
 urlpatterns = patterns('',
-   url(r'^123$',
-        championships.ChampionshipListView.as_view(),
-        name='123'),
     url(r'^meisterschaft/', include(patterns_championship, namespace="championship")),
+    url(r'^kategorie/', include(patterns_categories, namespace="category")),
 )
