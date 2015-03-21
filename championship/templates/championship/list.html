@@ -14,20 +14,20 @@
     </tr>
     </thead>
     <tbody>
-    {% for champtionship in championship_list %}
+    {% for championship in championship_list %}
     <tr>
         <td>
-            {{champtionship.name}}
+            {{championship.name}}
         </td>
         <td>
-            {{champtionship.date}}
+            {{championship.date}}
         </td>
         <td>
-            {{champtionship.state.name}}
+            {{championship.state.name}}
         </td>
         <td>
-            <a href="{% url 'championship:championship:edit' champtionship.id %}" title="Bearbeiten"><span class="glyphicon glyphicon-pencil"></span></a>
-            <a href="{% url 'championship:championship:delete' champtionship.id %}" title="Löschen"><span class="glyphicon glyphicon-trash"></span></a>
+            <a href="{% url 'championship:championship:edit' championship.id %}" title="Bearbeiten"><span class="glyphicon glyphicon-pencil"></span></a>
+            <a href="{% url 'championship:championship:delete' championship.id %}" title="Löschen"><span class="glyphicon glyphicon-trash"></span></a>
         </td>
     </tr>
     {% endfor %}
