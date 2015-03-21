@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load url from future %}
+
+{% block title %}Meisterschaften{% endblock %}
+
+{% block content %}
+{% if championship_list %}
+<table class="table table-striped" data-toggle="list">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Datum</th>
+        <th>Bundesland</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for champtionship in championship_list %}
+    <tr>
+        <td>
+            {{champtionship.name}}
+        </td>
+        <td>
+            {{champtionship.date}}
+        </td>
+        <td>
+            {{champtionship.state.name}}
+        </td>
+        <td>
+            <a href="{% url 'championship:championship:edit' champtionship.id %}" title="Bearbeiten"><span class="glyphicon glyphicon-pencil"></span></a>
+            <a href="{% url 'championship:championship:delete' champtionship.id %}" title="Löschen"><span class="glyphicon glyphicon-trash"></span></a>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+    <p>Es liegen momentan keine Meisterschaften vor.</p>
+{% endif %}
+{% endblock %}
+
+{% block sidebar %}
+<div class="sidebar-box">
+    <h5>Aktionen</h5>
+    <p><a href="{% url 'championship:championship:add' %}">Meisterschaft hinzufügen</a></p>
+</div>
+{% endblock %}

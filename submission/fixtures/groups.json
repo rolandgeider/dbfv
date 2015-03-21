@@ -1,7 +1,5 @@
 [
     {
-        "pk": 2, 
-        "model": "auth.group", 
         "fields": {
             "name": "Bundesverband", 
             "permissions": [
@@ -9,6 +7,21 @@
                     "add_user", 
                     "auth", 
                     "user"
+                ], 
+                [
+                    "add_championshipsubmission", 
+                    "championship", 
+                    "championship"
+                ], 
+                [
+                    "change_championshipsubmission", 
+                    "championship", 
+                    "championship"
+                ], 
+                [
+                    "delete_championshipsubmission", 
+                    "champion", 
+                    "championship"
                 ], 
                 [
                     "add_bankaccount", 
@@ -101,11 +114,11 @@
                     "submissionstarter"
                 ]
             ]
-        }
+        }, 
+        "model": "auth.group", 
+        "pk": 2
     }, 
     {
-        "pk": 3, 
-        "model": "auth.group", 
         "fields": {
             "name": "User", 
             "permissions": [
@@ -125,6 +138,8 @@
                     "submissionstarter"
                 ]
             ]
-        }
+        }, 
+        "model": "auth.group", 
+        "pk": 3
     }
 ]

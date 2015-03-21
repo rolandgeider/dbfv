@@ -84,6 +84,9 @@
                         <li><a href="{% url 'state-list' %}">Bundesländer</a></li>
                         <li><a href="{% url 'bank-account-list' %}">Bankkonten</a></li>
                         <li><a href="{% url 'email-list' %}">Manager Emails</a></li>
+                        <li class="divider"></li>
+                        <li class="dropdown-header">Meisterschaften</li>
+                        <li><a href="{% url 'championship:championship:list' %}">Verwaltung</a></li>
                     </ul>
                     </li>
                 {% endif %}

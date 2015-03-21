@@ -19,7 +19,7 @@ Simple script that filters the output of django's dumpdata command into more
 manageable chunks.
 
 Create the data.json e.g. with:
-    python ../../manage.py dumpdata --indent=4 > data.json
+    python ../manage.py dumpdata --indent=4 > data.json
 '''
 
 import json
@@ -37,6 +37,12 @@ def filter_dump(data, model_list, filename):
 fixture = open('data.json')
 data = json.load(fixture)
 fixture.close()
+
+#
+# Core
+#
+filter_dump(data, ('core.championshipsubmission',), 'championship.json')
+
 
 #
 # Submission
