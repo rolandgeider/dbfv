@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load dbfv_extras %}
+{% load i18n %}
+
+{% block title %}Vorschau{% endblock %}
+
+{% block content %}
+<h4>
+    Typ:
+    {% if email_type == 'starter' %}
+        Starter
+    {% else %}
+        Studio
+    {% endif %}
+</h4>
+<form action="{{ form_action }}"
+  method="post"
+  class="form-horizontal">
+    {% csrf_token %}
+    <input type="hidden" name="{{ stage_field }}" value="2" />
+    <input type="hidden" name="{{ hash_field }}" value="{{ hash_value }}" />
+    <input type="hidden" name="body" value="{{ form.cleaned_data.body }}" />
+    <input type="hidden" name="subject" value="{{ form.cleaned_data.subject }}" />
+
+    <table class="table">
+    <tr>
+        <th>Betreff</th>
+        <td><pre>{{ form.cleaned_data.subject }}</pre></td>
+    </tr>
+    <tr>
+        <th>Inhalt</th>
+        <td><pre>{{ form.cleaned_data.body }}</pre></td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            {% render_form_submit 'Emails verschicken' %}
+        </td>
+    </tr>
+</table>
+</form>
+
+<form action="{{ form_action }}"
+      method="post"
+      class="form-horizontal">
+    {% render_form_fields form 'Korrigieren' %}
+</form>
+{% endblock %}
+
+{% block sidebar %}
+
+    <h4>Benutzung</h4>
+    <ul>
+        <li>aaaa</li>
+        <li>bbbbb</li>
+        <li>ccccc</li>
+        <li>ddddd</li>
+    </ul>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load dbfv_extras %}
+{% load i18n %}
+
+{% block title %}Emailverteiler{% endblock %}
+
+{% block content %}
+<a href="{% url 'core:email:add' 'starter' %}">Starter</a>
+<a href="{% url 'core:email:add' 'studio' %}">Studio</a>
+</form>
+{% endblock %}
+
+{% block sidebar %}
+    <h4>Benutzung</h4>
+    <ul>
+        <li>aaaa</li>
+        <li>bbbbb</li>
+        <li>ccccc</li>
+        <li>ddddd</li>
+    </ul>
+{% endblock %}

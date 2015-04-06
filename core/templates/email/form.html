@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load dbfv_extras %}
+{% load i18n %}
+
+{% block title %}Emailverteiler{% endblock %}
+
+{% block content %}
+<h4>
+    Typ:
+    {% if email_type == 'starter' %}
+        Starter
+    {% else %}
+        Studio
+    {% endif %}
+</h4>
+
+<form action="{{ form_action }}"
+      method="post"
+      class="form-horizontal">
+    {% render_form_fields form %}
+</form>
+{% endblock %}
+
+{% block sidebar %}
+
+    <h4>Benutzung</h4>
+    <ul>
+        <li>aaaa</li>
+        <li>bbbbb</li>
+        <li>ccccc</li>
+        <li>ddddd</li>
+    </ul>
+{% endblock %}

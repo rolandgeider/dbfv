@@ -83,7 +83,10 @@
                         <li><a href="{% url 'gym-list' %}">Studios</a></li>
                         <li><a href="{% url 'state-list' %}">Bundesländer</a></li>
                         <li><a href="{% url 'bank-account-list' %}">Bankkonten</a></li>
+                        <li class="divider"></li>
+                        <li class="dropdown-header">Emails</li>
                         <li><a href="{% url 'email-list' %}">Manager Emails</a></li>
+                        <li><a href="{% url 'core:email:overview' %}">Email Verteiler</a></li>
                     </ul>
                     </li>
                 {% endif %}
