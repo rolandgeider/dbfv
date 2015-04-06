@@ -408,6 +408,10 @@ class SubmissionStarter(AbstractSubmission):
         if self.gym.state.email:
             email_list.append(self.gym.state.email)
 
+        # Hamburg
+        if self.gym.state.pk == 6:
+            email_list.append('clausmaibaum@web.de')
+
         email_list.append(self.email)
         return email_list
 
@@ -639,8 +643,12 @@ class SubmissionJudge(AbstractSubmission):
             email_list.append(self.state.email)
 
         email_list.append(self.email)
-        email_list.append('winie@fitness-maldener.de')
         email_list.append('enzokoenig@gmail.com')
+
+        # Hamburg
+        if self.gym.state.pk == 6:
+            email_list.append('clausmaibaum@web.de')
+
         return email_list
 
     def get_mailmerge_row(self):
