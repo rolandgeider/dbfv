@@ -5,17 +5,31 @@
 {% block title %}Emailverteiler{% endblock %}
 
 {% block content %}
-<a href="{% url 'core:email:add' 'starter' %}">Starter</a>
-<a href="{% url 'core:email:add' 'studio' %}">Studio</a>
-</form>
+
+    <p>Bitte wählen Sie die Empfänger</p>
+
+    <table class="table">
+        <tr>
+            <td>
+                <a href="{% url 'core:email:add' 'starter' %}" class="btn btn-default btn-block">Starterlizenzen</a>
+            </td>
+            <td>
+                es werden alle Teilnehmer angeschrieben, die im aktuellen Jahr
+                eine Starterlizenz beantragt haben und auch bewilligt bekommen haben.
+                Falls ein teilnehmer mehr als einmal im System erscheint, so wird
+                er nur einmal angeschrieben.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a href="{% url 'core:email:add' 'studio' %}" class="btn btn-default btn-block">Studio</a>
+            </td>
+            <td>
+                es werden alle aktuell aktive Studios angeschrieben
+            </td>
+        </tr>
+    </table>
 {% endblock %}
 
 {% block sidebar %}
-    <h4>Benutzung</h4>
-    <ul>
-        <li>aaaa</li>
-        <li>bbbbb</li>
-        <li>ccccc</li>
-        <li>ddddd</li>
-    </ul>
 {% endblock %}
