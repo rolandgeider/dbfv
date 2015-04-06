@@ -33,6 +33,9 @@ class EmailListFormPreview(FormPreview):
     list_type = None
 
     def parse_params(self, *args, **kwargs):
+        '''
+        Save the current recipient type
+        '''
         self.list_type = kwargs['type']
 
     def get_context(self, request, form):
