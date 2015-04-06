@@ -33,12 +33,12 @@
             <ul>
             {% for category in object.category_set.all %}
                 <li>
-                    {{ category }}
                     <a href="{% url 'championship:category:edit' category.id %}" title="Bearbeiten"><span class="glyphicon glyphicon-pencil"></span></a>
                     <a href="{% url 'championship:category:delete' category.id %}" title="Löschen"><span class="glyphicon glyphicon-trash"></span></a>
+                    {{ category }}
                 </li>
             {% empty %}
-                <em>Keine Kategorien vorhanden</em>
+                <li><em>Keine Kategorien vorhanden</em></li>
             {% endfor %}
             </ul>
 
