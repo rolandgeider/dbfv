@@ -14,21 +14,21 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 
-from django.conf.urls import patterns, url, include
 from django.views.generic import TemplateView
-from core.forms import EmailListForm
+from django.conf.urls import patterns, url, include
+from django.contrib.auth.decorators import permission_required
 
+from core.forms import EmailListForm
 from core.views import email_lists
 
 
 # sub patterns for email lists
 patterns_email = patterns('',
-    url(r'^erstellen/$',
-        TemplateView.as_view(template_name="email/overview.html"),
+    url(r'^auswaehlen/$',
+        permission_required('core.change_emailcron')(TemplateView.as_view(template_name="email/overview.html")),
         name='overview'),
     url(r'^erstellen/(?P<type>(starter|studio))$',
-        email_lists.EmailListFormPreview(EmailListForm),
-        # email_lists.EmailListFormPreview.as_view(),
+        permission_required('core.change_emailcron')(email_lists.EmailListFormPreview(EmailListForm)),
         name='add'),
 )
 
