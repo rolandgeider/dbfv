@@ -39,6 +39,9 @@ patterns_championship = patterns('',
     url(r'^(?P<pk>\d+)/loeschen$',
         championships.ChampionshipDeleteView.as_view(),
         name='delete'),
+    url(r'^(?P<pk>\d+)/export-csv',
+        championships.export_participants,
+        name='export-csv'),
 )
 
 # sub patterns for categories

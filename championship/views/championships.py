@@ -14,7 +14,10 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
+import csv
 from django.contrib.auth.decorators import permission_required
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 
 from django.views import generic
 from django.core.urlresolvers import reverse_lazy
@@ -83,3 +86,31 @@ class ChampionshipDeleteView(DbfvFormMixin, generic.DeleteView):
         context = super(ChampionshipDeleteView, self).get_context_data(**kwargs)
         context['title'] = u'Meisterschaft {0} löschen?'.format(self.object.name)
         return context
+
+
+@permission_required('championship.change_championship')
+def export_participants(request, pk):
+    '''
+    Export all participants for a championship
+    '''
+
+    championship = get_object_or_404(Championship, pk=pk)
+    participants = championship.participation_set.all()
+
+    response = HttpResponse(content_type='text/csv')
+    writer = csv.writer(response)
+    writer.writerow(['Teilnehmernr', 'Platzierung', 'Kategorie', 'Teilnehmer', 'Studio'])
+
+    for participant in participants:
+        writer.writerow([participant.participation_nr,
+                         participant.placement,
+                         participant.category,
+                         participant.submission.get_name,
+                         participant.submission.gym.name,
+                         ])
+
+    # Send the data to the browser
+    response['Content-Disposition'] = 'attachment; filename=Meisterschaft-{0}.csv'.\
+        format(championship.pk)
+    response['Content-Length'] = len(response.content)
+    return response

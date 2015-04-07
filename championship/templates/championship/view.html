@@ -78,11 +78,15 @@
 <div class="sidebar-box">
     <h4>Optionen</h4>
     <p>
-        <a href="{% url 'championship:championship:edit' object.id %}" title="Bearbeiten">Bearbeiten</a>
+        <a href="{% url 'championship:championship:edit' object.id %}">Bearbeiten</a>
     </p>
 
     <p>
-        <a href="{% url 'championship:championship:delete' object.id %}" title="Löschen">Löschen</a>
+        <a href="{% url 'championship:championship:export-csv' object.id %}">Teilnehmer exportieren</a>
+    </p>
+
+    <p>
+        <a href="{% url 'championship:championship:delete' object.id %}">Löschen</a>
     </p>
 </div>
 {% endblock %}
