@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
+from django.contrib.auth.decorators import permission_required
 
 from django.views import generic
 from django.core.urlresolvers import reverse_lazy

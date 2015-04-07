@@ -18,6 +18,7 @@ from django.conf.urls import patterns, url, include
 
 from championship.views import championships
 from championship.views import categories
+from championship.views import participations
 
 
 # sub patterns for championships
@@ -53,7 +54,15 @@ patterns_categories = patterns('',
         name='delete'),
 )
 
+# sub patterns for participations
+patterns_participation = patterns('',
+  url(r'^antrag-(?P<submission_pk>\d+)/anmelden$',
+      participations.ParticipationCreateView.as_view(),
+      name='register'),
+)
+
 urlpatterns = patterns('',
-    url(r'^meisterschaft/', include(patterns_championship, namespace="championship")),
+    url(r'^', include(patterns_championship, namespace="championship")),
+    url(r'^teilnahme/', include(patterns_participation, namespace="participation")),
     url(r'^kategorie/', include(patterns_categories, namespace="category")),
 )

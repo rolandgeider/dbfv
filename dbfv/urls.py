@@ -11,6 +11,6 @@ urlpatterns = patterns('',
 
 
     # The submission application
-    url(r'championship/', include('championship.urls', namespace='championship')),
+    url(r'meisterschaft/', include('championship.urls', namespace='championship')),
     url(r'^', include('submission.urls')),
 )

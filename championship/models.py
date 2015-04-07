@@ -15,14 +15,16 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
 
+import datetime
+
 from django.db import models
 from django.utils import formats
-from submission.models import State
+from submission.models import State, SubmissionStarter
 
 
 class Championship(models.Model):
     '''
-    Championship used in
+    A Championship
     '''
     class Meta:
         '''
@@ -82,3 +84,55 @@ class Category(models.Model):
         Return a more human-readable representation
         '''
         return u'{0}'.format(self.name)
+
+
+def limit_championship_choices():
+    return {'date__gte': datetime.date.today()}
+
+
+class Participation(models.Model):
+    '''
+    Intermediate table for championship participation
+    '''
+
+    class Meta:
+        '''
+        Configure other properties
+        '''
+        unique_together = (("championship", "participation_nr"),
+                           ("championship", "category", "submission"),
+                           ("championship", "category", "placement"))
+
+    submission = models.ForeignKey(SubmissionStarter,
+                                   editable=False,
+                                   verbose_name='Antrag')
+    '''
+    The user participating in a championship
+    '''
+
+    participation_nr = models.IntegerField(editable=False,
+                                           verbose_name='Teilnehmernummer')
+    '''
+    A unique identification number per user and championship
+    '''
+
+    championship = models.ForeignKey(Championship,
+                                     limit_choices_to=limit_championship_choices,
+                                     verbose_name='Meisterschaft')
+    '''
+    The championship
+    '''
+
+    category = models.ForeignKey(Category,
+                                 verbose_name='Kategorie')
+    '''
+    The categories in the championship
+
+    (usually only one, but for couples, more than one can be selected)
+    '''
+
+    placement = models.IntegerField(default=0,
+                                    verbose_name='Platzierung')
+    '''
+    The user's placement in this championship
+    '''
