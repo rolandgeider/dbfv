@@ -14,17 +14,15 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
-from django.contrib.auth.decorators import permission_required
-from django.contrib.auth.models import User
+
 from django.db.models.aggregates import Max
 from django.shortcuts import get_object_or_404
-
 from django.views import generic
-from django.core.urlresolvers import reverse_lazy, reverse
-from championship.models import Championship, Participation
-from submission.models import SubmissionStarter
+from django.core.urlresolvers import reverse
 
-from submission.views.generic_views import DbfvViewMixin, DbfvFormMixin
+from championship.models import Participation
+from submission.models import SubmissionStarter
+from submission.views.generic_views import DbfvFormMixin
 
 
 class ParticipationCreateView(DbfvFormMixin, generic.CreateView):
@@ -37,6 +35,7 @@ class ParticipationCreateView(DbfvFormMixin, generic.CreateView):
 
     def get_success_url(self):
         '''
+        Return to the championship page
         '''
         return reverse('championship:championship:view', kwargs={'pk': self.object.championship.pk})
 
@@ -55,3 +54,18 @@ class ParticipationCreateView(DbfvFormMixin, generic.CreateView):
         form.instance.submission = submission
         form.instance.participation_nr = max_participation
         return super(ParticipationCreateView, self).form_valid(form)
+
+
+class ParticipationUpdateView(DbfvFormMixin, generic.UpdateView):
+    '''
+    Updates a participation
+    '''
+
+    model = Participation
+    permission_required = 'championship.change_participation'
+
+    def get_success_url(self):
+        '''
+        Return to the championship page
+        '''
+        return reverse('championship:championship:view', kwargs={'pk': self.object.championship.pk})

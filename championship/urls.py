@@ -59,6 +59,9 @@ patterns_categories = patterns('',
 
 # sub patterns for participations
 patterns_participation = patterns('',
+  url(r'^(?P<pk>\d+)/bearbeiten$',
+      participations.ParticipationUpdateView.as_view(),
+      name='edit'),
   url(r'^antrag-(?P<submission_pk>\d+)/anmelden$',
       participations.ParticipationCreateView.as_view(),
       name='register'),

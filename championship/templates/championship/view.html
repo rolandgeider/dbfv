@@ -55,6 +55,7 @@
 <h3>Teilnehmer</h3>
 <table class="table">
     <tr>
+        <th></th>
         <th>Teilnehmernr.</th>
         <th>Kategorie</th>
         <th>Platzierung</th>
@@ -63,6 +64,11 @@
     </tr>
 {% for participation in object.participation_set.all %}
     <tr>
+        <td>
+            <a href="{% url 'championship:participation:edit' participation.pk %}">
+                <span class="glyphicon glyphicon-pencil"></span>
+            </a>
+        </td>
         <td>{{ participation.participation_nr }}</td>
         <td>{{ participation.category }}</td>
         <td>{{ participation.placement }}</td>
