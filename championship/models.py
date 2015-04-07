@@ -28,7 +28,7 @@ class Championship(models.Model):
         '''
         Configure other properties
         '''
-        ordering = ["date", "name"]
+        ordering = ["-date", "name"]
 
     name = models.CharField(verbose_name='Name',
                             max_length=50)
