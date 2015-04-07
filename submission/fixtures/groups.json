@@ -9,18 +9,33 @@
                     "user"
                 ], 
                 [
-                    "add_championshipsubmission", 
+                    "add_category", 
+                    "championship", 
+                    "category"
+                ], 
+                [
+                    "change_category", 
+                    "championship", 
+                    "category"
+                ], 
+                [
+                    "delete_category", 
+                    "championship", 
+                    "category"
+                ], 
+                [
+                    "add_championship", 
                     "championship", 
                     "championship"
                 ], 
                 [
-                    "change_championshipsubmission", 
+                    "change_championship", 
                     "championship", 
                     "championship"
                 ], 
                 [
-                    "delete_championshipsubmission", 
-                    "champion", 
+                    "delete_championship", 
+                    "championship", 
                     "championship"
                 ], 
                 [
