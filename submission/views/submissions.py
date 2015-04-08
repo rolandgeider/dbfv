@@ -95,6 +95,7 @@ class SubmissionListMonthView(SubmissionListView,
                                                  .filter(creation_date__year=date_obj.year)
             month_list.append({'date': date_obj,
                                'export_count': tmp_count.count()})
+        context['submission_list'] = self.get_queryset()
         context['month_list'] = month_list
         context['current_year'] = datetime.date.today().year
         context['current_month'] = datetime.date.today().month
