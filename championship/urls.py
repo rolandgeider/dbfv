@@ -19,6 +19,7 @@ from django.conf.urls import patterns, url, include
 from championship.views import championships
 from championship.views import categories
 from championship.views import participations
+from championship.views import placements
 
 
 # sub patterns for championships
@@ -59,6 +60,9 @@ patterns_categories = patterns('',
 
 # sub patterns for participations
 patterns_participation = patterns('',
+  url(r'^(?P<pk>\d+)/anzeigen$',
+      participations.ParticipationDetailView.as_view(),
+      name='view'),
   url(r'^(?P<pk>\d+)/bearbeiten$',
       participations.ParticipationUpdateView.as_view(),
       name='edit'),
@@ -67,8 +71,19 @@ patterns_participation = patterns('',
       name='register'),
 )
 
+# sub patterns for championship placements
+patterns_placement = patterns('',
+  url(r'^(?P<pk>\d+)/bearbeiten$',
+      placements.PlacementUpdateView.as_view(),
+      name='edit'),
+  url(r'^antrag-(?P<participation_pk>\d+)/anmelden$',
+      placements.PlacementCreateView.as_view(),
+      name='register'),
+)
+
 urlpatterns = patterns('',
     url(r'^', include(patterns_championship, namespace="championship")),
     url(r'^teilnahme/', include(patterns_participation, namespace="participation")),
+    url(r'^platzierung/', include(patterns_placement, namespace="placement")),
     url(r'^kategorie/', include(patterns_categories, namespace="category")),
 )

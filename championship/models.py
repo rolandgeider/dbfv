@@ -100,8 +100,7 @@ class Participation(models.Model):
         Configure other properties
         '''
         unique_together = (("championship", "participation_nr"),
-                           ("championship", "category", "submission"),
-                           ("championship", "category", "placement"))
+                           ("championship", "submission"))
 
     submission = models.ForeignKey(SubmissionStarter,
                                    editable=False,
@@ -123,16 +122,35 @@ class Participation(models.Model):
     The championship
     '''
 
+
+
+class Placement(models.Model):
+    '''
+    A placement for an athlete in a championship for a specific category
+    '''
+
+    class Meta:
+        '''
+        Configure other properties
+        '''
+        unique_together = (("participation", "category"))
+
+    participation = models.ForeignKey(Participation,
+                                      editable=False,
+                                      verbose_name='Teilnahme')
+    '''
+    The participation (basically, a championship) for this placement
+    '''
+
+
     category = models.ForeignKey(Category,
                                  verbose_name='Kategorie')
     '''
     The categories in the championship
-
-    (usually only one, but for couples, more than one can be selected)
     '''
 
     placement = models.IntegerField(default=0,
                                     verbose_name='Platzierung')
     '''
-    The user's placement in this championship
+    The user's placement in this championship and category
     '''

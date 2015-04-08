@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load dbfv_extras %}
+
+{% block title %}#{{ object.participation_nr }} - {{ object.submission.get_name }}{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block content %}
+
+<table class="table">
+    <tr>
+        <th>Teilnehmernummer</th>
+        <td colspan="3">
+            {{ object.participation_nr }}
+        </td>
+    </tr>
+    <tr>
+        <th>Name</th>
+        <td colspan="3">{{ object.submission.get_name }}</td>
+    </tr>
+    <tr>
+        <th>Starterlizenz</th>
+        <td colspan="3"><a href="{% url 'submission-view' object.submission.pk %}">#{{ object.submission.pk }}</a></td>
+    </tr>
+    <tr>
+        <th>Meisterschaft</th>
+        <td colspan="3"><a href="{% url 'championship:championship:view' object.championship.pk %}">{{ object.championship.name }}</a></td>
+    </tr>
+    <tr>
+        <th></th>
+        <th>Kategorie</th>
+        <th>Platzierung</th>
+        <th>Aktionen</th>
+    </tr>
+    {% for placement in object.placement_set.all %}
+        <tr>
+            <td>
+            </td>
+            <td>
+                {{ placement.category }}
+            </td>
+            <td>
+                {{ placement.placement }}
+                </td>
+            <td>
+                <a href="{% url 'championship:placement:edit' placement.pk %}"><span class="glyphicon glyphicon-pencil"></span></a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tr>
+</table>
+
+{% endblock %}
+
+{% block sidebar %}
+<div class="sidebar-box">
+    <h4>Optionen</h4>
+    <p><a href="{% url 'championship:placement:register' object.championship.pk %}">Kategorie hinzufügen</a>
+    <p>Zur Meisterschaftsseite gehen</a>
+</p>
+</div>
+{% endblock %}
+

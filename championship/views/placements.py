@@ -20,56 +20,44 @@ from django.shortcuts import get_object_or_404
 from django.views import generic
 from django.core.urlresolvers import reverse
 
-from championship.models import Participation
+from championship.models import Participation, Placement
 from submission.models import SubmissionStarter
 from submission.views.generic_views import DbfvFormMixin
 
 
-class ParticipationDetailView(DbfvFormMixin, generic.detail.DetailView):
+class PlacementCreateView(DbfvFormMixin, generic.CreateView):
     '''
-    Details of a participation at a championship
-    '''
-
-    model = Participation
-    permission_required = 'championship.change_participation'
-    login_required = True
-    template_name = 'participation/view.html'
-
-
-class ParticipationCreateView(DbfvFormMixin, generic.CreateView):
-    '''
-    Creates a new participation for a championship
+    Creates a new placement for a participation in a championship
     '''
 
-    model = Participation
-    permission_required = 'championship.add_participation'
+    model = Placement
+    permission_required = 'championship.add_placement'
 
     def get_success_url(self):
         '''
         Return to the championship page
         '''
-        return reverse('championship:participation:view', kwargs={'pk': self.object.pk})
+        return reverse('championship:participation:view', kwargs={'pk': self.object.participation.pk})
 
     def form_valid(self, form):
         '''
-        Set user and participation number
+        Set participation number
         '''
-        submission = get_object_or_404(SubmissionStarter, pk=self.kwargs['submission_pk'])
-        form.instance.submission = submission
-        form.instance.participation_nr = max_participation
-        return super(ParticipationCreateView, self).form_valid(form)
+        participation = get_object_or_404(Participation, pk=self.kwargs['participation_pk'])
+        form.instance.participation = participation
+        return super(PlacementCreateView, self).form_valid(form)
 
 
-class ParticipationUpdateView(DbfvFormMixin, generic.UpdateView):
+class PlacementUpdateView(DbfvFormMixin, generic.UpdateView):
     '''
-    Updates a participation
+    Updates a placement
     '''
 
-    model = Participation
-    permission_required = 'championship.change_participation'
+    model = Placement
+    permission_required = 'championship.change_placement'
 
     def get_success_url(self):
         '''
         Return to the championship page
         '''
-        return reverse('championship:championship:view', kwargs={'pk': self.object.championship.pk})
+        return reverse('championship:participation:view', kwargs={'pk': self.object.participation.pk})
