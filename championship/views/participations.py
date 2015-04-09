@@ -56,20 +56,4 @@ class ParticipationCreateView(DbfvFormMixin, generic.CreateView):
         '''
         submission = get_object_or_404(SubmissionStarter, pk=self.kwargs['submission_pk'])
         form.instance.submission = submission
-        form.instance.participation_nr = max_participation
         return super(ParticipationCreateView, self).form_valid(form)
-
-
-class ParticipationUpdateView(DbfvFormMixin, generic.UpdateView):
-    '''
-    Updates a participation
-    '''
-
-    model = Participation
-    permission_required = 'championship.change_participation'
-
-    def get_success_url(self):
-        '''
-        Return to the championship page
-        '''
-        return reverse('championship:championship:view', kwargs={'pk': self.object.championship.pk})

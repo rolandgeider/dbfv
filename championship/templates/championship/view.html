@@ -63,19 +63,20 @@
         <th>Studio</th>
     </tr>
 {% for participation in object.participation_set.all %}
+    {% for placement in participation.placement_set.all %}
     <tr>
         <td>
-            <a href="{% url 'championship:participation:edit' participation.pk %}">
+            <a href="{% url 'championship:placement:edit' placement.pk %}">
                 <span class="glyphicon glyphicon-pencil"></span>
             </a>
         </td>
         <td>{{ participation.participation_nr }}</td>
-        <td>{{ participation.category }}</td>
-        <td>{{ participation.placement }}</td>
+        <td>{{ placement.category }}</td>
+        <td>{{ placement.placement }}</td>
         <td><a href="{% url 'submission-view' participation.submission.pk %}">{{ participation.submission.get_name }}</a></td>
         <td><a href="{% url 'gym-view' participation.submission.gym.pk %}">{{ participation.submission.gym.name }}</a></td>
     </tr>
-
+    {% endfor %}
 {% endfor %}
 </table>
 {% endblock %}
