@@ -54,6 +54,21 @@
                     "participation"
                 ], 
                 [
+                    "add_placement", 
+                    "championship", 
+                    "placement"
+                ], 
+                [
+                    "change_placement", 
+                    "championship", 
+                    "placement"
+                ], 
+                [
+                    "delete_placement", 
+                    "championship", 
+                    "placement"
+                ], 
+                [
                     "add_bankaccount", 
                     "submission", 
                     "bankaccount"
