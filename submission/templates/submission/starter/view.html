@@ -101,6 +101,24 @@
         </td>
     </tr>
 </table>
+
+{% if perms.championship.change_championship %}
+<h3>Meisterschaften</h3>
+<table class="table">
+    {% for participation in object.participation_set.all %}
+        <tr>
+            <td style="width: 50%;">
+                <a href="{% url 'championship:championship:view' participation.championship.pk %}">{{ participation.championship }}</a>
+            </td>
+            <td>
+                <a href="{% url 'championship:participation:view' participation.pk %}">Platzierung</a>
+            </td>
+            <td></td>
+        </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
 {% endblock %}
 
 {% block sidebar %}
