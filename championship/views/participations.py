@@ -55,5 +55,13 @@ class ParticipationCreateView(DbfvFormMixin, generic.CreateView):
         Set user and participation number
         '''
         submission = get_object_or_404(SubmissionStarter, pk=self.kwargs['submission_pk'])
+        participation = Participation.objects.filter(championship=form.instance.championship)\
+            .aggregate(Max('participation_nr'))
+        if not participation['participation_nr__max']:
+            max_participation = 1
+        else:
+            max_participation = participation['participation_nr__max'] + 1
+
         form.instance.submission = submission
+        form.instance.participation_nr = max_participation
         return super(ParticipationCreateView, self).form_valid(form)
