@@ -102,12 +102,13 @@ def export_participants(request, pk):
     writer.writerow(['Teilnehmernr', 'Platzierung', 'Kategorie', 'Teilnehmer', 'Studio'])
 
     for participant in participants:
-        writer.writerow([participant.participation_nr,
-                         participant.placement,
-                         participant.category,
-                         participant.submission.get_name,
-                         participant.submission.gym.name,
-                         ])
+        for placement in participant.placement_set.all():
+            writer.writerow([participant.participation_nr,
+                             placement.placement,
+                             placement.category,
+                             participant.submission.get_name,
+                             participant.submission.gym.name,
+                             ])
 
     # Send the data to the browser
     response['Content-Disposition'] = 'attachment; filename=Meisterschaft-{0}.csv'.\
