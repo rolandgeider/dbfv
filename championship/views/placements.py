@@ -20,7 +20,7 @@ from django.shortcuts import get_object_or_404
 from django.views import generic
 from django.core.urlresolvers import reverse
 
-from championship.models import Participation, Placement
+from championship.models import Participation, Placement, Category
 from submission.models import SubmissionStarter
 from submission.views.generic_views import DbfvFormMixin
 
@@ -32,6 +32,14 @@ class PlacementCreateView(DbfvFormMixin, generic.CreateView):
 
     model = Placement
     permission_required = 'championship.add_placement'
+
+    def get_form(self, form_class):
+        '''
+        Only show categories for the current championship
+        '''
+        form = super(PlacementCreateView, self).get_form(form_class)
+        form.fields['category'].queryset = Category.objects.filter(championship=self.kwargs['participation_pk'])
+        return form
 
     def get_success_url(self):
         '''
@@ -55,6 +63,14 @@ class PlacementUpdateView(DbfvFormMixin, generic.UpdateView):
 
     model = Placement
     permission_required = 'championship.change_placement'
+
+    def get_form(self, form_class):
+        '''
+        Only show categories for the current championship
+        '''
+        form = super(PlacementUpdateView, self).get_form(form_class)
+        form.fields['category'].queryset = Category.objects.filter(championship=self.object.participation)
+        return form
 
     def get_success_url(self):
         '''
