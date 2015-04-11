@@ -47,7 +47,10 @@ patterns_championship = patterns('',
 
 # sub patterns for categories
 patterns_categories = patterns('',
-    url(r'^hinzufuegen/meisterschaft-(?P<championship_pk>\d+)$',
+    url(r'^liste$',
+        categories.CategoriesListView.as_view(),
+        name='list'),
+    url(r'^hinzufuegen$',
         categories.CategoryCreateView.as_view(),
         name='add'),
     url(r'^(?P<pk>\d+)/bearbeiten$',

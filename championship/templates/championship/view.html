@@ -32,21 +32,12 @@
         <td>
 
             <p>
-            {% for category in object.category_set.all %}
-                <a href="{% url 'championship:category:edit' category.id %}" title="Bearbeiten"><span class="glyphicon glyphicon-pencil"></span></a>
-                <a href="{% url 'championship:category:delete' category.id %}" title="Löschen"><span class="glyphicon glyphicon-trash"></span></a>
+            {% for category in object.categories.all %}
                 {{ category }}
                 <br>
             {% empty %}
                 <em>Keine Kategorien vorhanden</em>
             {% endfor %}
-            </p>
-
-            <p>
-                <a href="{% url 'championship:category:add' championship.id %}" title="Hinzufügen" class="btn btn-default btn-xs">
-                    Hinzufügen
-                    <span class="glyphicon glyphicon-plus"></span>
-                </a>
             </p>
         </td>
     </tr>

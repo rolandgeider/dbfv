@@ -23,6 +23,18 @@ from championship.models import Category, Championship
 from submission.views.generic_views import DbfvViewMixin, DbfvFormMixin
 
 
+class CategoriesListView(DbfvViewMixin, generic.ListView):
+    '''
+    Shows a list with all championship categories
+    '''
+
+    model = Category
+    context_object_name = "categories_list"
+    template_name = 'categories/list.html'
+    permission_required = 'championship.add_category'
+    login_required = True
+
+
 class CategoryCreateView(DbfvFormMixin, generic.CreateView):
     '''
     Creates a new federal state
@@ -31,21 +43,6 @@ class CategoryCreateView(DbfvFormMixin, generic.CreateView):
     model = Category
     success_url = reverse_lazy('championship:category:list')
     permission_required = 'championship.add_category'
-
-    def form_valid(self, form):
-        '''
-        Set championship
-        '''
-        championship = get_object_or_404(Championship, pk=self.kwargs['championship_pk'])
-        form.instance.championship = championship
-        return super(CategoryCreateView, self).form_valid(form)
-
-    def get_success_url(self):
-        '''
-        Return to the championship page
-        '''
-        return reverse('championship:championship:view',
-                       kwargs={'pk': self.kwargs['championship_pk']})
 
 
 class CategoryUpdateView(DbfvFormMixin, generic.UpdateView):
@@ -57,12 +54,6 @@ class CategoryUpdateView(DbfvFormMixin, generic.UpdateView):
     success_url = reverse_lazy('championship:category:list')
     permission_required = 'championship.change_category'
 
-    def get_success_url(self):
-        '''
-        Return to the championship page
-        '''
-        return reverse('championship:championship:view', kwargs={'pk': self.object.championship.pk})
-
 
 class CategoryDeleteView(DbfvFormMixin, generic.DeleteView):
     '''
@@ -73,12 +64,6 @@ class CategoryDeleteView(DbfvFormMixin, generic.DeleteView):
     success_url = reverse_lazy('championship:category:list')
     permission_required = 'championship.delete_category'
     template_name = 'delete.html'
-
-    def get_success_url(self):
-        '''
-        Return to the championship page
-        '''
-        return reverse('championship:championship:view', kwargs={'pk': self.object.championship.pk})
 
     def get_context_data(self, **kwargs):
         '''

@@ -49,6 +49,13 @@ class Championship(models.Model):
     The federal state the championship happens in
     '''
 
+    categories = models.ManyToManyField('Category',
+                                        verbose_name='Kategorien')
+    '''
+    All available categories for this championship
+    '''
+
+
     def __unicode__(self):
         '''
         Return a more human-readable representation
@@ -66,12 +73,6 @@ class Category(models.Model):
         '''
         ordering = ["name"]
 
-    championship = models.ForeignKey(Championship,
-                                     verbose_name='Meistershaft',
-                                     editable=False)
-    '''
-    Championship this category belongs to
-    '''
 
     name = models.CharField(verbose_name='Name',
                             max_length=50)
