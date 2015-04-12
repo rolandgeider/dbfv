@@ -123,6 +123,12 @@ class Participation(models.Model):
     The championship
     '''
 
+    def get_absolute_url(self):
+        '''
+        Return the detail view URL
+        '''
+        return reverse('championship:participation:view', kwargs={'pk': self.object.pk})
+
 
 
 class Placement(models.Model):
