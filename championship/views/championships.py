@@ -87,7 +87,7 @@ class ChampionshipDeleteView(DbfvFormMixin, generic.DeleteView):
 
     model = Championship
     success_url = reverse_lazy('championship:championship:list')
-    permission_required = 'submission.delete_championship'
+    permission_required = 'championship.delete_championship'
     template_name = 'delete.html'
 
     def get_context_data(self, **kwargs):
