@@ -74,5 +74,5 @@ class ParticipationDeleteView(DbfvFormMixin, generic.DeleteView):
         '''
         Return to the championship page
         '''
-        return reverse('championship:chamionship:view', kwargs={'pk': self.object.championship.pk})
+        return reverse('championship:championship:view', kwargs={'pk': self.object.championship.pk})
 
