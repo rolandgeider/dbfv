@@ -20,7 +20,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 
 from django.views import generic
-from django.core.urlresolvers import reverse_lazy
+from django.core.urlresolvers import reverse_lazy, reverse
 from championship.models import Championship
 
 from submission.views.generic_views import DbfvViewMixin, DbfvFormMixin
@@ -55,8 +55,14 @@ class ChampionshipCreateView(DbfvFormMixin, generic.CreateView):
     '''
 
     model = Championship
-    success_url = reverse_lazy('championship:championship:list')
     permission_required = 'championship.add_championship'
+
+    def get_success_url(self):
+        '''
+        Return to the championship page
+        '''
+        return reverse('championship:championship:view', kwargs={'pk': self.object.pk})
+
 
 
 class ChampionshipUpdateView(DbfvFormMixin, generic.UpdateView):
@@ -65,8 +71,13 @@ class ChampionshipUpdateView(DbfvFormMixin, generic.UpdateView):
     '''
 
     model = Championship
-    success_url = reverse_lazy('championship:championship:list')
     permission_required = 'championship.change_championship'
+
+    def get_success_url(self):
+        '''
+        Return to the championship page
+        '''
+        return reverse('championship:championship:view', kwargs={'pk': self.object.pk})
 
 
 class ChampionshipDeleteView(DbfvFormMixin, generic.DeleteView):
