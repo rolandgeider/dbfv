@@ -46,26 +46,29 @@
 <h3>Teilnehmer</h3>
 <table class="table">
     <tr>
-        <th></th>
         <th>Teilnehmernr.</th>
+        <th>Teilnehmer</th>
         <th>Kategorie</th>
         <th>Platzierung</th>
-        <th>Teilnehmer</th>
         <th>Studio</th>
+        <th></th>
     </tr>
 {% for participation in object.participation_set.all %}
     {% for placement in participation.placement_set.all %}
     <tr>
+        <td>{{ participation.participation_nr }}</td>
+        <td><a href="{% url 'submission-view' participation.submission.pk %}">{{ participation.submission.get_name }}</a></td>
+        <td>{{ placement.category }}</td>
+        <td>{{ placement.placement }}</td>
+        <td><a href="{% url 'gym-view' participation.submission.gym.pk %}">{{ participation.submission.gym.name }}</a></td>
         <td>
             <a href="{% url 'championship:participation:view' participation.pk %}">
                 <span class="glyphicon glyphicon-eye-open"></span>
             </a>
+            <a href="{% url 'championship:participation:delete' participation.pk %}">
+                <span class="glyphicon glyphicon-trash"></span>
+            </a>
         </td>
-        <td>{{ participation.participation_nr }}</td>
-        <td>{{ placement.category }}</td>
-        <td>{{ placement.placement }}</td>
-        <td><a href="{% url 'submission-view' participation.submission.pk %}">{{ participation.submission.get_name }}</a></td>
-        <td><a href="{% url 'gym-view' participation.submission.gym.pk %}">{{ participation.submission.gym.name }}</a></td>
     </tr>
     {% endfor %}
 {% endfor %}

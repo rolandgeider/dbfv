@@ -18,7 +18,7 @@
 from django.db.models.aggregates import Max
 from django.shortcuts import get_object_or_404
 from django.views import generic
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, reverse_lazy
 
 from championship.models import Participation
 from submission.models import SubmissionStarter
@@ -44,12 +44,6 @@ class ParticipationCreateView(DbfvFormMixin, generic.CreateView):
     model = Participation
     permission_required = 'championship.add_participation'
 
-    def get_success_url(self):
-        '''
-        Return to the championship page
-        '''
-        return reverse('championship:participation:view', kwargs={'pk': self.object.pk})
-
     def form_valid(self, form):
         '''
         Set user and participation number
@@ -65,3 +59,20 @@ class ParticipationCreateView(DbfvFormMixin, generic.CreateView):
         form.instance.submission = submission
         form.instance.participation_nr = max_participation
         return super(ParticipationCreateView, self).form_valid(form)
+
+
+class ParticipationDeleteView(DbfvFormMixin, generic.DeleteView):
+    '''
+    Deletes a participation
+    '''
+
+    model = Participation
+    permission_required = 'championship.delete_participation'
+    template_name = 'delete.html'
+
+    def get_success_url(self):
+        '''
+        Return to the championship page
+        '''
+        return reverse('championship:chamionship:view', kwargs={'pk': self.object.championship.pk})
+

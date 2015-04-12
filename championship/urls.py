@@ -63,6 +63,9 @@ patterns_categories = patterns('',
 
 # sub patterns for participations
 patterns_participation = patterns('',
+  url(r'^(?P<pk>\d+)/loeschen$',
+      participations.ParticipationDeleteView.as_view(),
+      name='delete'),
   url(r'^(?P<pk>\d+)/anzeigen$',
       participations.ParticipationDetailView.as_view(),
       name='view'),

@@ -16,16 +16,16 @@
         </td>
     </tr>
     <tr>
+        <th>Meisterschaft</th>
+        <td colspan="3"><a href="{% url 'championship:championship:view' object.championship.pk %}">{{ object.championship.name }}</a></td>
+    </tr>
+    <tr>
         <th>Name</th>
         <td colspan="3">{{ object.submission.get_name }}</td>
     </tr>
     <tr>
         <th>Starterlizenz</th>
         <td colspan="3"><a href="{% url 'submission-view' object.submission.pk %}">#{{ object.submission.pk }}</a></td>
-    </tr>
-    <tr>
-        <th>Meisterschaft</th>
-        <td colspan="3"><a href="{% url 'championship:championship:view' object.championship.pk %}">{{ object.championship.name }}</a></td>
     </tr>
     <tr>
         <th></th>
@@ -56,7 +56,7 @@
 {% block sidebar %}
 <div class="sidebar-box">
     <h4>Optionen</h4>
-    <p><a href="{% url 'championship:placement:register' object.championship.pk %}">Kategorie hinzufügen</a>
+    <p><a href="{% url 'championship:placement:register' object.pk %}">Kategorie hinzufügen</a>
 </p>
 </div>
 {% endblock %}
