@@ -78,3 +78,20 @@ class PlacementUpdateView(DbfvFormMixin, generic.UpdateView):
         Return to the championship page
         '''
         return reverse('championship:participation:view', kwargs={'pk': self.object.participation.pk})
+
+
+class PlacementDeleteView(DbfvFormMixin, generic.DeleteView):
+    '''
+    Deletes a placement
+    '''
+
+    model = Placement
+    permission_required = 'championship.delete_placement'
+    template_name = 'delete.html'
+
+    def get_success_url(self):
+        '''
+        Return to the participation page
+        '''
+        return reverse('championship:participation:view', kwargs={'pk': self.object.participation.pk})
+
