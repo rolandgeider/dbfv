@@ -37,8 +37,9 @@ class PlacementCreateView(DbfvFormMixin, generic.CreateView):
         '''
         Only show categories for the current championship
         '''
+        participation = get_object_or_404(Participation, pk=self.kwargs['participation_pk'])
         form = super(PlacementCreateView, self).get_form(form_class)
-        form.fields['category'].queryset = Category.objects.filter(championship=self.kwargs['participation_pk'])
+        form.fields['category'].queryset = Category.objects.filter(championship=participation.championship)
         return form
 
     def get_success_url(self):
