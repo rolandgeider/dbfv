@@ -57,8 +57,8 @@
 {% block sidebar %}
 <div class="sidebar-box">
     <h4>Optionen</h4>
-    <p><a href="{% url 'championship:placement:register' object.pk %}">Kategorie hinzufügen</a>
-</p>
+    <p><a href="{% url 'championship:placement:register' object.pk %}">Kategorie hinzufügen</a></p>
+    <p><a href="{% url 'championship:participation:delete' participation.pk %}">Teilnahme löschen</a></p>
 </div>
 {% endblock %}
 
