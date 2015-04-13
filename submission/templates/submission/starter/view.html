@@ -105,13 +105,17 @@
 {% if perms.championship.change_championship %}
 <h3>Meisterschaften</h3>
 <table class="table">
+    <tr>
+        <th>Name</th>
+        <th>Teilnehmernummer</th>
+    </tr>
     {% for participation in object.participation_set.all %}
         <tr>
             <td style="width: 50%;">
                 <a href="{% url 'championship:championship:view' participation.championship.pk %}">{{ participation.championship }}</a>
             </td>
             <td>
-                <a href="{% url 'championship:participation:view' participation.pk %}">Platzierung</a>
+                <a href="{% url 'championship:participation:view' participation.pk %}">#{{ participation.pk }}</a>
             </td>
             <td></td>
         </tr>
