@@ -17,6 +17,7 @@
 
 import datetime
 
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import formats
 from submission.models import State, SubmissionStarter
@@ -127,7 +128,7 @@ class Participation(models.Model):
         '''
         Return the detail view URL
         '''
-        return reverse('championship:participation:view', kwargs={'pk': self.object.pk})
+        return reverse('championship:participation:view', kwargs={'pk': self.pk})
 
 
 
