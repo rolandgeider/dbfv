@@ -646,7 +646,7 @@ class SubmissionJudge(AbstractSubmission):
         email_list.append('enzokoenig@gmail.com')
 
         # Hamburg
-        if self.gym.state.pk == 6:
+        if self.state.pk == 6:
             email_list.append('clausmaibaum@web.de')
 
         return email_list
