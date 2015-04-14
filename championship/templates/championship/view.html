@@ -59,7 +59,10 @@
         <td>{{ participation.participation_nr }}</td>
         <td><a href="{% url 'submission-view' participation.submission.pk %}">{{ participation.submission.get_name }}</a></td>
         <td>{{ placement.category }}</td>
-        <td>{{ placement.placement }}</td>
+        <td>
+            <a href="{% url 'championship:placement:edit' placement.pk %}"><span class="glyphicon glyphicon-pencil"></span></a>
+            {{ placement.placement }}
+        </td>
         <td><a href="{% url 'gym-view' participation.submission.gym.pk %}">{{ participation.submission.gym.name }}</a></td>
         <td>
             <a href="{% url 'championship:participation:view' participation.pk %}">
