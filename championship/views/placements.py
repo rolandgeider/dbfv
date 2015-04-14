@@ -70,7 +70,7 @@ class PlacementUpdateView(DbfvFormMixin, generic.UpdateView):
         Only show categories for the current championship
         '''
         form = super(PlacementUpdateView, self).get_form(form_class)
-        form.fields['category'].queryset = Category.objects.filter(championship=self.object.participation)
+        form.fields['category'].queryset = Category.objects.filter(championship=self.object.participation.championship)
         return form
 
     def get_success_url(self):
