@@ -17,16 +17,13 @@
     {% for championship in championship_list %}
     <tr>
         <td>
-            {{championship.name}}
+            <a href="{% url 'championship:championship:view' championship.id %}">{{championship.name}}</a>
         </td>
         <td>
             {{championship.date}}
         </td>
         <td>
             {{championship.state.name}}
-        </td>
-        <td>
-            <a href="{% url 'championship:championship:view' championship.id %}" title="Öffnen"><span class="glyphicon glyphicon-eye-open"></span></a>
         </td>
     </tr>
     {% endfor %}
