@@ -43,12 +43,17 @@ class ParticipationCreateView(DbfvFormMixin, generic.CreateView):
 
     model = Participation
     permission_required = 'championship.add_participation'
+    submission = None
+
+    def dispatch(self, request, *args, **kwargs):
+
+        self.submission = get_object_or_404(SubmissionStarter, pk=self.kwargs['submission_pk'])
+        return super(ParticipationCreateView, self).dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         '''
         Set user and participation number
         '''
-        submission = get_object_or_404(SubmissionStarter, pk=self.kwargs['submission_pk'])
         participation = Participation.objects.filter(championship=form.instance.championship)\
             .aggregate(Max('participation_nr'))
         if not participation['participation_nr__max']:
@@ -56,9 +61,19 @@ class ParticipationCreateView(DbfvFormMixin, generic.CreateView):
         else:
             max_participation = participation['participation_nr__max'] + 1
 
-        form.instance.submission = submission
+        form.instance.submission = self.submission
         form.instance.participation_nr = max_participation
         return super(ParticipationCreateView, self).form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        '''
+        Pass the title to the context
+        '''
+        context = super(ParticipationCreateView, self).get_context_data(**kwargs)
+        context['title'] = u'Starterlizenz {0} ({1})'.format(self.submission.pk,
+                                                                      self.submission.get_name)
+        return context
+
 
 
 class ParticipationDeleteView(DbfvFormMixin, generic.DeleteView):

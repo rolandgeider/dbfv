@@ -4,6 +4,20 @@
 {% block title %}Meisterschaft "{{ object.name }}"{% endblock %}
 
 {% block scripts %}
+<script>
+$(document).ready(function() {
+    $('#submission_id_register').click(function (e) {
+        e.preventDefault();
+        window.location = '/meisterschaft/teilnahme/antrag-' + $('#submission_id').val() + '/anmelden';
+    });
+
+    $('#submission_id_view').click(function(e) {
+        e.preventDefault();
+        window.location = '/antrag/' + $('#submission_id').val() + '/anzeigen';
+    });
+});
+</script>
+
 {% endblock %}
 
 {% block content %}
@@ -87,5 +101,18 @@
         <a href="{% url 'championship:championship:delete' object.id %}">Löschen</a>
     </p>
 </div>
+
+<div class="well">
+<form action="" class="form-horizontal">
+    <h4>Schnellanmelden</h4>
+    <p>
+    <input type="number" id="submission_id" placeholder="Antragsnummer eingeben" class="form-control">
+    </p>
+
+    <input id="submission_id_view" class="btn btn-default btn-block" type="submit" value="Starterlizenz anzeigen">
+    <input id="submission_id_register" class="btn btn-default btn-block" type="submit" value="Starterlizenz anmelden">
+</form>
+</div>
+
 {% endblock %}
 

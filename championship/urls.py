@@ -69,7 +69,7 @@ patterns_participation = patterns('',
   url(r'^(?P<pk>\d+)/anzeigen$',
       participations.ParticipationDetailView.as_view(),
       name='view'),
-  url(r'^antrag-(?P<submission_pk>\d+)/anmelden$',
+  url(r'^antrag-(?P<submission_pk>\d+)/anmelden$',  #JS!
       participations.ParticipationCreateView.as_view(),
       name='register'),
 )
