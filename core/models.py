@@ -53,3 +53,45 @@ class EmailCron(models.Model):
         Return a more human-readable representation
         '''
         return self.email
+
+
+class EmailLog(models.Model):
+    '''
+    A log of a sent email
+    '''
+
+    TYPE_STARTER = 's'
+    TYPE_GYM = 'g'
+
+    TYPE = (
+        (TYPE_STARTER, 'Starter'),
+        (TYPE_GYM, 'Studio'),
+    )
+
+    date = models.DateField(auto_now=True)
+    '''
+    Date when the log was created
+    '''
+
+    type = models.CharField(editable=False,
+                            max_length=1,
+                            choices=TYPE)
+    '''
+    Type of list, for information purposes
+    '''
+
+    subject = models.CharField(max_length=100)
+    '''
+    The email subject
+    '''
+
+    body = models.TextField()
+    '''
+    The email's body
+    '''
+
+    def __unicode__(self):
+        '''
+        Return a more human-readable representation
+        '''
+        return self.subject

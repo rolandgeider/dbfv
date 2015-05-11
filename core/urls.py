@@ -26,7 +26,7 @@ from core.views import email_lists
 # sub patterns for email lists
 patterns_email = patterns('',
     url(r'^auswaehlen/$',
-        permission_required('core.change_emailcron')(TemplateView.as_view(template_name="email/overview.html")),
+        email_lists.EmailLogListView.as_view(),
         name='overview'),
     url(r'^erstellen/(?P<type>(starter|studio))$',
         permission_required('core.change_emailcron')(email_lists.EmailListFormPreview(EmailListForm)),

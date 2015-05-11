@@ -24,6 +24,11 @@
                     "emailcron"
                 ], 
                 [
+                    "add_emaillog", 
+                    "core", 
+                    "emaillog"
+                ], 
+                [
                     "add_bankaccount", 
                     "submission", 
                     "bankaccount"

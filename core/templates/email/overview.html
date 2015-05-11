@@ -29,6 +29,23 @@
             </td>
         </tr>
     </table>
+
+    <h4>Log</h4>
+    <table class="table">
+        <tr>
+            <th>Datum</th>
+            <th>Typ</th>
+            <th>Betreff</th>
+        </tr>
+        {% for email in email_list %}
+        <tr>
+            <td>{{ email.date }}</td>
+            <td>{{ email.get_type_display }}</td>
+            <td>{{ email.subject }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
 {% endblock %}
 
 {% block sidebar %}
