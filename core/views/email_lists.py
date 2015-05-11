@@ -92,4 +92,4 @@ class EmailListFormPreview(FormPreview):
             cron.body = cleaned_data['body']
             cron.save()
 
-        return HttpResponseRedirect('/')
+        return HttpResponseRedirect(reverse('core:email:overview'))
