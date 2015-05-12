@@ -73,7 +73,6 @@ def render_submission_list(submissions, user, filter_mode, submission_type='star
     return render_to_string("tags/render_submission_list.html", context)
 
 
-
 #
 # Form utils
 #

@@ -146,7 +146,8 @@ class SubmissionCreateView(BaseSubmissionCreateView):
                 if i[0] == option:
                     return i[1]
 
-        self.extra_data = {'championships': [get_option(i) for i in form.cleaned_data['championships']]}
+        self.extra_data = {'championships':
+                           [get_option(i) for i in form.cleaned_data['championships']]}
         return super(SubmissionCreateView, self).form_valid(form)
 
     def get_context_data(self, **kwargs):
