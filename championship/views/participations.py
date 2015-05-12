@@ -71,9 +71,8 @@ class ParticipationCreateView(DbfvFormMixin, generic.CreateView):
         '''
         context = super(ParticipationCreateView, self).get_context_data(**kwargs)
         context['title'] = u'Starterlizenz {0} ({1})'.format(self.submission.pk,
-                                                                      self.submission.get_name)
+                                                             self.submission.get_name)
         return context
-
 
 
 class ParticipationDeleteView(DbfvFormMixin, generic.DeleteView):
@@ -90,4 +89,3 @@ class ParticipationDeleteView(DbfvFormMixin, generic.DeleteView):
         Return to the championship page
         '''
         return reverse('championship:championship:view', kwargs={'pk': self.object.championship.pk})
-

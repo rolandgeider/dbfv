@@ -56,7 +56,6 @@ class Championship(models.Model):
     All available categories for this championship
     '''
 
-
     def __unicode__(self):
         '''
         Return a more human-readable representation
@@ -73,7 +72,6 @@ class Category(models.Model):
         Configure other properties
         '''
         ordering = ["name"]
-
 
     name = models.CharField(verbose_name='Name',
                             max_length=50)
@@ -131,7 +129,6 @@ class Participation(models.Model):
         return reverse('championship:participation:view', kwargs={'pk': self.pk})
 
 
-
 class Placement(models.Model):
     '''
     A placement for an athlete in a championship for a specific category
@@ -149,7 +146,6 @@ class Placement(models.Model):
     '''
     The participation (basically, a championship) for this placement
     '''
-
 
     category = models.ForeignKey(Category,
                                  verbose_name='Kategorie')

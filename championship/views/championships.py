@@ -64,7 +64,6 @@ class ChampionshipCreateView(DbfvFormMixin, generic.CreateView):
         return reverse('championship:championship:view', kwargs={'pk': self.object.pk})
 
 
-
 class ChampionshipUpdateView(DbfvFormMixin, generic.UpdateView):
     '''
     Updates a federal state

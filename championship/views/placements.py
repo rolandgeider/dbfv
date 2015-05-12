@@ -39,14 +39,16 @@ class PlacementCreateView(DbfvFormMixin, generic.CreateView):
         '''
         participation = get_object_or_404(Participation, pk=self.kwargs['participation_pk'])
         form = super(PlacementCreateView, self).get_form(form_class)
-        form.fields['category'].queryset = Category.objects.filter(championship=participation.championship)
+        form.fields['category'].queryset = \
+            Category.objects.filter(championship=participation.championship)
         return form
 
     def get_success_url(self):
         '''
         Return to the championship page
         '''
-        return reverse('championship:participation:view', kwargs={'pk': self.object.participation.pk})
+        return reverse('championship:participation:view',
+                       kwargs={'pk': self.object.participation.pk})
 
     def form_valid(self, form):
         '''
@@ -70,14 +72,16 @@ class PlacementUpdateView(DbfvFormMixin, generic.UpdateView):
         Only show categories for the current championship
         '''
         form = super(PlacementUpdateView, self).get_form(form_class)
-        form.fields['category'].queryset = Category.objects.filter(championship=self.object.participation.championship)
+        form.fields['category'].queryset = \
+            Category.objects.filter(championship=self.object.participation.championship)
         return form
 
     def get_success_url(self):
         '''
         Return to the championship page
         '''
-        return reverse('championship:participation:view', kwargs={'pk': self.object.participation.pk})
+        return reverse('championship:participation:view',
+                       kwargs={'pk': self.object.participation.pk})
 
 
 class PlacementDeleteView(DbfvFormMixin, generic.DeleteView):
@@ -93,5 +97,5 @@ class PlacementDeleteView(DbfvFormMixin, generic.DeleteView):
         '''
         Return to the participation page
         '''
-        return reverse('championship:participation:view', kwargs={'pk': self.object.participation.pk})
-
+        return reverse('championship:participation:view',
+                       kwargs={'pk': self.object.participation.pk})
