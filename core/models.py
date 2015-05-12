@@ -28,33 +28,6 @@ from django.contrib.auth.models import User
 from django.core import mail
 
 
-class EmailCron(models.Model):
-    '''
-    List of emails to be sent bit by bit by a cron job
-    '''
-
-    subject = models.CharField(max_length=100)
-    '''
-    The email subject
-    '''
-
-    body = models.TextField()
-    '''
-    The email's body
-    '''
-
-    email = models.EmailField()
-    '''
-    The email address
-    '''
-
-    def __unicode__(self):
-        '''
-        Return a more human-readable representation
-        '''
-        return self.email
-
-
 class EmailLog(models.Model):
     '''
     A log of a sent email
@@ -95,3 +68,26 @@ class EmailLog(models.Model):
         Return a more human-readable representation
         '''
         return self.subject
+
+
+class EmailCron(models.Model):
+    '''
+    List of emails to be sent bit by bit by a cron job
+    '''
+
+    log = models.ForeignKey(EmailLog,
+                            editable=False)
+    '''
+    Foreign key to email log with subject and body
+    '''
+
+    email = models.EmailField()
+    '''
+    The email address
+    '''
+
+    def __unicode__(self):
+        '''
+        Return a more human-readable representation
+        '''
+        return self.email

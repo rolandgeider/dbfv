@@ -33,8 +33,8 @@ class Command(BaseCommand):
         '''
         if EmailCron.objects.count():
             for email in EmailCron.objects.all()[:100]:
-                mail.send_mail(email.subject,
-                               email.body,
+                mail.send_mail(email.log.subject,
+                               email.log.body,
                                settings.DEFAULT_FROM_EMAIL,
                                [email.email],
                                fail_silently=True)

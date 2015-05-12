@@ -107,9 +107,8 @@ class EmailListFormPreview(FormPreview):
 
         for email in email_list:
             cron = EmailCron()
+            cron.log = email_log
             cron.email = email
-            cron.subject = cleaned_data['subject']
-            cron.body = cleaned_data['body']
             cron.save()
 
         return HttpResponseRedirect(reverse('core:email:overview'))
