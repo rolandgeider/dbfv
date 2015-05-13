@@ -67,10 +67,10 @@ $(document).ready(function() {
 
 {% block sidebar %}
 {% if perms.submission.change_submissionstarter %}
-<h3>Suche</h3>
+<h4>Suche</h4>
 <input type="text" id="term" name="term" placeholder="Suchbegriff eingeben" class="no-bootstrap-focus">
 
-<h3>Info</h3>
+<h4>Info</h4>
 <div class="well">
     <h5>Serienbriefexport</h5>
     {% if mailmerge_count > 0 %}
