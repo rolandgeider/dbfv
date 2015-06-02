@@ -62,6 +62,13 @@ class Championship(models.Model):
         '''
         return u'{0} ({1})'.format(self.name, formats.date_format(self.date, "SHORT_DATE_FORMAT"))
 
+    @property
+    def total_participants(self):
+        '''
+        Returns the total number of participants
+        '''
+        return self.participation_set.count()
+
 
 class Category(models.Model):
     '''
