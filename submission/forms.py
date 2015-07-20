@@ -25,7 +25,7 @@ from django.utils.translation import ugettext as _
 
 from captcha.fields import ReCaptchaField
 
-from submission.models import State, Gym, SubmissionStarter, SubmissionGym, SubmissionJudge
+from submission.models import State, Gym, SubmissionStarter, SubmissionGym, SubmissionJudge, SubmissionInternational
 
 
 class UserEmailForm(ModelForm):
@@ -106,3 +106,11 @@ class SubmissionJudgeFormBV(ModelForm):
     class Meta:
         model = SubmissionJudge
         fields = ('submission_status', )
+
+
+class SubmissionInternationalForm(ModelForm):
+
+    class Meta:
+        model = SubmissionInternational
+        exclude = ('submission_status',)
+

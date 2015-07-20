@@ -84,12 +84,22 @@
                     "change_submissionjudge", 
                     "submission", 
                     "submissionjudge"
-                ], 
+                ],
                 [
                     "delete_submissionjudge", 
                     "submission", 
                     "submissionjudge"
                 ], 
+                [
+                    "change_submissioninternational",
+                    "submission",
+                    "submissioninternational"
+                ],
+                [
+                    "delete_submissioninternational",
+                    "submission",
+                    "submissioninternational"
+                ],
                 [
                     "change_submissionstarter", 
                     "submission", 
@@ -118,7 +128,12 @@
                     "add_submissionjudge", 
                     "submission", 
                     "submissionjudge"
-                ], 
+                ],
+                [
+                    "add_submissioninternational",
+                    "submission",
+                    "submissioninternational"
+                ],
                 [
                     "add_submissionstarter", 
                     "submission", 

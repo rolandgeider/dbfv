@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% load dbfv_extras %}
+
+{% block title %}Antrag für Starterlizenz{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    $('#form-championships').hide();
+
+    $('.gym-select').click(function(e) {
+        e.preventDefault();
+        var gym_id = $(this).data('gym-id');
+        var gym_state = $(this).data('gym-state');
+        var gym_name = $(this).html();
+
+        $('#ajax_id_gym').val(gym_id);
+        $('#id_gym').val(gym_id);
+
+        if (gym_state == 10) {
+            $('#form-championships').show();
+        } else {
+            $('#form-championships').hide();
+        }
+
+        // Scroll to element
+        $('html, body').animate({
+        scrollTop: $("#header-form2").offset().top
+        }, 1000);
+    });
+});
+</script>
+<style>
+.accordion-heading{
+    background-color: #f2f2f2;
+}
+
+.accordion-heading a{
+    color: black;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<p>Hiermit beantrage ich für mich die Ausstellung einer IFBB-Starterlizenz.</p>
+<p>Die nachfolgenden Angaben habe ich nach bestem Wissen und Gewissen gemacht und
+bestätige sie mit dem Absenden des Formulars. Unvollständige, fehlerhafte oder
+unleserliche Anträge führen zu fehlerhaften Daten. Eine Bearbeitung ist dann
+aus technischen Gründen nicht möglich.</p>
+
+<form action="{{ form_action }}"
+      method="post"
+      class="form-horizontal"
+      enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <h4>1. Studio aus Ihrem Landesverband auswählen</h4>
+    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+    {% for state in states_list %}
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="heading{{ state.pk }}">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{ state.pk }}" aria-expanded="true" aria-controls="collapse{{ state.pk }}">
+                        {{ state }}
+                    </a>
+                </h4>
+            </div>
+            <div id="collapse{{ state.pk }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading{{ state.pk }}">
+                <div class="panel-body">
+                {% for gym in state.gym_set.all %}
+                {% if gym.is_active %}
+                    <a id="gym-{{ gym.id }}"
+                       class="gym-select"
+                       data-gym-id="{{ gym.id }}"
+                       data-gym-state="{{ gym.state.id }}"
+                       href="#">{{ gym.name }} ({{ gym.city }})</a><br>
+                {% endif %}
+                {% endfor %}
+                </div>
+            </div>
+      </div>
+    {% endfor %}
+    </div>
+
+    <h4 id="header-form2">2. Stammdaten ausfühllen</h4>
+
+    {% if form.gym.errors %}
+        <div class="control-group error">
+            <div class="controls">
+            <span class="help-inline">
+                Bitte wählen Sie ein Studio aus der Liste aus
+            </span>
+            </div>
+        </div>
+    {% endif %}
+    <input type="hidden" name="gym" id="ajax_id_gym" value="{{form.gym.value}}">
+
+    {% render_form_fields form '' False %}
+
+    <p>Die Starterlizenz berechtigt zur Teilnahme an allen DBFV e.V /
+    IFBB Meisterschaften. Die Starterlizenz ist nur für das angegebene Kalenderjahr
+    gültig. Ein Start ohne Lizenz ist nicht möglich. Die Zustellung der Lizenz erfolgt
+    rechtzeitig vor Meisterschaftbeginn.</p>
+    <p>Verspätet gestellte Anträge können nur in Ausnahmefällen angenommen werden.</p>
+    <p>Die Wettkampregeln bzw. Beschlüsse des DBFV e.V. sind für Sie bindend.</p>
+    <p>Für die Genehmigung des Antrags ist der jeweilige Landesverband zuständig.</p>
+    <p><small>Die IFBB ist der einzige Bodybuilding-Weltverband, der von den
+    offiziellen Sportverbänden anerkannt ist. Der DBFV e.V. ist hier als einziger
+    deutscher Bodybuilding- und Fitnessverband Mitglied. Daher sind nur
+    Meisterschaften des DBFV e.V. in Deutschland sanktioniert. Alle vom DBFV e.V. /
+    IFBB nicht genehmigten Veranstalltungen oder sogennante offene Meisterschaften
+    geltern deshalb nur als Privat-Meisterschaften. Eine Beteiligung zieht daher
+    lt. Reglement ein Startverbot mit sich.</small></p>
+    <p></p>
+
+
+    {% render_form_submit 'Abschicken' 'btn-lg  btn-success' %}
+
+</form>
+
+{% endblock %}
+
+{% block sidebar %}
+<div class="sidebar-box">
+    <h4>Lizenzgebühr</h4>
+    <p>Die Lizenzgebühr in Höhe von €42,02 + ges. MwSt = €{{fee}} ist im Voraus zu
+    entrichten. Bitte immer Name und Antragsnummer angeben. Die Bearbeitung
+    erfolgt erst nach Eingang der Gebühr!</p>
+</div>
+{% endblock %}

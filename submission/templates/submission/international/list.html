@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load url from future %}
+{% load dbfv_extras %}
+
+{% block title %}Anträge internatioale Meisterschaften{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/jquery.tokeninput.js' %}"></script>
+<script>
+$(document).ready(function() {
+    $('#submission_id_submit').click(function(e) {
+        e.preventDefault();
+        window.location = '/antrag/' + $('#submission_id').val() + '/anzeigen';
+    });
+
+    // Search
+    $("#term").tokenInput("{% url 'submission-search' %}", {
+                tokenLimit: 1,
+                hintText: "Vor-, Nachname, Studioname",
+                searchingText: "Suche...",
+                minChars: 3,
+                onAdd: function(item){
+                    // Go the submission page
+                    window.location.href = '/antrag/' + item.id + '/anzeigen'
+                    },
+                resultsFormatter: function(item){
+                    var value = "<li>"
+                        + "<table class='narrow noborder'>"
+                        + "<tr>"
+                            + "<td colspan='2'>"
+                                + "<strong>" + item.name + "</strong>, "
+                                + "Nr. " + item.id +  ", "
+                                + item.date + " "
+                            + "</td>"
+                        + "</tr>"
+                        + "<tr>"
+                            + "<td width='50%'>" + item.category + "</td>"
+                            + "<td width='50%'>" + item.status + "</td>"
+                        + "</tr> "
+                        + "<tr>"
+                            + "<td width='50%'>"
+                            + item.gym + "</td>"
+                            + "<td width='50%'>"
+                            + item.state + "</td>"
+                        + "</tr>";
+
+                    return value;
+                    }
+                });
+});
+</script>
+{% endblock %}
+
+{% block content %}
+
+<h3>Laufende Anträge</h3>
+{% render_submission_list submission_list user 'open' 'international' %}
+
+{% if show_closed %}
+<h3>Geschlossene Anträge</h3>
+{% render_submission_list submission_list user 'closed' 'international' %}
+{% endif %}
+
+
+{% endblock %}
+
+{% block sidebar %}
+{% if perms.submission.change_submissionstarter %}
+<h4>Suche</h4>
+<input type="text" id="term" name="term" placeholder="Suchbegriff eingeben" class="no-bootstrap-focus">
+
+<h4>Info</h4>
+<div class="well">
+    <h5>Serienbriefexport</h5>
+    {% if mailmerge_count > 0 %}
+        <p>
+            Anträge, die noch nicht für Serienbriefe für Microsoft Word exportiert wurden:
+            <strong>{{mailmerge_count}}</strong>
+        </p>
+        <p>
+            <a href="{% url 'submission-export-mailmerge-new' %}" class="btn btn-default btn-block">Neue Anträge exportieren</a>
+
+            <div class="alert alert-error">
+            <strong>Achtung!</strong> Die Liste kann nur
+            einmal generiert werden, Datei sorgfältig aufbewahren.
+            </div>
+        </p>
+
+    {% else %}
+        <p>
+            Alle Anträge wurden bereits für den Serienbrief exportiert.
+        </p>
+    {% endif %}
+</div>
+
+<div class="well">
+<p>Klicken Sie auf einen Monat, um die entsprechenden Anträge zu sehen. Die Zahl in
+Klammern zeigt die Anzahl der Anträge aus dem Monat, die für den Serienbrief
+exportiert wurden.</p>
+
+{% for entry in month_list %}
+    {% ifchanged entry.date.year %}
+        <p><strong>{{ entry.date|date:"Y" }}</strong></p>
+    {% endifchanged %}
+    <span>
+        <a href="{% url 'submission-list-month' entry.date|date:'Y' entry.date|date:'m' %}">{{entry.date|date:"F"}}</a>
+    </span>
+    ({{entry.export_count}})
+    <br>
+{% endfor %}
+</div>
+
+<div class="well">
+<form action="">
+    <h5>Schnellzugriff</h5>
+    <input type="number" id="submission_id" placeholder="Antragsnummer eingeben">
+    <input id="submission_id_submit" class="btn btn-default btn-block" type="submit" value="Zu Antrag gehen">
+</form>
+</div>
+
+{# end permission check #}
+{% endif %}
+
+{% endblock %}

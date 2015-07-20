@@ -47,6 +47,7 @@ filter_dump(data, ('submission.state',), 'federal_states.json')
 filter_dump(data, ('submission.gym',), 'gyms.json')
 filter_dump(data, ('submission.submissiongym',), 'submission_gym.json')
 filter_dump(data, ('submission.submissionstarter',), 'submission_starter.json')
+filter_dump(data, ('submission.submissioninternational',), 'submission_international.json')
 
 #
 # Auth

@@ -26,6 +26,7 @@ from submission.views import bank_account
 from submission.views import submissions
 from submission.views import submission_gym
 from submission.views import submission_judge
+from submission.views import submission_international
 from submission.views import user
 from submission.views import emails
 
@@ -201,6 +202,32 @@ urlpatterns = patterns('submission.views',
     url(r'^antrag-kampfrichter/liste/exportieren/serienbrief$',
         submission_judge.SubmissionCsvExportView.as_view(),
         name='submission-judge-export-mailmerge-new'),
+
+    # International
+    url(r'^antrag-international/liste/alle$',
+        submission_international.SubmissionListView.as_view(),
+        name='submission-international-list'),
+    url(r'^antrag-international/neu$',
+        submission_international.SubmissionCreateView.as_view(),
+        name='submission-international-add'),
+    # url(r'^antrag-kampfrichter/(?P<pk>\d+)/bearbeiten$',
+    #     submission_judge.SubmissionUpdateView.as_view(),
+    #     name='submission-judge-edit'),
+    url(r'^antrag-international/(?P<pk>\d+)/anzeigen$',
+        submission_international.SubmissionDetailView.as_view(),
+        name='submission-international-view'),
+    # url(r'^antrag-kampfrichter/(?P<pk>\d+)/loeschen$',
+    #     submission_judge.SubmissionDeleteView.as_view(),
+    #     name='submission-judge-delete'),
+    # url(r'^antrag-international/(?P<pk>\d+)/bearbeiten/status$',
+    #     submission_international.SubmissionUpdateStatusView.as_view(),
+    #     name='submission-international-edit-status'),
+    # url(r'^antrag-kampfrichter/(?P<pk>\d+)/exportieren/serienbrief$',
+    #     submission_judge.SubmissionCsvIndividualExportView.as_view(),
+    #     name='submission-judge-export-mailmerge'),
+    # url(r'^antrag-kampfrichter/liste/exportieren/serienbrief$',
+    #     submission_judge.SubmissionCsvExportView.as_view(),
+    #     name='submission-judge-export-mailmerge-new'),
 
     # Impressum
     url(r'^impressum$',
