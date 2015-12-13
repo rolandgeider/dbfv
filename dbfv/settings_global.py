@@ -123,6 +123,7 @@ INSTALLED_APPS = (
 
     # The dbfv submission app
     'submission',
+    'core',
 
     # Django debug toolbar
     #'debug_toolbar',

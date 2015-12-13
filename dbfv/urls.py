@@ -16,5 +16,6 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
 
     # The submission application
+    url(r'core/', include('core.urls', namespace='core')),
     url(r'^', include('submission.urls')),
 )
