@@ -412,6 +412,10 @@ class SubmissionStarter(AbstractSubmission):
         if self.gym.state.pk == 6:
             email_list.append('clausmaibaum@web.de')
 
+        # Hessen
+        if self.gym.state.pk == 7:
+            email_list.append('info@hbbkv.com')
+
         email_list.append(self.email)
         return email_list
 
