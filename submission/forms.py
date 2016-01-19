@@ -25,7 +25,14 @@ from django.utils.translation import ugettext as _
 
 from captcha.fields import ReCaptchaField
 
-from submission.models import State, Gym, SubmissionStarter, SubmissionGym, SubmissionJudge
+from submission.models import (
+    State,
+    Gym,
+    SubmissionStarter,
+    SubmissionGym,
+    SubmissionJudge,
+    SubmissionInternational
+)
 
 
 class UserEmailForm(ModelForm):
@@ -75,6 +82,23 @@ class SubmissionStarterForm(ModelForm):
 
     class Meta:
         model = SubmissionStarter
+        exclude = ('submission_status',)
+
+
+class SubmissionInternationalForm(ModelForm):
+
+    gym = ModelChoiceField(queryset=Gym.objects.filter(is_active=True),
+                           label='Studio')
+
+    class Meta:
+        model = SubmissionInternational
+        exclude = ('submission_status',)
+
+
+class SubmissionInternationalFormBV(ModelForm):
+
+    class Meta:
+        model = SubmissionInternational
         exclude = ('submission_status',)
 
 

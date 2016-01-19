@@ -469,6 +469,210 @@ class SubmissionStarter(AbstractSubmission):
                 self.creation_date.year]
 
 
+class SubmissionInternational(AbstractSubmission):
+    '''
+    Model for a submission
+    '''
+
+    class Meta:
+        '''
+        Order first by state name, then by gym name
+        '''
+        ordering = ["creation_date", "gym"]
+
+    MAILMERGE_HEADER = ['ID',
+                        'Vorname',
+                        'Nachname',
+                        'Geburtsdatum',
+                        'Aktiv Seit',
+                        'Straße',
+                        'PLZ',
+                        'Stadt',
+                        'Telefon',
+                        'Email',
+                        'Nationalität',
+                        'Größe',
+                        'Gewicht',
+                        'Kategorie',
+                        'Studio',
+                        'Bundesverband',
+                        'Datum',
+                        'Jahr',
+                        'Meisterschaft',
+                        'Datum der Meisterschaft']
+
+    SUBMISSION_CATEGORY = (
+        ('1', u'Bikini-Klasse'),
+        ('2', u'Frauen Fitness-Figur-Klasse'),
+        ('3', u'Frauen Bodyklasse'),
+        ('4', u'Frauen Physiqueklasse'),
+        ('5', u'Juniorenklasse'),
+        ('6', u'Classic-Bodybuilding'),
+        ('7', u'Paare'),
+        ('8', u'Männer Physique'),
+        ('9', u'Männer Bodyklasse')
+    )
+
+    FEE = 50
+
+    # Personal information
+    date_of_birth = models.DateField(_('Geburtsdatum'))
+    active_since = models.CharField(_('Aktiv seit'),
+                                    max_length=20)
+    last_name = models.CharField(_('Familienname'),
+                                 max_length=30)
+    first_name = models.CharField(_('Vorname'),
+                                  max_length=30)
+    street = models.CharField(_(u'Straße'),
+                              max_length=30)
+    zip_code = models.IntegerField(_(u'PLZ'),
+                                   max_length=5)
+    city = models.CharField(_(u'Ort'),
+                            max_length=30)
+    tel_number = models.CharField(_(u'Tel. Nr.'),
+                                  max_length=20)
+    email = models.EmailField(_(u'Email'),
+                              max_length=120)
+    nationality = models.ForeignKey(Country,
+                                    verbose_name=u'Staatsangehörigkeit',
+                                    default=37  # Germany
+                                    )
+    height = models.IntegerField(_(u'Größe (cm)'),
+                                 max_length=3)
+    weight = models.DecimalField(_(u'Wettkampfgewicht (kg)'),
+                                 max_digits=5,
+                                 decimal_places=2)
+    category = models.CharField(_(u'Kategorie'),
+                                max_length=1,
+                                choices=SUBMISSION_CATEGORY)
+    championship = models.CharField(_(u'Meisterschaft'),
+                                    max_length=150)
+    championship_date = models.DateField(_(u'Datum der Meisterschaft'))
+
+    # Other fields
+    submission_last_year = models.BooleanField(u"Im Vorjahr wurde bereits eine Lizenz beantragt",
+                                               default=False)
+
+    gym = models.ForeignKey(Gym,
+                            verbose_name='Studio')
+
+    def __unicode__(self):
+        '''
+        Return a more human-readable representation
+        '''
+        return "%s - %s" % (self.creation_date, self.user)
+
+    def get_absolute_url(self):
+        return reverse('submission-international-view', kwargs={'pk': self.pk})
+
+    @property
+    def get_name(self):
+        """
+        Returns the name of the participant
+        """
+        return u"{0}, {1}".format(self.last_name, self.first_name)
+
+    def get_bank_account(self):
+        '''
+        Returns the correct bank account for this submission
+        '''
+        bank_account = 1
+        if self.gym.state_id == 10:
+            bank_account = 2
+
+        return bank_account
+
+    @staticmethod
+    def get_license_type():
+        '''
+        Returns the name of the license, this is used e.g. in the email subject
+        '''
+        return 'Internationale Lizenz'
+
+    def get_email_template(self):
+        '''
+        Returns the template used for the notification email
+        '''
+        return 'submission/international/email_new_submission.html'
+
+    def get_email_list(self):
+        '''
+        Collects and returns a list with the recipients of notification emails
+        '''
+        email_list = []
+        for email in ManagerEmail.objects.all():
+            email_list.append(email.email)
+
+        if self.gym.email:
+            email_list.append(self.gym.email)
+
+        if self.gym.state.email:
+            email_list.append(self.gym.state.email)
+
+        # Hamburg
+        if self.gym.state.pk == 6:
+            email_list.append('clausmaibaum@web.de')
+
+        # Hessen
+        if self.gym.state.pk == 7:
+            email_list.append('info@hbbkv.com')
+
+        email_list.append(self.email)
+        return email_list
+
+    def notification_email_hook(self):
+        '''
+        Notify the managers if the selected gym has no email
+        '''
+        if not self.gym.email:
+            for email in ManagerEmail.objects.all():
+                    mail.send_mail('Studio hat keine Emailadresse',
+                                   u"Eine internationale Lizenz wurde für ein Studio beantragt, dass\n"
+                                   u"keine Emailadresse im System hinterlegt hat.\n\n"
+                                   u"* Nr.:        {studio.pk}\n"
+                                   u"* Name:       {studio.name}\n"
+                                   u"* Bundesland: {studio.state.name}\n".format(studio=self.gym),
+                                   settings.DEFAULT_FROM_EMAIL,
+                                   [email.email],
+                                   fail_silently=True)
+
+    def get_search_json(self):
+        '''
+        Returns the necessary JSON to be used in the search
+        '''
+        data = super(SubmissionStarter, self).get_search_json()
+        data['state'] = self.gym.state.name
+        data['category'] = self.get_category_display()
+        data['gym'] = self.gym.name
+        return data
+
+    def get_mailmerge_row(self):
+        '''
+        Returns a row for the mailmerge CSV export
+        '''
+        return [self.pk,
+                self.first_name,
+                self.last_name,
+                self.date_of_birth,
+                self.active_since,
+                self.street,
+                self.zip_code,
+                self.city,
+                self.tel_number,
+                self.email,
+                self.nationality.name,
+                self.height,
+                self.weight,
+                self.get_category_display(),
+                self.gym.name,
+                self.gym.state,
+                self.creation_date,
+                self.creation_date.year,
+                self.championship,
+                self.championship_date]
+
+
+
 class SubmissionGym(AbstractSubmission):
     '''
     Model for a gym submission

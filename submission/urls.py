@@ -20,14 +20,15 @@ from django.core.urlresolvers import reverse_lazy
 
 from django.views.generic import TemplateView
 
-from submission.views import gym
-from submission.views import state
-from submission.views import bank_account
-from submission.views import submissions
-from submission.views import submission_gym
-from submission.views import submission_judge
-from submission.views import user
-from submission.views import emails
+from submission.views import (gym,
+    state,
+    bank_account,
+    submissions,
+    submission_gym,
+    submission_judge,
+    submissions_international,
+    user,
+    emails)
 
 
 urlpatterns = patterns('submission.views',
@@ -152,6 +153,38 @@ urlpatterns = patterns('submission.views',
     url(r'^antrag/suchen$',
         submissions.search,
         name='submission-search'),
+                       
+    # International
+    url(r'^antrag-international/liste/alle/$',
+        submissions_international.SubmissionListView.as_view(),
+        name='submission-international-list'),
+    url(r'^antrag-international/liste/(?P<year>\d+)/(?P<month>\d+)/$',
+        submissions_international.SubmissionListMonthView.as_view(),
+        name='submission-international-list-month'),
+    url(r'^antrag-international/neu/lizenz$',
+        submissions_international.SubmissionCreateView.as_view(),
+        name='submission-international-add'),
+    url(r'^antrag-international/(?P<pk>\d+)/bearbeiten$',
+        submissions_international.SubmissionUpdateView.as_view(),
+        name='submission-international-edit'),
+    url(r'^antrag-international/(?P<pk>\d+)/anzeigen$', # JS!
+        submissions_international.SubmissionDetailView.as_view(),
+        name='submission-international-view'),
+    url(r'^antrag-international/(?P<pk>\d+)/loeschen$',
+        submissions_international.SubmissionDeleteView.as_view(),
+        name='submission-international-delete'),
+    url(r'^antrag-international/(?P<pk>\d+)/bearbeiten/status$',
+        submissions_international.SubmissionUpdateStatusView.as_view(),
+        name='submission-international-edit-status'),
+    url(r'^antrag-international/(?P<pk>\d+)/exportieren/serienbrief$',
+        submissions_international.SubmissionCsvIndividualExportView.as_view(),
+        name='submission-international-export-mailmerge'),
+    url(r'^antrag-international/liste/exportieren/serienbrief$',
+        submissions_international.SubmissionCsvExportView.as_view(),
+        name='submission-international-export-mailmerge-new'),
+    url(r'^antrag-international/suchen$',
+        submissions_international.search,
+        name='submission-international-search'),
 
     # Gym
     url(r'^antrag-studio/liste/alle$',

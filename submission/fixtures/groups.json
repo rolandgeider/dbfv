@@ -9,19 +9,64 @@
                     "user"
                 ], 
                 [
-                    "add_emailcron", 
-                    "core", 
-                    "emailcron"
+                    "add_category", 
+                    "championship", 
+                    "category"
                 ], 
                 [
-                    "change_emailcron", 
-                    "core", 
-                    "emailcron"
+                    "change_category", 
+                    "championship", 
+                    "category"
                 ], 
                 [
-                    "delete_emailcron", 
-                    "core", 
-                    "emailcron"
+                    "delete_category", 
+                    "championship", 
+                    "category"
+                ], 
+                [
+                    "add_championship", 
+                    "championship", 
+                    "championship"
+                ], 
+                [
+                    "change_championship", 
+                    "championship", 
+                    "championship"
+                ], 
+                [
+                    "delete_championship", 
+                    "championship", 
+                    "championship"
+                ], 
+                [
+                    "add_participation", 
+                    "championship", 
+                    "participation"
+                ], 
+                [
+                    "change_participation", 
+                    "championship", 
+                    "participation"
+                ], 
+                [
+                    "delete_participation", 
+                    "championship", 
+                    "participation"
+                ], 
+                [
+                    "add_placement", 
+                    "championship", 
+                    "placement"
+                ], 
+                [
+                    "change_placement", 
+                    "championship", 
+                    "placement"
+                ], 
+                [
+                    "delete_placement", 
+                    "championship", 
+                    "placement"
                 ], 
                 [
                     "add_bankaccount", 
@@ -126,6 +171,11 @@
                     "add_submissiongym", 
                     "submission", 
                     "submissiongym"
+                ], 
+                [
+                    "add_submissioninternational", 
+                    "submission", 
+                    "submissioninternational"
                 ], 
                 [
                     "add_submissionjudge", 
