@@ -587,7 +587,7 @@ class SubmissionInternational(AbstractSubmission):
         '''
         Returns the name of the license, this is used e.g. in the email subject
         '''
-        return 'Internationale Lizenz'
+        return 'Internationaler Start'
 
     def get_email_template(self):
         '''
