@@ -599,26 +599,7 @@ class SubmissionInternational(AbstractSubmission):
         '''
         Collects and returns a list with the recipients of notification emails
         '''
-        email_list = []
-        for email in ManagerEmail.objects.all():
-            email_list.append(email.email)
-
-        if self.gym.email:
-            email_list.append(self.gym.email)
-
-        if self.gym.state.email:
-            email_list.append(self.gym.state.email)
-
-        # Hamburg
-        if self.gym.state.pk == 6:
-            email_list.append('clausmaibaum@web.de')
-
-        # Hessen
-        if self.gym.state.pk == 7:
-            email_list.append('info@hbbkv.com')
-
-        email_list.append(self.email)
-        return email_list
+        return ['info@dbfv.de', 'smash-fitness-park@t-online.de', self.email]
 
     def notification_email_hook(self):
         '''
