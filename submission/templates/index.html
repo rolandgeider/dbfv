@@ -77,6 +77,7 @@ Diese berechtigt zur Teilnahme an allen DBFV e.V / IFBB Meisterschaften.</p>
     {% elif perms.submission.add_submissionstarter %}
         <p><a class="btn btn-default btn-block" href="{% url 'submission-list' %}">Starterlizenzen</a></p>
         <p><a class="btn btn-default btn-block" href="{% url 'submission-judge-list' %}">Kampfrichterizenzen</a></p>
+        <p><a class="btn btn-default btn-block" href="{% url 'submission-international-list' %}">Internationale Starts</a></p>
     {% endif %}
 
 </div>
