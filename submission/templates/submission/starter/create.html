@@ -95,24 +95,24 @@ aus technischen Gründen nicht möglich.</p>
     {% endif %}
     <input type="hidden" name="gym" id="ajax_id_gym" value="{{form.gym.value}}">
 
-    {% render_form_fields form %}
+    {% render_form_fields form show_save=False %}
 
-    <p>Die Starterlizenz berechtigt zur Teilnahme an allen DBFV e.V /
-    IFBB Meisterschaften. Die Starterlizenz ist nur für das angegebene Kalenderjahr
-    gültig. Ein Start ohne Lizenz ist nicht möglich. Die Zustellung der Lizenz erfolgt
-    rechtzeitig vor Meisterschaftbeginn.</p>
-    <p>Verspätet gestellte Anträge können nur in Ausnahmefällen angenommen werden.</p>
-    <p>Die Wettkampregeln bzw. Beschlüsse des DBFV e.V. sind für Sie bindend.</p>
-    <p>Für die Genehmigung des Antrags ist der jeweilige Landesverband zuständig.</p>
-    <p><small>Die IFBB ist der einzige Bodybuilding-Weltverband, der von den
-    offiziellen Sportverbänden anerkannt ist. Der DBFV e.V. ist hier als einziger
-    deutscher Bodybuilding- und Fitnessverband Mitglied. Daher sind nur
-    Meisterschaften des DBFV e.V. in Deutschland sanktioniert. Alle vom DBFV e.V. /
-    IFBB nicht genehmigten Veranstalltungen oder sogennante offene Meisterschaften
-    geltern deshalb nur als Privat-Meisterschaften. Eine Beteiligung zieht daher
-    lt. Reglement ein Startverbot mit sich.</small></p>
-    <p></p>
-
+    <div class="col-md-offset-3 col-md-9">
+        <p>Die Starterlizenz berechtigt zur Teilnahme an allen DBFV e.V /
+        IFBB Meisterschaften. Die Starterlizenz ist nur für das angegebene Kalenderjahr
+        gültig. Ein Start ohne Lizenz ist nicht möglich. Die Zustellung der Lizenz erfolgt
+        rechtzeitig vor Meisterschaftbeginn.</p>
+        <p>Verspätet gestellte Anträge können nur in Ausnahmefällen angenommen werden.</p>
+        <p>Die Wettkampregeln bzw. Beschlüsse des DBFV e.V. sind für Sie bindend.</p>
+        <p>Für die Genehmigung des Antrags ist der jeweilige Landesverband zuständig.</p>
+        <p><small>Die IFBB ist der einzige Bodybuilding-Weltverband, der von den
+        offiziellen Sportverbänden anerkannt ist. Der DBFV e.V. ist hier als einziger
+        deutscher Bodybuilding- und Fitnessverband Mitglied. Daher sind nur
+        Meisterschaften des DBFV e.V. in Deutschland sanktioniert. Alle vom DBFV e.V. /
+        IFBB nicht genehmigten Veranstalltungen oder sogennante offene Meisterschaften
+        geltern deshalb nur als Privat-Meisterschaften. Eine Beteiligung zieht daher
+        lt. Reglement ein Startverbot mit sich.</small></p>
+    </div>
 
     {% render_form_submit 'Abschicken' 'btn-lg  btn-success' %}
 
