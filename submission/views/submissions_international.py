@@ -62,7 +62,7 @@ class SubmissionListView(BaseSubmissionListView):
 class SubmissionListMonthView(SubmissionListView,
                               generic.dates.MonthMixin,
                               generic.dates.YearMixin):
-    permission_required = 'submission.change_SubmissionInternational'
+    permission_required = 'submission.change_submissioninternational'
 
     def get_queryset(self):
         '''
@@ -116,7 +116,7 @@ class SubmissionDetailView(DbfvViewMixin, generic.detail.DetailView):
         Check for necessary permissions
         '''
         submission = self.get_object()
-        if not request.user.has_perm('submission.delete_SubmissionInternational') \
+        if not request.user.has_perm('submission.delete_submissioninternational') \
            and submission.user != request.user:
             return HttpResponseForbidden()
 
@@ -134,7 +134,7 @@ class SubmissionCreateView(BaseSubmissionCreateView):
 
     model = SubmissionInternational
     form_class = SubmissionInternationalForm
-    permission_required = 'submission.add_SubmissionInternational'
+    permission_required = 'submission.add_submissioninternational'
     template_name = 'submission/international/create.html'
 
     def get_context_data(self, **kwargs):
@@ -170,7 +170,7 @@ class SubmissionUpdateStatusView(DbfvFormMixin, generic.UpdateView):
     model = SubmissionInternational
     form_class = SubmissionInternationalFormBV
     success_url = reverse_lazy('submission-list')
-    permission_required = 'submission.change_SubmissionInternational'
+    permission_required = 'submission.change_submissioninternational'
 
 
 class SubmissionCsvExportView(BaseCsvExportView):
@@ -199,7 +199,7 @@ def search(request):
     '''
     Search for a submission, return the result as a JSON list
     '''
-    if not request.user.has_perm('submission.change_SubmissionInternational'):
+    if not request.user.has_perm('submission.change_submissioninternational'):
         return HttpResponseForbidden()
 
     # Perform the search
