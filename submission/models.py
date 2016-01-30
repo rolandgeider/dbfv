@@ -513,7 +513,7 @@ class SubmissionInternational(AbstractSubmission):
         ('9', u'Männer Bodyklasse')
     )
 
-    FEE = 50
+    FEE = 0
 
     # Personal information
     date_of_birth = models.DateField(_('Geburtsdatum'))
