@@ -22,9 +22,23 @@ from django.http import HttpResponseRedirect
 from django.core import mail
 from django.core.urlresolvers import reverse
 from django.contrib.formtools.preview import FormPreview
+from django.views import generic
 
-from core.models import EmailCron
+from core.models import EmailCron, EmailLog
 from submission.models import ManagerEmail, SubmissionStarter, Gym
+from submission.views.generic_views import DbfvViewMixin
+
+
+class EmailLogListView(DbfvViewMixin, generic.ListView):
+    '''
+    Shows a list with all manager emails
+    '''
+
+    model = EmailLog
+    context_object_name = "email_list"
+    template_name = 'email/overview.html'
+    permission_required = 'core.add_emaillog'
+    login_required = True
 
 
 class EmailListFormPreview(FormPreview):
@@ -84,12 +98,17 @@ class EmailListFormPreview(FormPreview):
         # Make unique, so people don't get duplicate emails later
         email_list = list(set(email_list))
 
-        # Save entries to list to be processed later
+        # Save the entries to a list to be processed later as well as a log
+        email_log = EmailLog()
+        email_log.body = cleaned_data['body']
+        email_log.subject = cleaned_data['subject']
+        email_log.type = 's' if self.list_type == 'starter' else 'g'
+        email_log.save()
+
         for email in email_list:
             cron = EmailCron()
+            cron.log = email_log
             cron.email = email
-            cron.subject = cleaned_data['subject']
-            cron.body = cleaned_data['body']
             cron.save()
 
-        return HttpResponseRedirect('/')
+        return HttpResponseRedirect(reverse('core:email:overview'))
