@@ -36,7 +36,17 @@ Diese berechtigt zur Teilnahme an allen DBFV e.V / IFBB Meisterschaften.</p>
     </div>
     <div class="col-md-6">
         <h4>Internationale Starts</h4>
-        <p>Hier Stellen Sie den Antrag an einen internationalen Start</p>
+        <p>Hier Stellen Sie den Antrag an einen internationalen Start. Voraussetzungen:</p>
+        <ul>
+            <li>Top 6 bei Deutschen Meisterschaften.</li>
+            <li>Mitglied eines Nationalkaders.</li>
+            <li>Anmeldeschluss beim Sportreferenten je nach Meisterschaft mind. 2 Monate vorher.</li>
+            <li>Bei Arnold-Classic (USA, Europa) sind nur Klassensieger der DM, IDM, Gesamtsieger der
+                Newcomer DM, der Int.Süddt.Meisterschaft oder Mitglieder eines Nationalkaders startberechtigt.</li>
+            <li>Gültige Starterlizenz, gültiger Reispass (mind.1/2 Jahr gültig), Visa (falls notwendig).</li>
+            <li>Zustimmung und Vorschlag des DBFV e.V. (auch bei entsprechenden Altersgruppen)
+                nur bei rechtzeitiger Anmeldung - (vorbehaltlich der Zustimmung des Veranstalters).</li>
+        </ul>
     </div>
 </div>
 <div class="row">
@@ -49,7 +59,7 @@ Diese berechtigt zur Teilnahme an allen DBFV e.V / IFBB Meisterschaften.</p>
     </div>
     <div class="col-md-6">
         {% if perms.submission.add_submissioninternational %}
-        <p><a class="btn btn-success" href="{% url 'submission-international-add' %}">Antrag auf internationalen Start stellen &raquo;</a></p>
+        <p><a class="btn btn-success" href="{% url 'submission-international-add' %}">Antrag für einen internationalen Start stellen &raquo;</a></p>
         {% else %}
         <p><a href="{% url 'login' %}" class="btn btn-danger">Sie müssen sich anmelden</a></p>
         {% endif %}
