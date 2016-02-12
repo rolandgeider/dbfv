@@ -17,19 +17,3 @@ Details:
 * Studio:                {{submission.gym.name}} ({{submission.gym.state.name}})
                          {{submission.gym.email}}
 * Meisterschaft:         {{submission.championship}} ({{submission.championship_date}})
-{% if extra_data.championships %}* Meisterschaften:{% for championship in extra_data.championships %}
-    - {{ championship }}{% endfor %}
-{% endif %}
-
-{% if is_user %}
-Bitte überweisen Sie den Teilnahmebeitrag innerhalb von 5 Tagen
-an das folgende Konto:
-
-* Betrag:           {{fee}}EUR
-* Verwendungszweck: Starterlizenz {{submission.pk}}
-                    {{submission.get_name}}
-* Begünstigter:     {{bankaccount.owner_name}}
-* IBAN:             {{bankaccount.iban}}
-* BIC:              {{bankaccount.bic}} ({{bankaccount.bank_name}})
-                    Nur bei Auslandsüberweisung nötig!
-{% endif %}
