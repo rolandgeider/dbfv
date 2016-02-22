@@ -552,6 +552,11 @@ class SubmissionInternational(AbstractSubmission):
                                     max_length=150)
     championship_date = models.DateField(_(u'Datum der Meisterschaft'))
 
+    best_placement = models.CharField(u'Beste Platzierung',
+                                      max_length=150,
+                                      help_text='Beste Platzierung auf einer deutschen '
+        'DBFV/IFBB-Meisterschaft, mit Datum und Kategorie')
+
     gym = models.ForeignKey(Gym,
                             verbose_name='Studio')
 
