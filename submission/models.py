@@ -502,23 +502,26 @@ class SubmissionInternational(AbstractSubmission):
                         'Datum der Meisterschaft']
 
     SUBMISSION_CATEGORY = (
-        ('1', u'Bikini-Klasse'),
-        ('2', u'Frauen Fitness-Figur-Klasse'),
-        ('3', u'Frauen Bodyklasse'),
-        ('4', u'Frauen Physiqueklasse'),
-        ('5', u'Juniorenklasse'),
-        ('6', u'Classic-Bodybuilding'),
-        ('7', u'Paare'),
-        ('8', u'Männer Physique'),
-        ('9', u'Männer Bodyklasse')
+        ('1',  u'Bikini-Klasse'),
+        ('2',  u'Junior-Klasse'),
+        ('3',  u'Junior-Bodybuilding'),
+        ('4',  u'Junior Physique'),
+        ('5',  u'Jugend-Klasse'),
+        ('6',  u'Jugend-Bodybuilding'),
+        ('7',  u'Jugend Physique'),
+        ('8',  u'Frauen Fitness-Figur-Klasse'),
+        ('9',  u'Frauen Bodyklasse'),
+        ('10', u'Frauen Physiqueklasse'),
+        ('11', u'Classic-Bodybuilding'),
+        ('12', u'Paare'),
+        ('13', u'Männer Physique'),
+        ('14', u'Männer Bodyklasse'),
     )
 
     FEE = 0
 
     # Personal information
     date_of_birth = models.DateField(_('Geburtsdatum'))
-    active_since = models.CharField(_('Aktiv seit'),
-                                    max_length=20)
     last_name = models.CharField(_('Familienname'),
                                  max_length=30)
     first_name = models.CharField(_('Vorname'),
@@ -539,7 +542,7 @@ class SubmissionInternational(AbstractSubmission):
                                     )
     height = models.IntegerField(_(u'Größe (cm)'),
                                  max_length=3)
-    weight = models.DecimalField(_(u'Wettkampfgewicht (kg)'),
+    weight = models.DecimalField(_(u'Wettkampfgewicht in kg (ca.)'),
                                  max_digits=5,
                                  decimal_places=2)
     category = models.CharField(_(u'Kategorie'),
@@ -548,10 +551,6 @@ class SubmissionInternational(AbstractSubmission):
     championship = models.CharField(_(u'Meisterschaft'),
                                     max_length=150)
     championship_date = models.DateField(_(u'Datum der Meisterschaft'))
-
-    # Other fields
-    submission_last_year = models.BooleanField(u"Im Vorjahr wurde bereits eine Lizenz beantragt",
-                                               default=False)
 
     gym = models.ForeignKey(Gym,
                             verbose_name='Studio')
