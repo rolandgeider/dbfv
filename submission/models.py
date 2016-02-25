@@ -502,20 +502,20 @@ class SubmissionInternational(AbstractSubmission):
                         'Datum der Meisterschaft']
 
     SUBMISSION_CATEGORY = (
-        ('1',  u'Bikini-Klasse'),
-        ('2',  u'Junior-Klasse'),
-        ('3',  u'Junior-Bodybuilding'),
-        ('4',  u'Junior Physique'),
-        ('5',  u'Jugend-Klasse'),
-        ('6',  u'Jugend-Bodybuilding'),
-        ('7',  u'Jugend Physique'),
-        ('8',  u'Frauen Fitness-Figur-Klasse'),
-        ('9',  u'Frauen Bodyklasse'),
-        ('10', u'Frauen Physiqueklasse'),
-        ('11', u'Classic-Bodybuilding'),
-        ('12', u'Paare'),
+        ('1',  u'Jugend-Bikini-Fitness'),
+        ('2',  u'Jugend-Mens Physique'),
+        ('3',  u'Jugend-Bodybuilding'),
+        ('4',  u'Junioren-Bikini-Fitness'),
+        ('5',  u'Junioren-Mens Physique'),
+        ('6',  u'Junioren-Bodybuilding'),
+        ('7',  u'Frauen-Bikini-Fitness'),
+        ('8',  u'Frauen-Fitness-Figur'),
+        ('9',  u'Frauen-Physique'),
+        ('10', u'Paare'),
+        ('11', u'Handicappt/Wheelchair'),
+        ('12', u'Classic Bodybuilding'),
         ('13', u'Männer Physique'),
-        ('14', u'Männer Bodyklasse'),
+        ('14', u'Männer Bodybuilding'),
     )
 
     FEE = 0
@@ -549,6 +549,7 @@ class SubmissionInternational(AbstractSubmission):
                                 max_length=1,
                                 choices=SUBMISSION_CATEGORY)
     championship = models.CharField(_(u'Meisterschaft'),
+                                    help_text=u'Meisterschaft in der Du starten möchtest',
                                     max_length=150)
     championship_date = models.DateField(_(u'Datum der Meisterschaft'))
 
