@@ -546,7 +546,7 @@ class SubmissionInternational(AbstractSubmission):
                                  max_digits=5,
                                  decimal_places=2)
     category = models.CharField(_(u'Kategorie'),
-                                max_length=1,
+                                max_length=2,
                                 choices=SUBMISSION_CATEGORY)
     championship = models.CharField(_(u'Meisterschaft'),
                                     help_text=u'Meisterschaft in der Du starten möchtest',
