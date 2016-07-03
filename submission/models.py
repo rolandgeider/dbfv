@@ -110,7 +110,6 @@ class Gym(models.Model):
                              blank=True,
                              null=True)
     zip_code = models.IntegerField(_(u'PLZ'),
-                                   max_length=5,
                                    blank=True,
                                    null=True)
     city = models.CharField(_(u'Ort'),
@@ -327,8 +326,7 @@ class SubmissionStarter(AbstractSubmission):
                                   max_length=30)
     street = models.CharField(_(u'Straße'),
                               max_length=30)
-    zip_code = models.IntegerField(_(u'PLZ'),
-                                   max_length=5)
+    zip_code = models.IntegerField(_(u'PLZ'))
     city = models.CharField(_(u'Ort'),
                             max_length=30)
     tel_number = models.CharField(_(u'Tel. Nr.'),
@@ -339,8 +337,7 @@ class SubmissionStarter(AbstractSubmission):
                                     verbose_name=u'Staatsangehörigkeit',
                                     default=37  # Germany
                                     )
-    height = models.IntegerField(_(u'Größe (cm)'),
-                                 max_length=3)
+    height = models.IntegerField(_(u'Größe (cm)'))
     weight = models.DecimalField(_(u'Wettkampfgewicht (kg)'),
                                  max_digits=5,
                                  decimal_places=2)
@@ -528,8 +525,7 @@ class SubmissionInternational(AbstractSubmission):
                                   max_length=30)
     street = models.CharField(_(u'Straße'),
                               max_length=30)
-    zip_code = models.IntegerField(_(u'PLZ'),
-                                   max_length=5)
+    zip_code = models.IntegerField(_(u'PLZ'))
     city = models.CharField(_(u'Ort'),
                             max_length=30)
     tel_number = models.CharField(_(u'Tel. Nr.'),
@@ -540,8 +536,7 @@ class SubmissionInternational(AbstractSubmission):
                                     verbose_name=u'Staatsangehörigkeit',
                                     default=37  # Germany
                                     )
-    height = models.IntegerField(_(u'Größe (cm)'),
-                                 max_length=3)
+    height = models.IntegerField(_(u'Größe (cm)'))
     weight = models.DecimalField(_(u'Wettkampfgewicht in kg (ca.)'),
                                  max_digits=5,
                                  decimal_places=2)
@@ -675,8 +670,7 @@ class SubmissionGym(AbstractSubmission):
     founded = models.DateField(_(u'Gegründet am'))
     street = models.CharField(_(u'Straße'),
                               max_length=30)
-    zip_code = models.IntegerField(_(u'PLZ'),
-                                   max_length=5)
+    zip_code = models.IntegerField(_(u'PLZ'))
     city = models.CharField(_(u'Ort'),
                             max_length=30)
     tel_number = models.CharField(_(u'Tel. Nr.'),
@@ -686,7 +680,6 @@ class SubmissionGym(AbstractSubmission):
     email = models.EmailField(_(u'Email'),
                               max_length=120)
     members = models.IntegerField(verbose_name=_(u'Anzahl Mitglieder'),
-                                  max_length=5,
                                   help_text=_('Dient nur statistischen Zwecken'),
                                   null=True,
                                   blank=True)
@@ -773,8 +766,7 @@ class SubmissionJudge(AbstractSubmission):
                                   max_length=30)
     street = models.CharField(u'Straße',
                               max_length=30)
-    zip_code = models.IntegerField(u'PLZ',
-                                   max_length=5)
+    zip_code = models.IntegerField(u'PLZ')
     city = models.CharField(u'Ort',
                             max_length=30)
     state = models.ForeignKey(State,
@@ -877,8 +869,7 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User)
 
     # User type
-    type = models.IntegerField(max_length=1,
-                               choices=USER_TYPES,
+    type = models.IntegerField(choices=USER_TYPES,
                                default=USER_TYPE_UNKNOWN)
 
     # Personal information
