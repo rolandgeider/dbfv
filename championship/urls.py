@@ -16,10 +16,13 @@
 
 from django.conf.urls import url, include
 
-from championship.views import championships
-from championship.views import categories
-from championship.views import participations
-from championship.views import placements
+from championship.views import (
+    championships,
+    categories,
+    participations,
+    placements,
+    judges
+)
 
 
 # sub patterns for championships
@@ -43,6 +46,19 @@ patterns_championship = [
     url(r'^(?P<pk>\d+)/export-csv',
         championships.export_participants,
         name='export-csv'),
+]
+
+# sub patterns for judges
+patterns_judge = [
+    url(r'^(?P<championship_pk>\d+)/hinzufuegen$',
+        judges.JudgeCreateView.as_view(),
+        name='add'),
+    url(r'^(?P<pk>\d+)/bearbeiten$',
+        judges.JudgeUpdateView.as_view(),
+        name='edit'),
+    url(r'^(?P<pk>\d+)/loeschen$',
+        judges.JudgeDeleteView.as_view(),
+        name='delete'),
 ]
 
 # sub patterns for categories
@@ -92,4 +108,5 @@ urlpatterns = [
     url(r'^teilnahme/', include(patterns_participation, namespace="participation")),
     url(r'^platzierung/', include(patterns_placement, namespace="placement")),
     url(r'^kategorie/', include(patterns_categories, namespace="category")),
+    url(r'^kampfrichter/', include(patterns_judge, namespace="judge")),
 ]

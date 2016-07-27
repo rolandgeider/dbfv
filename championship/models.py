@@ -23,6 +23,7 @@ from django.utils import formats
 from submission.models import State, SubmissionStarter
 
 championship_fields = ('name', 'date', 'state', 'categories')
+judge_fields = ('name', )
 
 class Championship(models.Model):
     '''
@@ -85,6 +86,35 @@ class Category(models.Model):
                             max_length=50)
     '''
     The category's name
+    '''
+
+    def __unicode__(self):
+        '''
+        Return a more human-readable representation
+        '''
+        return u'{0}'.format(self.name)
+
+
+class Judge(models.Model):
+    '''
+    A Judge in a Championship
+    '''
+    class Meta:
+        '''
+        Configure other properties
+        '''
+        ordering = ["name"]
+
+    name = models.CharField(verbose_name='Name',
+                            max_length=50)
+    '''
+    The judge's name
+    '''
+
+    championship = models.ForeignKey(Championship,
+                                     editable=False)
+    '''
+    The championship
     '''
 
     def __unicode__(self):

@@ -69,6 +69,21 @@
                     "placement"
                 ], 
                 [
+                    "add_judge", 
+                    "championship", 
+                    "judge"
+                ], 
+                [
+                    "change_judge", 
+                    "championship", 
+                    "judge"
+                ], 
+                [
+                    "delete_judge", 
+                    "championship", 
+                    "judge"
+                ], 
+                [
                     "add_bankaccount", 
                     "submission", 
                     "bankaccount"

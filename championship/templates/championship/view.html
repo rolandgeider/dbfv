@@ -51,6 +51,28 @@ $(document).ready(function() {
     </tr>
 </table>
 
+
+<h3>Kampfrichter</h3>
+<table class="table">
+    <tr>
+        <th>Name</th>
+        <th>Aktionen</th>
+    </tr>
+    {% for judge in object.judge_set.all %}
+    <tr>
+        <td>{{ judge }}</td>
+        <td>
+            <a href="{% url 'championship:judge:edit' judge.pk %}">
+                <span class="glyphicon glyphicon-pencil"></span>
+            </a>
+            <a href="{% url 'championship:judge:delete' judge.pk %}">
+                <span class="glyphicon glyphicon-trash"></span>
+            </a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
 <h3>Teilnehmer</h3>
 <table class="table">
     <tr>
@@ -99,6 +121,10 @@ $(document).ready(function() {
 
     <p>
         <a href="{% url 'championship:championship:delete' object.id %}">Löschen</a>
+    </p>
+
+    <p>
+        <a href="{% url 'championship:judge:add' object.id %}">Kampfrichter hinzufügen</a>
     </p>
 </div>
 
