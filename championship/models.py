@@ -22,6 +22,7 @@ from django.db import models
 from django.utils import formats
 from submission.models import State, SubmissionStarter
 
+championship_fields = ('name', 'date', 'state', 'categories')
 
 class Championship(models.Model):
     '''
