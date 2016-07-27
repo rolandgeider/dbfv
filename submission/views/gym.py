@@ -67,6 +67,7 @@ class GymCreateView(DbfvFormMixin, generic.CreateView):
     model = Gym
     permission_required = 'submission.add_gym'
     page_title = 'Studio hinzufügen'
+    fields = '__all__' 
 
 
 class GymUpdateView(DbfvFormMixin, generic.UpdateView):
@@ -77,6 +78,7 @@ class GymUpdateView(DbfvFormMixin, generic.UpdateView):
     model = Gym
     permission_required = 'submission.change_gym'
     page_title = 'Studio bearbeiten'
+    fields = '__all__' 
 
 
 class GymDeleteView(DbfvFormMixin, generic.DeleteView):
@@ -88,6 +90,7 @@ class GymDeleteView(DbfvFormMixin, generic.DeleteView):
     success_url = reverse_lazy('gym-list')
     permission_required = 'submission.delete_gym'
     template_name = 'delete.html'
+    fields = '__all__' 
 
     def get_context_data(self, **kwargs):
         '''
