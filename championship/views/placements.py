@@ -15,13 +15,16 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.db.models.aggregates import Max
+from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.views import generic
-from django.core.urlresolvers import reverse
 
-from championship.models import Participation, Placement, Category
-from submission.models import SubmissionStarter
+from championship.models import (
+    Participation,
+    Placement,
+    Category,
+    placement_fields
+)
 from submission.views.generic_views import DbfvFormMixin
 
 
@@ -31,6 +34,7 @@ class PlacementCreateView(DbfvFormMixin, generic.CreateView):
     '''
 
     model = Placement
+    fields = placement_fields
     permission_required = 'championship.add_placement'
 
     def get_form(self, form_class):
@@ -65,6 +69,7 @@ class PlacementUpdateView(DbfvFormMixin, generic.UpdateView):
     '''
 
     model = Placement
+    fields = placement_fields
     permission_required = 'championship.change_placement'
 
     def get_form(self, form_class):
@@ -90,6 +95,7 @@ class PlacementDeleteView(DbfvFormMixin, generic.DeleteView):
     '''
 
     model = Placement
+    fields = placement_fields
     permission_required = 'championship.delete_placement'
     template_name = 'delete.html'
 
