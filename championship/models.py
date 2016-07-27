@@ -178,7 +178,7 @@ class Placement(models.Model):
         '''
         Configure other properties
         '''
-        unique_together = (("participation", "category"))
+        unique_together = (("participation", "category", "placement"))
 
     participation = models.ForeignKey(Participation,
                                       editable=False,
