@@ -1,0 +1,19 @@
+Internationaler Start wurde beantragt
+-------------------------------------
+
+Details:
+* Antragsnummer:         {{submission.pk}}
+* Name:                  {{submission.last_name}}
+* Vorname:               {{submission.first_name}}
+* Geburtsdatum:          {{submission.date_of_birth}}
+* Adresse:               {{submission.street}}, {{submission.city}}, {{submission.zip_code}}
+* Staatsangehörigkeit:   {{submission.nationality}}
+* Email:                 {{submission.email}}
+* Telefon:               {{submission.tel_number}}
+* Größe (cm):            {{submission.height}}
+* Wettkampfgewicht (kg): {{submission.weight}}
+* Klasse:                {{submission.get_category_display}}
+* Studio:                {{submission.gym.name}} ({{submission.gym.state.name}})
+                         {{submission.gym.email}}
+* Meisterschaft:         {{submission.championship}} ({{submission.championship_date}})
+* Beste Platzierung:     {{submission.best_placement}}

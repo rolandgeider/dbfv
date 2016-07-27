@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% load dbfv_extras %}
+
+{% block title %}Internationaler Start {{object.pk}} - {{object.get_name}}{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block content %}
+<p>
+    {% if object.submission_status == '1' %}
+        <span class="label">Eingegangen</span>
+    {% elif object.submission_status == '2' %}
+        <span class="label label-success">Bewilligt</span>
+    {% elif object.submission_status == '3' %}
+        <span class="label label-important">Abgelehnt</span>
+    {% endif %}
+
+    {% if perms.submission.change_submissionstarter %}
+        {% if object.mail_merge %}
+            <span class="label label-success">Serienbrief Export</span>
+        {% else %}
+            <span class="label">Kein Serienbrief Export</span>
+        {% endif %}
+    {% endif %}
+</p>
+
+<table class="table">
+    <tr>
+        <th>Antragsnummer</th>
+        <td colspan="3">{{object.pk}}</td>
+    </tr>
+    <tr>
+        <th>Geburtsdatum</th>
+        <td>{{object.date_of_birth}}</td>
+        <th>Aktiv seit</th>
+        <td>{{object.active_since}}</td>
+    </tr>
+    <tr>
+        <th>Familienname</th>
+        <td>{{object.last_name}}</td>
+        <th>Vornamename</th>
+        <td>{{object.first_name}}</td>
+    </tr>
+    <tr>
+        <th>Tel. Nr.</th>
+        <td>{{object.tel_number}}</td>
+        <th>Email</th>
+        <td><a href="mailto:{{object.email}}">{{object.email}}</a></td>
+    </tr>
+    <tr>
+        <th>Straße</th>
+        <td>{{object.street}}</td>
+        <th>Wohnort</th>
+        <td>{{object.zip_code}}, {{object.city}}</td>
+    </tr>
+    <tr>
+        <th>Staatsangehörigkeit</th>
+        <td>{{object.nationality.name}}</td>
+        <th>Lizenz im Vorjahr</th>
+        <td>{{object.submission_last_year|yesno:"Ja,Nein" }}</td>
+    </tr>
+    <tr>
+        <th>Größe</th>
+        <td>{{object.height}} cm.</td>
+        <th>Wettkampfgewicht</th>
+        <td>{{object.weight}} kg.</td>
+    </tr>
+    <tr>
+        <th>Kategorie</th>
+        <td colspan="3">{{object.get_category_display}}</td>
+    </tr>
+    <tr>
+        <th>Landesverband</th>
+        <td>{{object.gym.state.name}}</td>
+        <th>Email</th>
+        <td>
+            {% if object.gym.state.email %}
+                <a href="mailto:{{object.gym.state.email}}">{{object.gym.state.email}}</a>
+            {% else %}
+                -/-
+            {% endif %}
+        </td>
+    </tr>
+    <tr>
+        <th>Studio</th>
+        <td>
+            {% if perms.submission.change_submissionstarter %}
+                <a href="{{object.gym.get_absolute_url}}">{{object.gym.name}}</a>
+            {% else %}
+                {{object.gym.name}}
+            {% endif %}
+        </td>
+        <th>Email</th>
+        <td>
+            {% if object.gym.email %}
+                <a href="mailto:{{object.gym.email}}">{{object.gym.email}}</a>
+            {% else %}
+                -/-
+            {% endif %}
+        </td>
+    </tr>
+    <tr>
+        <th>Meisterschaft</th>
+        <td>
+            {{object.championship}}
+        </td>
+        <th>Datum der Meisterschaft</th>
+        <td>
+            {{ object.championship_date }}
+        </td>
+    </tr>
+</table>
+{% endblock %}
+
+{% block sidebar %}
+{% if perms.submission.change_submissionstarter %}
+<div class="sidebar-box">
+    <h4>Optionen</h4>
+    <p><a href="{% url 'submission-international-edit' object.id %}"
+          title="Bearbeiten">Bearbeiten</a></p>    
+    <p><a href="{% url 'submission-international-edit-status' object.id %}"
+          title="Status bearbeiten">Status bearbeiten</a></p>
+    <p><a href="{% url 'submission-international-export-mailmerge' object.id %}"
+          title="Status bearbeiten">Für Serienbrief exportieren</a></p>
+    <p><a href="{% url 'bank-account-view' %}"
+              title="Bearbeiten">Kontodaten anzeigen</a></p>
+    <p><a href="{% url 'submission-international-delete' object.pk %}"
+              title="Bearbeiten">Antrag löschen</a></p>
+</div>
+{% else %}
+    {% if object.submission_status == object.SUBMISSION_STATUS_EINGEGANGEN %}
+    <div class="sidebar-box">
+        <h4>Optionen</h4>
+        <p><a href="{% url 'submission-international-edit' object.id %}"
+              title="Bearbeiten">Bearbeiten</a></p>
+        <p><a href="{% url 'bank-account-view' %}"
+              title="Bearbeiten">Kontodaten anzeigen</a></p>
+
+    </div>
+    {% endif %}
+{% endif %}
+{% endblock %}

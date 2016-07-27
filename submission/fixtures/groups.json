@@ -173,6 +173,11 @@
                     "submissiongym"
                 ], 
                 [
+                    "add_submissioninternational", 
+                    "submission", 
+                    "submissioninternational"
+                ], 
+                [
                     "add_submissionjudge", 
                     "submission", 
                     "submissionjudge"

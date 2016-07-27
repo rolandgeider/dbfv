@@ -122,6 +122,10 @@ INSTALLED_APPS = (
     # The dbfv app
     'championship',
     'submission',
+    'core',
+
+    # Django debug toolbar
+    #'debug_toolbar',
 )
 
 DEBUG_TOOLBAR_CONFIG = {'INTERCEPT_REDIRECTS': False}

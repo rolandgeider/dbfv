@@ -72,6 +72,7 @@
                     <ul class="dropdown-menu">
                         <li><a href="{% url 'submission-list' %}">Starterlizenzen</a></li>
                         <li><a href="{% url 'submission-judge-list' %}">Kampfrichterizenzen</a></li>
+                        <li><a href="{% url 'submission-international-list' %}">Internationale Starts</a></li>
                     </ul>
                     </li>
                 {% endif %}
@@ -83,7 +84,10 @@
                         <li><a href="{% url 'gym-list' %}">Studios</a></li>
                         <li><a href="{% url 'state-list' %}">Bundesländer</a></li>
                         <li><a href="{% url 'bank-account-list' %}">Bankkonten</a></li>
+                        <li class="divider"></li>
+                        <li class="dropdown-header">Emails</li>
                         <li><a href="{% url 'email-list' %}">Manager Emails</a></li>
+                        <li><a href="{% url 'core:email:overview' %}">Email Verteiler</a></li>
                         <li class="divider"></li>
                         <li class="dropdown-header">Meisterschaften</li>
                         <li><a href="{% url 'championship:championship:list' %}">Verwaltung</a></li>
@@ -117,8 +121,6 @@
             </div>
             </div>
         </div>
-    </div>
-    </div>
 
     <div class="container">
         <h2>{% block title %}{% endblock %}</h2>

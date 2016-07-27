@@ -179,8 +179,9 @@ class BaseCsvExportView(View):
 
         Default: all non-exported submissions
         '''
+        submission_status = self.model.SUBMISSION_STATUS_BEWILLIGT
         submissions = self.model.objects.filter(mail_merge=False) \
-                                        .filter(submission_status=self.model.SUBMISSION_STATUS_BEWILLIGT) \
+                                        .filter(submission_status=submission_status) \
                                         .select_related()
 
         return submissions

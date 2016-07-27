@@ -44,6 +44,8 @@ def render_submission_list(submissions, user, filter_mode, submission_type='star
         url_fragment = '-studio'
     elif submission_type == 'judge':
         url_fragment = '-judge'
+    elif submission_type == 'international':
+        url_fragment = '-international'
 
     context = dict()
     context['SUBMISSION_STATUS_EINGEGANGEN'] = SubmissionStarter.SUBMISSION_STATUS_EINGEGANGEN
@@ -71,7 +73,6 @@ def render_submission_list(submissions, user, filter_mode, submission_type='star
     context['url_submission_delete'] = 'submission{0}-delete'.format(url_fragment)
 
     return render_to_string("tags/render_submission_list.html", context)
-
 
 
 #

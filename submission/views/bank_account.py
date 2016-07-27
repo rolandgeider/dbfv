@@ -41,8 +41,19 @@ class BankAccountDetailView(DbfvViewMixin, generic.DetailView):
     '''
 
     model = BankAccount
-    template_name = 'bank_account/view.html'
     login_required = True
+
+    def get_template_names(self):
+        '''
+        Return the correct template after submitting a new license
+
+        Note: international starts are free so we check here (hackily) and return
+        a different template that is basically just a confirmation screen.
+        '''
+        if 'international' in self.request.session['designated-use'].lower():
+            return 'bank_account/view_international.html'
+        else:
+            return 'bank_account/view.html'
 
     def get_object(self):
         '''
