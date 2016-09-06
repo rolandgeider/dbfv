@@ -171,7 +171,7 @@ class Participation(models.Model):
 
 class Placement(models.Model):
     '''
-    A placement for an athlete in a championship for a specific category
+    The final placement for an athlete in a championship for a specific category
     '''
 
     class Meta:
@@ -197,4 +197,40 @@ class Placement(models.Model):
                                     verbose_name='Platzierung')
     '''
     The user's placement in this championship and category
+    '''
+
+
+class Assessment(models.Model):
+    '''
+    An assessment of a judge about an athlete
+    '''
+    class Meta:
+        '''
+        Configure other properties
+        '''
+        unique_together = (("participation", "category", "judge"))
+
+    participation = models.ForeignKey(Participation,
+                                      editable=False,
+                                      verbose_name='Teilnahme')
+    '''
+    The participation (basically, an athlete) for this assessment
+    '''
+
+    category = models.ForeignKey(Category,
+                                 verbose_name='Kategorie')
+    '''
+    The categories in the championship
+    '''
+
+    judge = models.ForeignKey(Judge,
+                              verbose_name='Kampfrichter')
+    '''
+    The judge making the assessment
+    '''
+
+    points = models.IntegerField(default=0,
+                                 verbose_name='Punkte')
+    '''
+    Points given to the athlete
     '''
