@@ -73,13 +73,25 @@ $(document).ready(function() {
     {% endfor %}
 </table>
 
+<h3>Kategorien</h3>
+<table class="table">
+    <tr>
+        <th>Name</th>
+    </tr>
+    {% for categorie in object.categories.all %}
+    <tr>
+        <td>{{ categorie }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
 <h3>Teilnehmer</h3>
 <table class="table">
     <tr>
         <th>Teilnehmernr.</th>
         <th>Teilnehmer</th>
         <th>Kategorie</th>
-        <th>Platzierung</th>
+        <th>Gesamtplatzierung</th>
         <th>Studio</th>
         <th>Aktionen</th>
     </tr>
