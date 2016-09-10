@@ -104,7 +104,11 @@ $(document).ready(function() {
     <tr>
         <td>{{ participation.participation_nr }}</td>
         <td><a href="{% url 'submission-view' participation.submission.pk %}">{{ participation.submission.get_name }}</a></td>
-        <td>{{ placement.category }}</td>
+        <td>
+            <a href="{% url 'championship:championship:category-detail' object.pk placement.category.pk  %}">
+                {{ placement.category }}
+            </a>
+        </td>
         <td>
             <a href="{% url 'championship:placement:edit' placement.pk %}"><span class="glyphicon glyphicon-pencil"></span></a>
             {{ placement.placement }}
