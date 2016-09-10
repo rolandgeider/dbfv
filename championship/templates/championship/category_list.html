@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load url from future %}
+
+{% block title %}Einträge für {{ category }}{% endblock %}
+
+{% block content %}
+<table class="table">
+    <tr>
+        <th>Nr.</th>
+        <th>Platzierung</th>
+        <th>Name</th>
+    </tr>
+    {% for placement in placements %}
+        <tr>
+            <td>{{ placement.participation.participation_nr }}</td>
+            <td>{{ placement.placement }}</td>
+            <td>{{ placement.placement.submission.user }}</td>
+        </tr>
+    {% endfor %}
+</table>
+{% endblock %}
+
+{% block sidebar %}
+{% endblock %}

@@ -17,11 +17,15 @@
 import csv
 from django.contrib.auth.decorators import permission_required
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 
 from django.views import generic
 from django.core.urlresolvers import reverse_lazy, reverse
-from championship.models import Championship, championship_fields
+from championship.models import (
+    Championship,
+    Category,
+    championship_fields,
+    Placement)
 
 from submission.views.generic_views import DbfvViewMixin, DbfvFormMixin
 
@@ -128,3 +132,24 @@ def export_participants(request, pk):
         format(championship.pk)
     response['Content-Length'] = len(response.content)
     return response
+
+
+@permission_required('championship.change_championship')
+def category_detail(request, pk, category_pk):
+    '''
+    View participations and other details for a category
+    '''
+
+    championship = get_object_or_404(Championship, pk=pk)
+    category = get_object_or_404(Category, pk=pk)
+
+    placements = Placement.objects.filter(participation__championship=championship,
+                                          category=category)
+
+    # participants = championship.participation_set.filter(category=category, placement__category=category)
+
+    context = {'championship': championship,
+               'category': category,
+               'placements': placements}
+
+    return render(request, 'championship/category_list.html', context)

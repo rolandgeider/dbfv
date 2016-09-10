@@ -46,6 +46,9 @@ patterns_championship = [
     url(r'^(?P<pk>\d+)/export-csv',
         championships.export_participants,
         name='export-csv'),
+    url(r'^(?P<pk>\d+)/(?P<category_pk>\d+)/view',
+        championships.category_detail,
+        name='category-detail'),
 ]
 
 # sub patterns for judges

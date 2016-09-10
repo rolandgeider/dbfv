@@ -20,7 +20,7 @@ from django.shortcuts import get_object_or_404
 from django.views import generic
 from django.core.urlresolvers import reverse, reverse_lazy
 
-from championship.models import Participation
+from championship.models import Participation, participation_fields
 from submission.models import SubmissionStarter
 from submission.views.generic_views import DbfvFormMixin
 
@@ -44,6 +44,7 @@ class ParticipationCreateView(DbfvFormMixin, generic.CreateView):
     model = Participation
     permission_required = 'championship.add_participation'
     submission = None
+    fields = participation_fields
 
     def dispatch(self, request, *args, **kwargs):
 

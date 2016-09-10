@@ -78,9 +78,13 @@ $(document).ready(function() {
     <tr>
         <th>Name</th>
     </tr>
-    {% for categorie in object.categories.all %}
+    {% for category in object.categories.all %}
     <tr>
-        <td>{{ categorie }}</td>
+        <td>
+            <a href="{% url 'championship:championship:category-detail' object.pk category.pk  %}">
+                {{ category }}
+            </a>
+        </td>
     </tr>
     {% endfor %}
 </table>

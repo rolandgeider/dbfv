@@ -25,6 +25,7 @@ from submission.models import State, SubmissionStarter
 championship_fields = ('name', 'date', 'state', 'categories')
 judge_fields = ('name', )
 placement_fields = ('category', 'placement')
+participation_fields = ('championship',)
 
 
 class Championship(models.Model):
@@ -200,6 +201,37 @@ class Placement(models.Model):
     '''
 
 
+class AssessmentCollection(models.Model):
+    '''
+    A collection of assessments, e.g. for different rounds
+    '''
+
+    championship = models.ForeignKey(Championship,
+                                     editable=False)
+    '''
+    The championship this collection belongs to
+    '''
+
+    category = models.ForeignKey(Category,
+                                 verbose_name='Kategorie')
+    '''
+    The categories in the championship
+    '''
+
+    round = models.PositiveSmallIntegerField(editable=False)
+    '''
+    The round number
+    '''
+
+    def calculate_points(self):
+        '''
+        Helper function that calculates the points for each participant
+
+        :return: dictionary with athelete and points
+        '''
+        return {}
+
+
 class Assessment(models.Model):
     '''
     An assessment of a judge about an athlete
@@ -208,19 +240,19 @@ class Assessment(models.Model):
         '''
         Configure other properties
         '''
-        unique_together = (("participation", "category", "judge"))
+        unique_together = (("participation", "judge"))
+
+    collection = models.ForeignKey(AssessmentCollection,
+                                   editable=False)
+    '''
+    The collection this assessment belongs to
+    '''
 
     participation = models.ForeignKey(Participation,
                                       editable=False,
                                       verbose_name='Teilnahme')
     '''
     The participation (basically, an athlete) for this assessment
-    '''
-
-    category = models.ForeignKey(Category,
-                                 verbose_name='Kategorie')
-    '''
-    The categories in the championship
     '''
 
     judge = models.ForeignKey(Judge,
