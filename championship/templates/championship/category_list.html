@@ -1,12 +1,13 @@
 {% extends "base.html" %}
 {% load url from future %}
 
-{% block title %}Einträge für {{ category }}{% endblock %}
+{% block title %}Einträge für {{ category }}-Klasse{% endblock %}
 
 {% block content %}
+<h3>Endplatzierung</h3>
 <table class="table">
     <tr>
-        <th>Nr.</th>
+        <th>Teilnehmendennummer</th>
         <th>Platzierung</th>
         <th>Name</th>
     </tr>

@@ -144,7 +144,8 @@ def category_detail(request, pk, category_pk):
     category = get_object_or_404(Category, pk=pk)
 
     placements = Placement.objects.filter(participation__championship=championship,
-                                          category=category)
+                                          category=category,
+                                          placement__gt=0)
 
     # participants = championship.participation_set.filter(category=category, placement__category=category)
 
