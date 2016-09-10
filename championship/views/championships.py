@@ -129,7 +129,7 @@ def category_detail(request, pk, category_pk):
     '''
 
     championship = get_object_or_404(Championship, pk=pk)
-    category = get_object_or_404(Category, pk=pk)
+    category = get_object_or_404(Category, pk=category_pk)
 
     placements = Placement.objects.filter(participation__championship=championship,
                                           category=category,
