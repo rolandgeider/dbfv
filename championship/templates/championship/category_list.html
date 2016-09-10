@@ -15,7 +15,7 @@
         <tr>
             <td>{{ placement.participation.participation_nr }}</td>
             <td>{{ placement.placement }}</td>
-            <td>{{ placement.placement.submission.user }}</td>
+            <td>{{ placement.participation.submission.get_name }}</td>
         </tr>
     {% endfor %}
 </table>
