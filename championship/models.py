@@ -67,6 +67,13 @@ class Championship(models.Model):
         '''
         return u'{0} ({1})'.format(self.name, formats.date_format(self.date, "SHORT_DATE_FORMAT"))
 
+
+    def get_absolute_url(self):
+        '''
+        Return the detail view URL
+        '''
+        return reverse('championship:championship:view', kwargs={'pk': self.pk})
+
     @property
     def total_participants(self):
         '''

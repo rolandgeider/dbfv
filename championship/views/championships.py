@@ -62,12 +62,6 @@ class ChampionshipCreateView(DbfvFormMixin, generic.CreateView):
     fields = championship_fields
     permission_required = 'championship.add_championship'
 
-    def get_success_url(self):
-        '''
-        Return to the championship page
-        '''
-        return reverse('championship:championship:view', kwargs={'pk': self.object.pk})
-
 
 class ChampionshipUpdateView(DbfvFormMixin, generic.UpdateView):
     '''
@@ -77,12 +71,6 @@ class ChampionshipUpdateView(DbfvFormMixin, generic.UpdateView):
     model = Championship
     fields = championship_fields
     permission_required = 'championship.change_championship'
-
-    def get_success_url(self):
-        '''
-        Return to the championship page
-        '''
-        return reverse('championship:championship:view', kwargs={'pk': self.object.pk})
 
 
 class ChampionshipDeleteView(DbfvFormMixin, generic.DeleteView):
