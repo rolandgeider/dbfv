@@ -102,8 +102,14 @@ $(document).ready(function() {
 {% for participation in object.participation_set.all %}
     {% for placement in participation.placement_set.all %}
     <tr>
-        <td>{{ participation.participation_nr }}</td>
-        <td><a href="{% url 'submission-view' participation.submission.pk %}">{{ participation.submission.get_name }}</a></td>
+        <td>
+            {{ participation.participation_nr }}
+        </td>
+        <td>
+            <a href="{% url 'submission-view' participation.submission.pk %}">
+                {{ participation.submission.get_name }}
+            </a>
+        </td>
         <td>
             <a href="{% url 'championship:championship:category-detail' object.pk placement.category.pk  %}">
                 {{ placement.category }}
@@ -111,9 +117,13 @@ $(document).ready(function() {
         </td>
         <td>
             <a href="{% url 'championship:placement:edit' placement.pk %}"><span class="glyphicon glyphicon-pencil"></span></a>
-            {{ placement.placement }}
+            {{ placement.placement|default:"-/-" }}
         </td>
-        <td><a href="{% url 'gym-view' participation.submission.gym.pk %}">{{ participation.submission.gym.name }}</a></td>
+        <td>
+            <a href="{% url 'gym-view' participation.submission.gym.pk %}">
+                {{ participation.submission.gym.name }}
+            </a>
+        </td>
         <td>
             <a href="{% url 'championship:participation:view' participation.pk %}">
                 <span class="glyphicon glyphicon-eye-open"></span>
