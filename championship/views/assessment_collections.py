@@ -16,18 +16,19 @@
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.views import generic
 
+from django.contrib.auth.decorators import permission_required
+
+from submission.views.generic_views import DbfvFormMixin
 from championship.models import (
     Participation,
-    Placement,
     AssessmentCollection,
     Category,
-    placement_fields,
     assessmentcollection_fields,
-    Championship, Assessment)
-from submission.views.generic_views import DbfvFormMixin
+    Championship, Assessment, Placement)
 
 
 class AssessmentCollectionCreateView(DbfvFormMixin, generic.CreateView):
@@ -38,16 +39,6 @@ class AssessmentCollectionCreateView(DbfvFormMixin, generic.CreateView):
     model = AssessmentCollection
     fields = assessmentcollection_fields
     permission_required = 'championship.add_assessmentcollection'
-    #
-    # def get_form123(self, form_class):
-    #     '''
-    #     Only show categories for the current championship
-    #     '''
-    #     championship = get_object_or_404(Championship, pk=self.kwargs['championship_pk'])
-    #     form = super(AssessmentCollectionCreateView, self).get_form(form_class)
-    #     form.fields['category'].queryset = \
-    #         Category.objects.filter(championship=championship)
-    #     return form
 
     def get_success_url(self):
         '''
@@ -81,6 +72,23 @@ class AssessmentCollectionCreateView(DbfvFormMixin, generic.CreateView):
         form.instance.category = category
         return super(AssessmentCollectionCreateView, self).form_valid(form)
 
+
+@permission_required('championship.change_assessmentcollection')
+def use_collection(request, pk):
+    '''
+    Uses the given collection to calculate the final placements for the athletes
+    '''
+    collection = get_object_or_404(AssessmentCollection, pk=pk)
+    results = collection.calculate_points()
+    for participation in results:
+        placement = Placement.objects.get(participation=participation,
+                                          category=collection.category)
+        placement.placement = results[participation]['placement']
+        placement.save()
+
+    return HttpResponseRedirect((reverse('championship:championship:category-detail',
+                                         kwargs={'pk': collection.championship.pk,
+                                                 'category_pk': collection.category.pk})))
 
 class AssessmentCollectionDeleteView(DbfvFormMixin, generic.DeleteView):
     '''

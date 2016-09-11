@@ -22,7 +22,8 @@
 
 {% for collection in assessment_collection %}
 <h3>{{ collection.round }}. Wahlgang</h3>
-    <a href="{% url 'championship:assessment-collection:delete' collection.pk %}">Entfernen</a>
+    <a href="{% url 'championship:assessment-collection:delete' collection.pk %}">Entfernen</a> |
+    <a href="{% url 'championship:assessment-collection:use' collection.pk %}">Für endgültige Platzierung verwenden</a>
 <table class="table">
     <tr>
         <th>Kampfrichter</th>

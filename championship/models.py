@@ -189,6 +189,7 @@ class Placement(models.Model):
         Configure other properties
         '''
         unique_together = (("participation", "category"))
+        ordering = ("category", "placement")
 
     participation = models.ForeignKey(Participation,
                                       editable=False,
@@ -236,9 +237,25 @@ class AssessmentCollection(models.Model):
         '''
         Helper function that calculates the points for each participant
 
-        :return: dictionary with athelete and points
+        :return: dictionary with athletes, points and their placement
         '''
-        return {}
+        out = {}
+
+        # Sum up the points
+        for assessment in self.assessment_set.all():
+            if not out.get(assessment.participation):
+                out[assessment.participation] = {'points': 0, 'placement': 0}
+
+            out[assessment.participation]['points'] += assessment.points
+
+        # Calculate the placement
+        counter = 1
+        tmp = sorted(out.items(), key=lambda item: item[1]['points'], reverse=True)
+        for participation_item in tmp:
+            out[participation_item[0]]['placement'] = counter
+            counter += 1
+
+        return out
 
 
 class Assessment(models.Model):

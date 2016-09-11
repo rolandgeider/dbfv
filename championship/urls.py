@@ -116,6 +116,9 @@ patterns_assessmentcollection = [
   url(r'^(?P<pk>\d+)/loeschen',
       assessment_collections.AssessmentCollectionDeleteView.as_view(),
       name='delete'),
+  url(r'^(?P<pk>\d+)/fuer-endwertung-nutzen',
+      assessment_collections.use_collection,
+      name='use'),
 ]
 
 # sub patterns for individual assessment
