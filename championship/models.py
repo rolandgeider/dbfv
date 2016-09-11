@@ -26,6 +26,8 @@ championship_fields = ('name', 'date', 'state', 'categories')
 judge_fields = ('name', )
 placement_fields = ('category', )
 participation_fields = ('championship',)
+assessment_fields = ('points',)
+assessmentcollection_fields = ('round',)
 
 
 class Championship(models.Model):
@@ -186,7 +188,7 @@ class Placement(models.Model):
         '''
         Configure other properties
         '''
-        unique_together = (("participation", "category", "placement"))
+        unique_together = (("participation", "category"))
 
     participation = models.ForeignKey(Participation,
                                       editable=False,
@@ -225,7 +227,7 @@ class AssessmentCollection(models.Model):
     The categories in the championship
     '''
 
-    round = models.PositiveSmallIntegerField(editable=False)
+    round = models.PositiveSmallIntegerField(verbose_name='Runde')
     '''
     The round number
     '''
@@ -248,6 +250,7 @@ class Assessment(models.Model):
         Configure other properties
         '''
         unique_together = (("participation", "judge"))
+        ordering = ("participation", "judge", "points")
 
     collection = models.ForeignKey(AssessmentCollection,
                                    editable=False)
@@ -263,6 +266,7 @@ class Assessment(models.Model):
     '''
 
     judge = models.ForeignKey(Judge,
+                              editable=False,
                               verbose_name='Kampfrichter')
     '''
     The judge making the assessment

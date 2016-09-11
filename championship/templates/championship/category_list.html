@@ -19,11 +19,40 @@
         </tr>
     {% endfor %}
 </table>
+
+{% for collection in assessment_collection %}
+<h3>{{ collection.round }}. Wahlgang</h3>
+    <a href="{% url 'championship:assessment-collection:delete' collection.pk %}">Entfernen</a>
+<table class="table">
+    <tr>
+        <th>Kampfrichter</th>
+        <th>Teilnehmendennummer</th>
+        <th>Name</th>
+        <th>Punkte</th>
+    </tr>
+    {% for assessent in collection.assessment_set.all %}
+        <tr>
+            <td>{{ assessent.judge }}</td>
+            <td>{{ assessent.participation.participation_nr }}</td>
+            <td>{{ assessent.participation.submission.get_name }}</td>
+            <td>
+                {{ assessent.points|default:"-/-" }}
+                <a href="{% url 'championship:assessment:edit' assessent.pk %}"><span class="glyphicon glyphicon-pencil"></span></a>
+            </td>
+        </tr>
+    {% endfor %}
+</table>
+{% endfor %}
 {% endblock %}
+
+
 
 {% block sidebar %}
     <h4>Optionen</h4>
     <p>
         <a href="{{ championship.get_absolute_url }}">Zur Meisterschaft</a>
+    </p>
+    <p>
+        <a href="{% url 'championship:assessment-collection:add' championship.pk category.pk %}">Neuer Wahlgang</a>
     </p>
 {% endblock %}

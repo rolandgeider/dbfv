@@ -25,7 +25,7 @@ from championship.models import (
     Championship,
     Category,
     championship_fields,
-    Placement)
+    Placement, AssessmentCollection)
 
 from submission.views.generic_views import DbfvViewMixin, DbfvFormMixin
 
@@ -127,18 +127,17 @@ def category_detail(request, pk, category_pk):
     '''
     View participations and other details for a category
     '''
-
     championship = get_object_or_404(Championship, pk=pk)
     category = get_object_or_404(Category, pk=category_pk)
-
     placements = Placement.objects.filter(participation__championship=championship,
                                           category=category,
                                           placement__gt=0)
-
-    # participants = championship.participation_set.filter(category=category, placement__category=category)
+    assessment_collection = AssessmentCollection.objects.filter(championship=championship,
+                                                                category=category)
 
     context = {'championship': championship,
                'category': category,
-               'placements': placements}
+               'placements': placements,
+               'assessment_collection': assessment_collection}
 
     return render(request, 'championship/category_list.html', context)

@@ -16,12 +16,14 @@
 
 from django.conf.urls import url, include
 
+from championship.views import assessment
 from championship.views import (
     championships,
     categories,
     participations,
     placements,
-    judges
+    judges,
+    assessment_collections,
 )
 
 
@@ -106,10 +108,29 @@ patterns_placement = [
       name='register'),
 ]
 
+# sub patterns for assessment collections
+patterns_assessmentcollection = [
+  url(r'^(?P<championship_pk>\d+)/(?P<category_pk>\d+)/erstellen',
+      assessment_collections.AssessmentCollectionCreateView.as_view(),
+      name='add'),
+  url(r'^(?P<pk>\d+)/loeschen',
+      assessment_collections.AssessmentCollectionDeleteView.as_view(),
+      name='delete'),
+]
+
+# sub patterns for individual assessment
+patterns_assessment = [
+  url(r'^(?P<pk>\d+)/bearbeiten',
+      assessment.CategoryUpdateView.as_view(),
+      name='edit'),
+]
+
 urlpatterns = [
     url(r'^', include(patterns_championship, namespace="championship")),
     url(r'^teilnahme/', include(patterns_participation, namespace="participation")),
     url(r'^platzierung/', include(patterns_placement, namespace="placement")),
     url(r'^kategorie/', include(patterns_categories, namespace="category")),
     url(r'^kampfrichter/', include(patterns_judge, namespace="judge")),
+    url(r'^wahlgaenge/', include(patterns_assessmentcollection, namespace="assessment-collection")),
+    url(r'^wertung/', include(patterns_assessment, namespace="assessment")),
 ]
