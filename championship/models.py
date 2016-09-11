@@ -210,6 +210,12 @@ class Placement(models.Model):
     The user's placement in this championship and category
     '''
 
+    points = models.PositiveSmallIntegerField(default=0,
+                                              editable=False)
+    '''
+    The user's total points (for information purposes only)
+    '''
+
 
 class AssessmentCollection(models.Model):
     '''

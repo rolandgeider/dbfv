@@ -8,14 +8,16 @@
 <table class="table">
     <tr>
         <th>Teilnehmendennummer</th>
-        <th>Platzierung</th>
         <th>Name</th>
+        <th>Platzierung</th>
+        <th>Punkte</th>
     </tr>
     {% for placement in placements %}
         <tr>
             <td>{{ placement.participation.participation_nr }}</td>
-            <td>{{ placement.placement }}</td>
             <td>{{ placement.participation.submission.get_name }}</td>
+            <td>{{ placement.placement }}</td>
+            <td>{{ placement.points|default:'-/-' }}</td>
         </tr>
     {% endfor %}
 </table>

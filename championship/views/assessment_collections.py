@@ -84,6 +84,7 @@ def use_collection(request, pk):
         placement = Placement.objects.get(participation=participation,
                                           category=collection.category)
         placement.placement = results[participation]['placement']
+        placement.points = results[participation]['points']
         placement.save()
 
     return HttpResponseRedirect((reverse('championship:championship:category-detail',
