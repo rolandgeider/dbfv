@@ -14,12 +14,11 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
-from django.shortcuts import get_object_or_404
 
 from django.views import generic
-from django.core.urlresolvers import reverse_lazy, reverse
+from django.core.urlresolvers import reverse_lazy
 
-from championship.models import Category, Championship
+from championship.models import Category, category_fields
 from submission.views.generic_views import DbfvViewMixin, DbfvFormMixin
 
 
@@ -41,6 +40,7 @@ class CategoryCreateView(DbfvFormMixin, generic.CreateView):
     '''
 
     model = Category
+    fields = category_fields
     success_url = reverse_lazy('championship:category:list')
     permission_required = 'championship.add_category'
 
@@ -51,6 +51,7 @@ class CategoryUpdateView(DbfvFormMixin, generic.UpdateView):
     '''
 
     model = Category
+    fields = category_fields
     success_url = reverse_lazy('championship:category:list')
     permission_required = 'championship.change_category'
 

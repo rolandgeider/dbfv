@@ -25,6 +25,7 @@ from submission.models import State, SubmissionStarter
 championship_fields = ('name', 'date', 'state', 'categories')
 judge_fields = ('name', )
 placement_fields = ('category', )
+category_fields = ('name', )
 participation_fields = ('championship',)
 assessment_fields = ('points',)
 assessmentcollection_fields = ('round',)
