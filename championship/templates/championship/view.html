@@ -103,7 +103,6 @@ $(document).ready(function() {
             </a>
         </td>
         <td>
-            <a href="{% url 'championship:placement:edit' placement.pk %}"><span class="glyphicon glyphicon-pencil"></span></a>
             {{ placement.placement|default:"-/-" }}
         </td>
         <td>
