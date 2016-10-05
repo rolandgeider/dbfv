@@ -27,19 +27,25 @@
     <a href="{% url 'championship:assessment-collection:use' collection.pk %}">Für endgültige Platzierung verwenden</a>
 <table class="table">
     <tr>
-        <th>Kampfrichter</th>
         <th>Teilnehmendennummer</th>
         <th>Name</th>
+        <th>Kampfrichter</th>
         <th>Punkte</th>
     </tr>
-    {% for assessent in collection.assessment_set.all %}
+    {% for assessment in collection.assessment_set.all %}
         <tr>
-            <td>{{ assessent.judge }}</td>
-            <td>{{ assessent.participation.participation_nr }}</td>
-            <td>{{ assessent.participation.submission.get_name }}</td>
+            <td>{{ assessment.participation.participation_nr }}</td>
+            <td>{{ assessment.participation.submission.get_name }}</td>
+            <td>{{ assessment.judge }}</td>
             <td>
-                {{ assessent.points|default:"-/-" }}
-                <a href="{% url 'championship:assessment:edit' assessent.pk %}"><span class="glyphicon glyphicon-pencil"></span></a>
+                {% if not assessment.is_used %}
+                    <span style="text-decoration: line-through;">
+                {% endif %}
+                {{ assessment.points|default:"-/-" }}
+                {% if not assessment.is_used %}
+                    </span>
+                {% endif %}
+                <a href="{% url 'championship:assessment:edit' assessment.pk %}"><span class="glyphicon glyphicon-pencil"></span></a>
             </td>
         </tr>
     {% endfor %}

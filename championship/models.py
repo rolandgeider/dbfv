@@ -30,7 +30,6 @@ participation_fields = ('championship',)
 assessment_fields = ('points',)
 assessmentcollection_fields = ('round',)
 
-
 class Championship(models.Model):
     '''
     A Championship
@@ -253,11 +252,13 @@ class AssessmentCollection(models.Model):
             if not out.get(assessment.participation):
                 out[assessment.participation] = {'points': 0, 'placement': 0}
 
-            out[assessment.participation]['points'] += assessment.points
+            # Only valid assessments are taken into account
+            if assessment.is_used:
+                out[assessment.participation]['points'] += assessment.points
 
-        # Calculate the placement
+        # Calculate the placement (less points are better)
         counter = 1
-        tmp = sorted(out.items(), key=lambda item: item[1]['points'], reverse=True)
+        tmp = sorted(out.items(), key=lambda item: item[1]['points'])
         for participation_item in tmp:
             out[participation_item[0]]['placement'] = counter
             counter += 1
@@ -300,3 +301,27 @@ class Assessment(models.Model):
     '''
     Points given to the athlete
     '''
+
+    @property
+    def is_used(self):
+        '''
+        Calculates whether this assessment is used for the total
+
+        Rules:
+        - for 5 or 7 judges, the best and worst assessments are discarded
+        - for 9 judges the 2 best and worst assessments are discarded
+        '''
+        points = [a.points for a in self.collection.assessment_set.filter(participation=self.participation).order_by('points')]
+        points_reverse = [a.points for a in self.collection.assessment_set.filter(participation=self.participation).order_by('-points')]
+
+        if self.collection.championship.judge_set.count() in (5, 7):
+            if self.points in (points[0], points_reverse[0]):
+                return False
+            return True
+        elif self.collection.championship.judge_set.count() == 9:
+            if self.points in (points[0], points[1], points_reverse[0], points_reverse[1]):
+                return False
+            return True
+        # Should never happen
+        else:
+            pass
