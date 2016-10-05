@@ -273,7 +273,6 @@ class Assessment(models.Model):
         '''
         Configure other properties
         '''
-        unique_together = (("participation", "judge"))
         ordering = ("participation", "judge", "points")
 
     collection = models.ForeignKey(AssessmentCollection,
