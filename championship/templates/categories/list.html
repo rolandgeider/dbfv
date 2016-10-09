@@ -8,6 +8,7 @@
     <thead>
     <tr>
         <th>Name</th>
+        <th>Runden</th>
         <th style="width: 15%;">Aktionen</th>
     </tr>
     </thead>
@@ -16,6 +17,13 @@
     <tr>
         <td>
             {{category.name}}
+        </td>
+        <td>
+            {% if category.category_type == 'bb' %}
+                3
+            {% elif category.category_type == 'andere' %}
+                2
+            {% endif %}
         </td>
 
         <td>

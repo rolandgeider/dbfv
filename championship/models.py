@@ -25,7 +25,7 @@ from submission.models import State, SubmissionStarter
 championship_fields = ('name', 'date', 'state', 'categories')
 judge_fields = ('name', )
 placement_fields = ('category', )
-category_fields = ('name', )
+category_fields = ('name', 'category_type')
 participation_fields = ('championship',)
 assessment_fields = ('points',)
 assessmentcollection_fields = ('round',)
@@ -94,10 +94,28 @@ class Category(models.Model):
         '''
         ordering = ["name"]
 
+    CATEGORY_TYPE_BB = 'bb'
+    CATEGORY_TYPE_OTHERS = 'andere'
+    CATEGORY_TYPE = (
+        (CATEGORY_TYPE_BB, 'Bodybuilding allgemein (3 Runden)'),
+        (CATEGORY_TYPE_OTHERS, 'Andere Klassen (2 Runden)'),
+    )
+
     name = models.CharField(verbose_name='Name',
                             max_length=50)
     '''
     The category's name
+    '''
+
+    category_type = models.CharField(
+        verbose_name='Anzahl der Runden',
+        max_length=6,
+        choices=CATEGORY_TYPE,
+        default=CATEGORY_TYPE_BB,
+    )
+    '''
+    The type of category. This basically just controlls wether there will be
+    two or three rounds.
     '''
 
     def __unicode__(self):
@@ -311,6 +329,7 @@ class Assessment(models.Model):
         - for 5 or 7 judges, the best and worst assessments are discarded
         - for 9 judges the 2 best and worst assessments are discarded
         '''
+
         points = [a.points for a in self.collection.assessment_set.filter(participation=self.participation).order_by('points')]
         points_reverse = [a.points for a in self.collection.assessment_set.filter(participation=self.participation).order_by('-points')]
 
