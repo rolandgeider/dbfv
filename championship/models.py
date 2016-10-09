@@ -358,7 +358,6 @@ class Assessment(models.Model):
         return u'points {0} (judge {1})'.format(self.points,
                                                 self.judge)
 
-
     @property
     def is_used(self):
         '''
@@ -369,15 +368,15 @@ class Assessment(models.Model):
         - for 9 judges the 2 best and worst assessments are discarded
         '''
 
-        points = [a.points for a in self.collection.assessment_set.filter(participation=self.participation).order_by('points')]
-        points_reverse = [a.points for a in self.collection.assessment_set.filter(participation=self.participation).order_by('-points')]
+        points = [a for a in self.collection.assessment_set.filter(participation=self.participation).order_by('points')]
+        points_reverse = [a for a in self.collection.assessment_set.filter(participation=self.participation).order_by('-points')]
 
         if self.collection.championship.judge_set.count() in (5, 7):
-            if self.points in (points[0], points_reverse[0]):
+            if self in (points[0], points_reverse[0]):
                 return False
             return True
         elif self.collection.championship.judge_set.count() == 9:
-            if self.points in (points[0], points[1], points_reverse[0], points_reverse[1]):
+            if self in (points[0], points[1], points_reverse[0], points_reverse[1]):
                 return False
             return True
         # Should never happen
