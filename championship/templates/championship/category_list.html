@@ -6,7 +6,7 @@
 <h3>Endplatzierung</h3>
 <table class="table">
     <tr>
-        <th>Teilnehmendennummer</th>
+        <th>Nr.</th>
         <th>Name</th>
         <th>Platzierung</th>
         <th>Punkte</th>
@@ -30,7 +30,7 @@
 {% with data=collection.process_data %}
 <table class="table">
     <tr>
-        <th>Teilnehmendennummer</th>
+        <th>Nr.</th>
         <th>Name</th>
         {% for judge in championship.judge_set.all %}
             <th>{{ judge }}</th>

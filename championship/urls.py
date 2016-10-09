@@ -111,7 +111,7 @@ patterns_placement = [
 # sub patterns for assessment collections
 patterns_assessmentcollection = [
   url(r'^(?P<championship_pk>\d+)/(?P<category_pk>\d+)/erstellen',
-      assessment_collections.AssessmentCollectionCreateView.as_view(),
+      assessment_collections.add_collection,
       name='add'),
   url(r'^(?P<pk>\d+)/loeschen',
       assessment_collections.AssessmentCollectionDeleteView.as_view(),

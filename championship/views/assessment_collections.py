@@ -31,46 +31,62 @@ from championship.models import (
     Championship, Assessment, Placement)
 
 
-class AssessmentCollectionCreateView(DbfvFormMixin, generic.CreateView):
+@permission_required('championship.add_assessmentcollection')
+def add_collection(request, category_pk, championship_pk):
     '''
-    Creates a assessment collection and combinations for assessments and judges
+    Adds a collection to a category
+
+    This view automatically checks the category type (2 or 3 rounds) and
+    checks how many rounds have there been already. Except for the initial
+    round where all participations are added, all further ones are filtered.
     '''
+    championship = get_object_or_404(Championship, pk=championship_pk)
+    category = get_object_or_404(Category, pk=category_pk)
 
-    model = AssessmentCollection
-    fields = assessmentcollection_fields
-    permission_required = 'championship.add_assessmentcollection'
+    count = AssessmentCollection.objects.filter(championship=championship,
+                                                category=category).count()
+    round = count + 1
 
-    def get_success_url(self):
-        '''
-        Return to the championship page and generate combinations for individual
-        assessments
+    # First round
+    # -> all categories are the same, just add all participations
+    if count == 0:
+        participations = Participation.objects.filter(championship=championship)
 
-        It's a bit ugly to create objects here, but in form_valid the assessment
-        collection is not saved yet.
-        '''
+    # Half or Final round
+    # -> select the top15 or top6 from the ranking of the previous round
+    elif count ==1:
 
-        category = self.object.category
-        participations = Participation.objects.filter(championship=self.object.championship)
-        for participation in participations:
-            placement = participation.placement_set.filter(category=category)
-            if placement:
-                for judge in self.object.championship.judge_set.all():
-                    Assessment(collection=self.object,
-                               participation=participation,
-                               judge=judge).save()
-        return reverse('championship:championship:category-detail',
-                       kwargs={'pk': self.object.championship.pk,
-                               'category_pk': self.object.category.pk})
+        # Top 6 (finals)
+        if category.category_type == '2':
+            pass
+        # Top 15 (semi finals)
+        elif category.category_type == '3':
+            pass
 
-    def form_valid(self, form):
-        '''
-        Set championship
-        '''
-        championship = get_object_or_404(Championship, pk=self.kwargs['championship_pk'])
-        category = get_object_or_404(Category, pk=self.kwargs['category_pk'])
-        form.instance.championship = championship
-        form.instance.category = category
-        return super(AssessmentCollectionCreateView, self).form_valid(form)
+    elif count ==2:
+        # Not possible, redirect
+        if category.category_type == '2':
+            # TODO: redirect
+            pass
+        # Top 6 (finals)
+        if category.category_type == '3':
+            pass
+
+    collection = AssessmentCollection(championship=championship,
+                                      category=category,
+                                      round=round)
+    collection.save()
+    for participation in participations:
+        placement = participation.placement_set.filter(category=category)
+        if placement:
+            for judge in championship.judge_set.all():
+                Assessment(collection=collection,
+                           participation=participation,
+                           judge=judge).save()
+    return HttpResponseRedirect(reverse('championship:championship:category-detail',
+                                        kwargs={'pk': championship.pk,
+                                                'category_pk': category.pk}))
+
 
 
 @permission_required('championship.change_assessmentcollection')
