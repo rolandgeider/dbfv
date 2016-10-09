@@ -45,14 +45,13 @@ $(document).ready(function() {
         </th>
         <td>
             {% for judge in object.judge_set.all %}
-                {{ judge }}
-
                 <a href="{% url 'championship:judge:edit' judge.pk %}">
                     <span class="glyphicon glyphicon-pencil"></span>
                 </a>
                 <a href="{% url 'championship:judge:delete' judge.pk %}">
                     <span class="glyphicon glyphicon-trash"></span>
                 </a>
+                {{ judge }}
                 <br>
             {% endfor %}
         </td>
