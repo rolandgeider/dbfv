@@ -38,7 +38,9 @@
             <td>
             </td>
             <td>
-                {{ placement.category }}
+                <a href="{% url 'championship:championship:category-detail' object.championship.pk placement.category.pk  %}">
+                    {{ placement.category }}
+                </a>
             </td>
             <td>
                 {{ placement.placement }}
