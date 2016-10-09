@@ -23,33 +23,53 @@
 
 {% for collection in assessment_collection %}
 <h3>{{ collection.round }}. Wahlgang</h3>
-    <a href="{% url 'championship:assessment-collection:delete' collection.pk %}">Entfernen</a> |
-    <a href="{% url 'championship:assessment-collection:use' collection.pk %}">Für endgültige Platzierung verwenden</a>
+<a href="{% url 'championship:assessment-collection:delete' collection.pk %}">Entfernen</a> |
+<a href="{% url 'championship:assessment-collection:use' collection.pk %}">Für endgültige Platzierung verwenden</a>
+
+{#<pre>{{ collection.process_data|pprint }}</pre>#}
+{% with data=collection.process_data %}
 <table class="table">
     <tr>
         <th>Teilnehmendennummer</th>
         <th>Name</th>
-        <th>Kampfrichter</th>
+        {% for judge in championship.judge_set.all %}
+            <th>{{ judge }}</th>
+        {% endfor %}
         <th>Punkte</th>
+        <th>Platz</th>
     </tr>
-    {% for assessment in collection.assessment_set.all %}
-        <tr>
-            <td>{{ assessment.participation.participation_nr }}</td>
-            <td>{{ assessment.participation.submission.get_name }}</td>
-            <td>{{ assessment.judge }}</td>
-            <td>
-                {% if not assessment.is_used %}
-                    <span style="text-decoration: line-through;">
-                {% endif %}
-                {{ assessment.points|default:"-/-" }}
-                {% if not assessment.is_used %}
-                    </span>
-                {% endif %}
-                <a href="{% url 'championship:assessment:edit' assessment.pk %}"><span class="glyphicon glyphicon-pencil"></span></a>
-            </td>
-        </tr>
+    {% for participation, values in data.iteritems %}
+    <tr>
+        <td>
+            {{ participation.participation_nr }}
+        </td>
+        <td>
+            {{ participation.submission.get_name }}
+        </td>
+        {% for placement in values.judges %}
+        <td>
+            {% if not placement.is_used %}
+                <span style="text-decoration: line-through;" class="text-muted">
+            {% endif %}
+            {{ placement.points }}
+            {% if not placement.is_used %}
+                </span>
+            {% endif %}
+        </td>
+        {% endfor %}
+        <td>
+            {{ values.points }}
+        </td>
+        <td>
+            {{ values.placement }}
+        </td>
+    </tr>
     {% endfor %}
 </table>
+{% endwith %}
+
+
+
 {% endfor %}
 {% endblock %}
 

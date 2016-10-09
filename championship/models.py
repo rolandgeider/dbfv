@@ -30,6 +30,7 @@ participation_fields = ('championship',)
 assessment_fields = ('points',)
 assessmentcollection_fields = ('round',)
 
+
 class Championship(models.Model):
     '''
     A Championship
@@ -190,6 +191,13 @@ class Participation(models.Model):
     The championship
     '''
 
+    def __unicode__(self):
+        '''
+        Return a more human-readable representation
+        '''
+        return u'#{0} ({1})'.format(self.participation_nr,
+                                    self.submission)
+
     def get_absolute_url(self):
         '''
         Return the detail view URL
@@ -257,6 +265,29 @@ class AssessmentCollection(models.Model):
     The round number
     '''
 
+    def process_data(self):
+        '''
+        Processes and prepares data to be presented in one of the overview tables
+        '''
+        out = {}
+
+        # Judges, participations
+        for assessment in self.assessment_set.all():
+            if not out.get(assessment.participation):
+                out[assessment.participation] = {'participation': assessment.participation,
+                                                 'points': None,
+                                                 'placement': None,
+                                                 'judges': []}
+            out[assessment.participation]['judges'].append(assessment)
+
+        # Points
+        points = self.calculate_points()
+        for participation in points:
+            out[participation]['points'] = points[participation]['points']
+            out[participation]['placement'] = points[participation]['placement']
+
+        return out
+
     def calculate_points(self):
         '''
         Helper function that calculates the points for each participant
@@ -319,6 +350,14 @@ class Assessment(models.Model):
     '''
     Points given to the athlete
     '''
+
+    def __unicode__(self):
+        '''
+        Return a more human-readable representation
+        '''
+        return u'points {0} (judge {1})'.format(self.points,
+                                                self.judge)
+
 
     @property
     def is_used(self):
