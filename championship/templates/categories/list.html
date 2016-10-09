@@ -19,11 +19,7 @@
             {{category.name}}
         </td>
         <td>
-            {% if category.category_type == 'bb' %}
-                3
-            {% elif category.category_type == 'andere' %}
-                2
-            {% endif %}
+            {{ category.category_type }}
         </td>
 
         <td>

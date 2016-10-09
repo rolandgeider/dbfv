@@ -95,8 +95,8 @@ class Category(models.Model):
         '''
         ordering = ["name"]
 
-    CATEGORY_TYPE_BB = 'bb'
-    CATEGORY_TYPE_OTHERS = 'andere'
+    CATEGORY_TYPE_BB = '3'
+    CATEGORY_TYPE_OTHERS = '2'
     CATEGORY_TYPE = (
         (CATEGORY_TYPE_BB, 'Bodybuilding allgemein (3 Runden)'),
         (CATEGORY_TYPE_OTHERS, 'Andere Klassen (2 Runden)'),
