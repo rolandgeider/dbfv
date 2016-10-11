@@ -14,8 +14,10 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
+import csv
 
 from django.core.urlresolvers import reverse
+from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.views import generic
@@ -138,3 +140,41 @@ class AssessmentCollectionDeleteView(DbfvFormMixin, generic.DeleteView):
         return reverse('championship:championship:category-detail',
                        kwargs={'pk': self.object.championship.pk,
                                'category_pk': self.object.category.pk})
+
+
+@permission_required('championship.delete_assessmentcollection')
+def export_collection(request, pk):
+    '''
+    Export the a collection as a CSV
+    '''
+
+    collection = get_object_or_404(AssessmentCollection, pk=pk)
+    results = collection.get_sorted_results()
+
+    response = HttpResponse(content_type='text/csv')
+    writer = csv.writer(response)
+    header = ['Nr', 'Name', ]
+    for judge in collection.championship.judge_set.all():
+        header.append(judge.name)
+    header.append('Punkte')
+    header.append('Platz')
+    writer.writerow(header)
+
+    for item in results:
+        participation = item['participation']
+        out = [participation.participation_nr,
+               participation.submission.get_name,
+               ]
+        for placement in item['judges']:
+            out.append(placement.points)
+        out.append(item['points'])
+        out.append(item['placement'])
+        writer.writerow(out)
+
+    # Send the data to the browser
+    response['Content-Disposition'] = 'attachment; filename=Meisterschaft-{0}-Klasse-{1}-Runde-{2}.csv'.\
+        format(collection.championship.pk,
+               collection.category,
+               collection.round)
+    response['Content-Length'] = len(response.content)
+    return response

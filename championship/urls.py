@@ -119,6 +119,9 @@ patterns_assessmentcollection = [
   url(r'^(?P<pk>\d+)/fuer-endwertung-nutzen',
       assessment_collections.use_collection,
       name='use'),
+  url(r'^(?P<pk>\d+)/export-csv',
+      assessment_collections.export_collection,
+      name='export-csv'),
 ]
 
 # sub patterns for individual assessment
