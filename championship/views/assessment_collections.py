@@ -42,50 +42,64 @@ def add_collection(request, category_pk, championship_pk):
     '''
     championship = get_object_or_404(Championship, pk=championship_pk)
     category = get_object_or_404(Category, pk=category_pk)
+    collection_list = AssessmentCollection.objects.filter(championship=championship,
+                                                          category=category)
+    collection = collection_list.first()
+    results = collection.get_sorted_results()
 
-    count = AssessmentCollection.objects.filter(championship=championship,
-                                                category=category).count()
+    count = collection_list.count()
     round = count + 1
 
+    #
     # First round
     # -> all categories are the same, just add all participations
+    #
     if count == 0:
         participations = Participation.objects.filter(championship=championship)
 
+    #
     # Half or Final round
     # -> select the top15 or top6 from the ranking of the previous round
+    #
     elif count ==1:
 
         # Top 6 (finals)
         if category.category_type == '2':
-            pass
+            participations = [i['participation'] for i in results[:6]]
         # Top 15 (semi finals)
         elif category.category_type == '3':
-            pass
+            participations = [i['participation'] for i in results[:15]]
 
     elif count ==2:
         # Not possible, redirect
         if category.category_type == '2':
-            # TODO: redirect
-            pass
+            return HttpResponseRedirect(reverse('championship:championship:category-detail',
+                                        kwargs={'pk': championship.pk,
+                                                'category_pk': category.pk}))
         # Top 6 (finals)
         if category.category_type == '3':
-            pass
+            participations = [i['participation'] for i in results[:6]]
 
-    collection = AssessmentCollection(championship=championship,
-                                      category=category,
-                                      round=round)
-    collection.save()
+    # No categories have more than 2 rounds, redirect
+    else:
+        return HttpResponseRedirect(reverse('championship:championship:category-detail',
+                                            kwargs={'pk': championship.pk,
+                                                    'category_pk': category.pk}))
+
+    collection_list = AssessmentCollection(championship=championship,
+                                           category=category,
+                                           round=round)
+    collection_list.save()
     for participation in participations:
         placement = participation.placement_set.filter(category=category)
         if placement:
             for judge in championship.judge_set.all():
-                Assessment(collection=collection,
+                Assessment(collection=collection_list,
                            participation=participation,
                            judge=judge).save()
-    return HttpResponseRedirect(reverse('championship:championship:category-detail',
-                                        kwargs={'pk': championship.pk,
-                                                'category_pk': category.pk}))
+    HttpResponseRedirect(reverse('championship:championship:category-detail',
+                                 kwargs={'pk': championship.pk,
+                                         'category_pk': category.pk}))
 
 
 

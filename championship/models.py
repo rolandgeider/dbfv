@@ -288,6 +288,18 @@ class AssessmentCollection(models.Model):
 
         return out
 
+    def get_sorted_results(self):
+        '''
+        Convenience method that returns the sorted results for this collection
+
+        :return: a list of dictionaries
+        '''
+        tmp = []
+        for value in self.process_data().values():
+            tmp.append(value)
+        sorted_list = sorted(tmp, key=lambda value: value['placement'])
+        return sorted_list
+
     def calculate_points(self):
         '''
         Helper function that calculates the points for each participant
