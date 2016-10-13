@@ -142,7 +142,7 @@ class AssessmentCollectionDeleteView(DbfvFormMixin, generic.DeleteView):
                                'category_pk': self.object.category.pk})
 
 
-@permission_required('championship.delete_assessmentcollection')
+@permission_required('championship.change_assessmentcollection')
 def export_collection(request, pk):
     '''
     Export the a collection as a CSV
