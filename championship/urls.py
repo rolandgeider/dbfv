@@ -16,7 +16,6 @@
 
 from django.conf.urls import url, include
 
-from championship.views import assessment
 from championship.views import (
     championships,
     categories,
@@ -119,16 +118,12 @@ patterns_assessmentcollection = [
   url(r'^(?P<pk>\d+)/fuer-endwertung-nutzen',
       assessment_collections.use_collection,
       name='use'),
+  url(r'^(?P<pk>\d+)/editieren',
+      assessment_collections.edit_collection,
+      name='edit'),
   url(r'^(?P<pk>\d+)/export-csv',
       assessment_collections.export_collection,
       name='export-csv'),
-]
-
-# sub patterns for individual assessment
-patterns_assessment = [
-  url(r'^(?P<pk>\d+)/bearbeiten',
-      assessment.CategoryUpdateView.as_view(),
-      name='edit'),
 ]
 
 urlpatterns = [
@@ -138,5 +133,4 @@ urlpatterns = [
     url(r'^kategorie/', include(patterns_categories, namespace="category")),
     url(r'^kampfrichter/', include(patterns_judge, namespace="judge")),
     url(r'^wahlgaenge/', include(patterns_assessmentcollection, namespace="assessment-collection")),
-    url(r'^wertung/', include(patterns_assessment, namespace="assessment")),
 ]

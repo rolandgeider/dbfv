@@ -25,6 +25,7 @@
 <h3>{{ collection.round }}. Wahlgang</h3>
 <a href="{% url 'championship:assessment-collection:delete' collection.pk %}">Entfernen</a> |
 <a href="{% url 'championship:assessment-collection:export-csv' collection.pk %}">Exportieren</a> |
+<a href="{% url 'championship:assessment-collection:edit' collection.pk %}">Editieren</a> |
 <a href="{% url 'championship:assessment-collection:use' collection.pk %}">Für endgültige Platzierung verwenden</a>
 
 {% with data=collection.process_data %}

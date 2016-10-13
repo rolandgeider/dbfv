@@ -17,9 +17,10 @@
 import csv
 
 from django.core.urlresolvers import reverse
+from django.forms import modelformset_factory
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.views import generic
 
 from django.contrib.auth.decorators import permission_required
@@ -178,3 +179,36 @@ def export_collection(request, pk):
                collection.round)
     response['Content-Length'] = len(response.content)
     return response
+
+
+@permission_required('championship.change_assessmentcollection')
+def edit_collection(request, pk):
+    '''
+    Edits all assessments in a collection
+    '''
+
+    collection = get_object_or_404(AssessmentCollection, pk=pk)
+    results = collection.process_data()
+    AssessmentFormset = modelformset_factory(Assessment,
+                                             fields=('points',),
+                                             extra=0)
+    if request.method == 'POST':
+        formset = AssessmentFormset(data=request.POST)
+        if formset.is_valid():
+            formset.save()
+            return HttpResponseRedirect((reverse('championship:championship:category-detail',
+                                                 kwargs={'pk': collection.championship.pk,
+                                                         'category_pk': collection.category.pk})))
+    else:
+        formset = AssessmentFormset(queryset=Assessment.objects.filter(collection=collection))
+
+    # Add the formset elements to the result dictionaries
+    for item in formset:
+        if not results[item.instance.participation].get('form_item'):
+            results[item.instance.participation]['form_item'] = {}
+        results[item.instance.participation]['form_item'][item.instance.judge] = item
+
+    context = {'collection_data': results,
+               'collection': collection,
+               'formset': formset}
+    return render(request, 'assessment/formset.html', context)
