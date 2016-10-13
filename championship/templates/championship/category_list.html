@@ -27,7 +27,6 @@
 <a href="{% url 'championship:assessment-collection:export-csv' collection.pk %}">Exportieren</a> |
 <a href="{% url 'championship:assessment-collection:use' collection.pk %}">Für endgültige Platzierung verwenden</a>
 
-{#<pre>{{ collection.process_data|pprint }}</pre>#}
 {% with data=collection.process_data %}
 <table class="table">
     <tr>
