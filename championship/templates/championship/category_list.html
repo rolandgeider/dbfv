@@ -83,7 +83,6 @@
     <p>
         <a href="{{ championship.get_absolute_url }}">Zur Meisterschaft</a>
     </p>
-    {{ assessment_collection.last.is_last_round }}
     {% if not assessment_collection.last.is_last_round %}
     <p>
         <a href="{% url 'championship:assessment-collection:add' championship.pk category.pk %}">Neuer Wahlgang</a>
