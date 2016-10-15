@@ -397,7 +397,7 @@ class Assessment(models.Model):
     '''
 
     points = models.IntegerField(default=0,
-                                 verbose_name='Punkte')
+                                 verbose_name='')
     '''
     Points given to the athlete
     '''
