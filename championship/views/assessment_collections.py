@@ -48,9 +48,11 @@ def add_collection(request, category_pk, championship_pk):
     collection_list = AssessmentCollection.objects.filter(championship=championship,
                                                           category=category)
     collection = collection_list.first()
-    results = collection.get_sorted_results()
-
-    count = collection_list.count()
+    if collection:
+        results = collection.get_sorted_results()
+        count = collection_list.count()
+    else:
+        count = 0
     round = count + 1
 
     #
@@ -100,9 +102,9 @@ def add_collection(request, category_pk, championship_pk):
                 Assessment(collection=collection_list,
                            participation=participation,
                            judge=judge).save()
-    HttpResponseRedirect(reverse('championship:championship:category-detail',
-                                 kwargs={'pk': championship.pk,
-                                         'category_pk': category.pk}))
+    return HttpResponseRedirect(reverse('championship:championship:category-detail',
+                                kwargs={'pk': championship.pk,
+                                        'category_pk': category.pk}))
 
 
 
