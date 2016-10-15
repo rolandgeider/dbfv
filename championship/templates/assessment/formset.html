@@ -15,8 +15,6 @@
         {% for judge in collection.championship.judge_set.all %}
             <th>{{ judge }}</th>
         {% endfor %}
-        <th>Punkte</th>
-        <th>Platz</th>
     </tr>
     {% for participation, values in collection_data.iteritems %}
     <tr>
@@ -31,12 +29,6 @@
             {{ placement.as_p }}
         </td>
         {% endfor %}
-        <td>
-            {{ values.points }}
-        </td>
-        <td>
-            {{ values.placement }}
-        </td>
     </tr>
     {% endfor %}
 </table>
