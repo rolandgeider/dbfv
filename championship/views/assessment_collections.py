@@ -112,7 +112,7 @@ def use_collection(request, pk):
     Uses the given collection to calculate the final placements for the athletes
     '''
     collection = get_object_or_404(AssessmentCollection, pk=pk)
-    results = collection.calculate_points()
+    results = collection.calculate_points(total=True)
     for participation in results:
         placement = Placement.objects.get(participation=participation,
                                           category=collection.category)

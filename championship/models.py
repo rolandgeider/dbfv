@@ -265,6 +265,35 @@ class AssessmentCollection(models.Model):
     The round number
     '''
 
+    def is_last_round(self):
+        '''
+        Calculates whether this is the last round for a collection.
+
+        This depends on the category
+
+        :return: Boolean
+        '''
+        if self.round == 2 and self.category.category_type == '2':
+            return True
+        elif self.round == 3 and self.category.category_type == '3':
+            return True
+        return False
+
+    def is_second_last_round(self):
+        '''
+        Calculates whether this is the second last round for a collection.
+
+        This depends on the category and is needed to calculate the total points,
+        which are doubled in the second to last round.
+
+        :return: Boolean
+        '''
+        if self.round == 1 and self.category.category_type == '2':
+            return True
+        elif self.round == 2 and self.category.category_type == '3':
+            return True
+        return False
+
     def process_data(self):
         '''
         Processes and prepares data to be presented in one of the overview tables
@@ -300,9 +329,13 @@ class AssessmentCollection(models.Model):
         sorted_list = sorted(tmp, key=lambda value: value['placement'])
         return sorted_list
 
-    def calculate_points(self):
+    def calculate_points(self, total=False):
         '''
         Helper function that calculates the points for each participant
+
+        :param total: Flag indicating whether this is the final placement. This
+        flag is needed because on the final placement on the second to last round
+        all points count double
 
         :return: dictionary with athletes, points and their placement
         '''
@@ -314,8 +347,14 @@ class AssessmentCollection(models.Model):
                 out[assessment.participation] = {'points': 0, 'placement': 0}
 
             # Only valid assessments are taken into account
+            # For the final assessment the points on the second to last round
+            # count double.
             if assessment.is_used:
-                out[assessment.participation]['points'] += assessment.points
+                if total and self.is_second_last_round():
+                    out[assessment.participation]['points'] += 2*assessment.points
+                else:
+                    out[assessment.participation]['points'] += assessment.points
+
 
         # Calculate the placement (less points are better)
         counter = 1

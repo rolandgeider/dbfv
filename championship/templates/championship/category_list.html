@@ -26,7 +26,9 @@
 <a href="{% url 'championship:assessment-collection:delete' collection.pk %}">Entfernen</a> |
 <a href="{% url 'championship:assessment-collection:export-csv' collection.pk %}">Exportieren</a> |
 <a href="{% url 'championship:assessment-collection:edit' collection.pk %}">Editieren</a> |
+{% if collection.is_last_round %}
 <a href="{% url 'championship:assessment-collection:use' collection.pk %}">Für endgültige Platzierung verwenden</a>
+{% endif %}
 
 {% with data=collection.process_data %}
 <table class="table">
@@ -81,7 +83,10 @@
     <p>
         <a href="{{ championship.get_absolute_url }}">Zur Meisterschaft</a>
     </p>
+    {{ assessment_collection.last.is_last_round }}
+    {% if not assessment_collection.last.is_last_round %}
     <p>
         <a href="{% url 'championship:assessment-collection:add' championship.pk category.pk %}">Neuer Wahlgang</a>
     </p>
+    {% endif %}
 {% endblock %}
