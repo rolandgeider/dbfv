@@ -65,12 +65,14 @@ class RegistrationForm(UserCreationForm, UserEmailForm):
 class SubmissionStarterForm(ModelForm):
 
     CHAMPIONSHIPS = (
-        ('1', u'Deutsche Junioren und Masters am 18.04.2015 in Berlin'),
-        ('2', u'Int. Deutsche Newcomer-Meisterschaft am 25.04.2015 in Fulda/Petersberg'),
-        ('3', u'Deutsche Jugendmeisterschaft am 25.04.2015 in Fulda/Petersberg'),
-        ('4', u'NRW Landesmeisterschaften am 02.05.2015 in Duisburg-Rheinhausen'),
-        ('5', u'NRW Newcomerklasse für Männer am 02.05.2015 in Duisburg-Rheinhausen'),
-        ('6', u'33. Duisburger Stadtmeisterschaft am 02.05.2015 in Duisburg-Rheinhausen'),
+        # ('1', u'Deutsche Junioren und Masters am 18.04.2015 in Berlin'),
+        # ('2', u'Int. Deutsche Newcomer-Meisterschaft am 25.04.2015 in Fulda/Petersberg'),
+        # ('3', u'Deutsche Jugendmeisterschaft am 25.04.2015 in Fulda/Petersberg'),
+        # ('4', u'NRW Landesmeisterschaften am 02.05.2015 in Duisburg-Rheinhausen'),
+        # ('5', u'NRW Newcomerklasse für Männer am 02.05.2015 in Duisburg-Rheinhausen'),
+        # ('6', u'33. Duisburger Stadtmeisterschaft am 02.05.2015 in Duisburg-Rheinhausen'),
+        ('7', u'Int. NRW Meisterschaften am 19.11.2016 in Duisburg-Rheinhausen'),
+        ('8', u'Int. NRW Newcomer-Wertung für Männer am 19.11.2016 in Duisburg-Rheinhausen'),
     )
 
     gym = ModelChoiceField(queryset=Gym.objects.filter(is_active=True),
