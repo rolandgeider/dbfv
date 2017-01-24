@@ -829,7 +829,7 @@ class SubmissionJudge(AbstractSubmission):
             email_list.append(self.state.email)
 
         email_list.append(self.email)
-        email_list.append('enzokoenig@gmail.com')
+        email_list.append('dbfvkampfrichter@gmail.com')
 
         # Hamburg
         if self.state.pk == 6:
