@@ -344,6 +344,8 @@ class SubmissionStarter(AbstractSubmission):
     category = models.CharField(_(u'Kategorie'),
                                 max_length=1,
                                 choices=SUBMISSION_CATEGORY)
+    terms_and_conditions = models.BooleanField('Hiermit erkläre ich mich mit den Regeln des DBFV e.V./IFBB',
+                                               blank=False)
 
     # Other fields
     submission_last_year = models.BooleanField(u"Im Vorjahr wurde bereits eine Lizenz beantragt",

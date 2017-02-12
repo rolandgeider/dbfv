@@ -16,9 +16,13 @@
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
 from django.core.exceptions import ValidationError
 
-from django.forms import ModelForm, MultipleChoiceField
-from django.forms import EmailField
-from django.forms import ModelChoiceField
+from django.forms import (
+    ModelForm,
+    MultipleChoiceField,
+    EmailField,
+    BooleanField,
+    ModelChoiceField
+)
 from django.contrib.auth.models import User as Django_User
 from django.contrib.auth.forms import UserCreationForm
 from django.utils.translation import ugettext as _
@@ -81,6 +85,12 @@ class SubmissionStarterForm(ModelForm):
     championships = MultipleChoiceField(label='Meisterschaften',
                                         choices=CHAMPIONSHIPS,
                                         required=False)
+
+    terms_and_conditions = BooleanField(label=u'Regeln des DBFV e.V./IFBB',
+                                        help_text=u'Hiermit erkläre ich mich mit '
+                                                  '<a href="http://dbfv.de/wettkampfregeln/">'
+                                                  'den Regeln</a> des DBFV e.V./IFBB einverstanden/',
+                                        required=True)
 
     class Meta:
         model = SubmissionStarter
