@@ -879,6 +879,10 @@ class UserProfile(models.Model):
                               blank=True,
                               null=True)
 
+    terms_and_conditions = models.BooleanField('Hiermit erkläre ich mich mit den Regeln des DBFV e.V./IFBB',
+                                               blank=False,
+                                               default=False)
+
     def __unicode__(self):
         '''
         Return a more human-readable representation

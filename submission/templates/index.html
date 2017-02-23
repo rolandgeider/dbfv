@@ -16,55 +16,26 @@
 
 <!-- Example row of columns -->
 
-<h2>Starterlizenz</h2>
-<p>Beantragen Sie hier die Ausstellung 
-einer DBFV/IFBB-Starterlizenz.
-Diese berechtigt zur Teilnahme an allen DBFV e.V / IFBB Meisterschaften.</p>
-{% if perms.submission.add_submissionstarter %}
-<p><a class="btn btn-success" href="{% url 'submission-add' 'starter' %}">Antrag auf Starterlizenz stellen &raquo;</a></p>
-{% else %}
-<p><a href="{% url 'login' %}" class="btn btn-danger">Sie müssen sich anmelden</a></p>
-{% endif %}
+<h3>Starterlizenz</h3>
+    {% if perms.submission.add_submissionstarter %}
+        <a class="btn btn-success" href="{% url 'submission-add' 'starter' %}">Antrag auf Starterlizenz stellen &raquo;</a>
+    {% else %}
+        <a href="{% url 'login' %}" class="btn btn-danger">Sie müssen sich anmelden</a>
+    {% endif %}
 
-<h2 style="margin-top:1.5em;">Andere Anträge</h2>
-<div class="row">
-    <div class="col-md-6">
-        <h4>Kampfrichterlizenz</h4>
-        <p>Nach bestandener Kampfrichterprüfung und bestandenen Probewertungen
-        kann die Kampfrichterlizenz beantragt werden. Ohne Widerspruch des Bundeskampfrichterreferenten
-        wird Ihnen die Kampfrichterlizenz zugeschickt.</p>
-    </div>
-    <div class="col-md-6">
-        <h4>Internationale Starts</h4>
-        <p>Hier Stellen Sie den Antrag an einen internationalen Start. Voraussetzungen:</p>
-        <ul>
-            <li>Top 6 bei Deutschen Meisterschaften.</li>
-            <li>Mitglied eines Nationalkaders.</li>
-            <li>Anmeldeschluss beim Sportreferenten je nach Meisterschaft mind. 2 Monate vorher.</li>
-            <li>Bei Arnold-Classic (USA, Europa) sind nur Klassensieger der DM, IDM, Gesamtsieger der
-                Newcomer DM, der Int.Süddt.Meisterschaft oder Mitglieder eines Nationalkaders startberechtigt.</li>
-            <li>Gültige Starterlizenz, gültiger Reispass (mind.1/2 Jahr gültig), Visa (falls notwendig).</li>
-            <li>Zustimmung und Vorschlag des DBFV e.V. (auch bei entsprechenden Altersgruppen)
-                nur bei rechtzeitiger Anmeldung - (vorbehaltlich der Zustimmung des Veranstalters).</li>
-        </ul>
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-6">
-        {% if perms.submission.add_submissiongym %}
+<h3>Kampfrichterlizenz</h3>
+    {% if perms.submission.add_submissiongym %}
         <p><a class="btn btn-success" href="{% url 'submission-judge-add' %}">Antrag auf Kampfrichterlizenz stellen &raquo;</a></p>
-        {% else %}
+    {% else %}
         <p><a href="{% url 'login' %}" class="btn btn-danger">Sie müssen sich anmelden</a></p>
-        {% endif %}
-    </div>
-    <div class="col-md-6">
-        {% if perms.submission.add_submissioninternational %}
+    {% endif %}
+
+<h3>Internationale Starts</h3>
+{% if perms.submission.add_submissioninternational %}
         <p><a class="btn btn-success" href="{% url 'submission-international-add' %}">Antrag für einen internationalen Start stellen &raquo;</a></p>
         {% else %}
         <p><a href="{% url 'login' %}" class="btn btn-danger">Sie müssen sich anmelden</a></p>
         {% endif %}
-    </div>
-</div>
 
 {% endblock %}
 

@@ -60,10 +60,19 @@ class UserEmailForm(ModelForm):
 class RegistrationForm(UserCreationForm, UserEmailForm):
     state = ModelChoiceField(label=_("Bundesverband"),
                              queryset=State.objects.all())
+
+    terms_and_conditions = BooleanField(label=u'Regeln des DBFV e.V./IFBB',
+                                        help_text=u'Hiermit erkläre ich mich mit '
+                                                  '<a href="/rules">'
+                                                  'den Regeln</a> des DBFV e.V./IFBB einverstanden/',
+                                        required=True)
+
     captcha = ReCaptchaField(attrs={'theme': 'clean'},
                              label=u'Sicherheitscheck',
                              help_text=u'Geben Sie bitte die Wörter ein, das dient als '
                                        u'Sicherheitsmaßname gegen Spam',)
+
+
 
 
 class SubmissionStarterForm(ModelForm):
