@@ -311,7 +311,9 @@ class SubmissionStarter(AbstractSubmission):
         ('6', u'Classic-Bodybuilding'),
         ('7', u'Paare'),
         ('8', u'Männer Physique'),
-        ('9', u'Männer Bodyklasse')
+        ('9', u'Männer Bodyklasse'),
+        ('10', u'Wellness-Fitness'),
+        ('11', u'Muscular-Physique'),
     )
 
     FEE = 50
@@ -515,8 +517,6 @@ class SubmissionInternational(AbstractSubmission):
         ('12', u'Classic Bodybuilding'),
         ('13', u'Männer Physique'),
         ('14', u'Männer Bodybuilding'),
-        ('15', u'Wellness-Fitness'),
-        ('16', u'Muscular-Physique'),
     )
 
     FEE = 0
