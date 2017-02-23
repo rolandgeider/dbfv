@@ -97,7 +97,7 @@ class SubmissionStarterForm(ModelForm):
 
     terms_and_conditions = BooleanField(label=u'Regeln des DBFV e.V./IFBB',
                                         help_text=u'Hiermit erkläre ich mich mit '
-                                                  '<a href="http://dbfv.de/wettkampfregeln/">'
+                                                  '<a href="/rules">'
                                                   'den Regeln</a> des DBFV e.V./IFBB einverstanden/',
                                         required=True)
 
