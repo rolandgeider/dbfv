@@ -515,6 +515,8 @@ class SubmissionInternational(AbstractSubmission):
         ('12', u'Classic Bodybuilding'),
         ('13', u'Männer Physique'),
         ('14', u'Männer Bodybuilding'),
+        ('15', u'Wellness-Fitness'),
+        ('16', u'Muscular-Physique'),
     )
 
     FEE = 0
