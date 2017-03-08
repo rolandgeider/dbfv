@@ -84,8 +84,10 @@ class SubmissionStarterForm(ModelForm):
         # ('4', u'NRW Landesmeisterschaften am 02.05.2015 in Duisburg-Rheinhausen'),
         # ('5', u'NRW Newcomerklasse für Männer am 02.05.2015 in Duisburg-Rheinhausen'),
         # ('6', u'33. Duisburger Stadtmeisterschaft am 02.05.2015 in Duisburg-Rheinhausen'),
-        ('7', u'Int. NRW Meisterschaften am 19.11.2016 in Duisburg-Rheinhausen'),
-        ('8', u'Int. NRW Newcomer-Wertung für Männer am 19.11.2016 in Duisburg-Rheinhausen'),
+        # ('7', u'Int. NRW Meisterschaften am 19.11.2016 in Duisburg-Rheinhausen'),
+        # ('8', u'Int. NRW Newcomer-Wertung für Männer am 19.11.2016 in Duisburg-Rheinhausen'),
+        ('9', u'NRW Landesmeisterschaft am 06.05.2017 in Duisburg-Rheinhausen'),
+        ('10', u'NRW Newcomer-Wertung für Männer am 06.05.2017 in Duisburg-Rheinhausen'),
     )
 
     gym = ModelChoiceField(queryset=Gym.objects.filter(is_active=True),
