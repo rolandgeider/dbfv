@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Einträge für {{ category }}-Klasse{% endblock %}
+
+{% block content %}
+<h3>Endplatzierung</h3>
+<table class="table">
+    <tr>
+        <th>Nr.</th>
+        <th>Name</th>
+        <th>Platzierung</th>
+        <th>Punkte</th>
+    </tr>
+    {% for placement in placements %}
+        <tr>
+            <td>{{ placement.participation.participation_nr }}</td>
+            <td>{{ placement.participation.submission.get_name }}</td>
+            <td>{{ placement.placement }}</td>
+            <td>{{ placement.points|default:'-/-' }}</td>
+        </tr>
+    {% endfor %}
+</table>
+
+{% for collection in assessment_collection %}
+<h3>{{ collection.round }}. Wahlgang</h3>
+<a href="{% url 'championship:assessment-collection:delete' collection.pk %}">Entfernen</a> |
+<a href="{% url 'championship:assessment-collection:export-csv' collection.pk %}">Exportieren</a> |
+<a href="{% url 'championship:assessment-collection:edit' collection.pk %}">Editieren</a> |
+{% if collection.is_last_round %}
+<a href="{% url 'championship:assessment-collection:use' collection.pk %}">Für endgültige Platzierung verwenden</a>
+{% endif %}
+
+{% with data=collection.process_data %}
+<table class="table">
+    <tr>
+        <th>Nr.</th>
+        <th>Name</th>
+        {% for judge in championship.judge_set.all %}
+            <th>{{ judge }}</th>
+        {% endfor %}
+        <th>Punkte</th>
+        <th>Platz</th>
+    </tr>
+    {% for participation, values in data.iteritems %}
+    <tr>
+        <td>
+            {{ participation.participation_nr }}
+        </td>
+        <td>
+            {{ participation.submission.get_name }}
+        </td>
+        {% for placement in values.judges %}
+        <td>
+            {% if not placement.is_used %}
+                <span style="text-decoration: line-through;" class="text-muted">
+            {% endif %}
+            {{ placement.points }}
+            {% if not placement.is_used %}
+                </span>
+            {% endif %}
+        </td>
+        {% endfor %}
+        <td>
+            {{ values.points }}
+        </td>
+        <td>
+            {{ values.placement }}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endwith %}
+
+
+
+{% endfor %}
+{% endblock %}
+
+
+
+{% block sidebar %}
+    <h4>Optionen</h4>
+    <p>
+        <a href="{{ championship.get_absolute_url }}">Zur Meisterschaft</a>
+    </p>
+    {% if not assessment_collection.last.is_last_round %}
+    <p>
+        <a href="{% url 'championship:assessment-collection:add' championship.pk category.pk %}">Neuer Wahlgang</a>
+    </p>
+    {% endif %}
+{% endblock %}

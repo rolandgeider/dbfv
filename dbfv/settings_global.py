@@ -67,7 +67,6 @@ LOGIN_REDIRECT_URL = '/'
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 
@@ -81,7 +80,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -121,13 +119,13 @@ INSTALLED_APPS = (
     # reCaptcha support, see https://github.com/praekelt/django-recaptcha
     'captcha',
 
-    # The dbfv submission app
+    # The dbfv app
+    'championship',
     'submission',
     'core',
 
     # Django debug toolbar
     #'debug_toolbar',
-
 )
 
 DEBUG_TOOLBAR_CONFIG = {'INTERCEPT_REDIRECTS': False}

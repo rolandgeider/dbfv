@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Meisterschaften{% endblock %}
+
+{% block content %}
+{% if championship_list %}
+<table class="table table-striped" data-toggle="list">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Datum</th>
+        <th>Teilnehmer</th>
+        <th>Bundesland</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for championship in championship_list %}
+    <tr>
+        <td>
+            <a href="{% url 'championship:championship:view' championship.id %}">{{championship.name}}</a>
+        </td>
+        <td>
+            {{championship.date}}
+        </td>
+        <td>
+            {{championship.total_participants}}
+        </td>
+        <td>
+            {{championship.state.name}}
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+    <p>Es liegen momentan keine Meisterschaften vor.</p>
+{% endif %}
+{% endblock %}
+
+{% block sidebar %}
+<div class="sidebar-box">
+    <h4>Aktionen</h4>
+    <p><a href="{% url 'championship:championship:add' %}">Meisterschaft hinzufügen</a></p>
+</div>
+{% endblock %}

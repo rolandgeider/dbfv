@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Kategorien{% endblock %}
+
+{% block content %}
+{% if categories_list %}
+<table class="table table-striped" data-toggle="list">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Runden</th>
+        <th style="width: 15%;">Aktionen</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for category in categories_list %}
+    <tr>
+        <td>
+            {{category.name}}
+        </td>
+        <td>
+            {{ category.category_type }}
+        </td>
+
+        <td>
+            <a href="{% url 'championship:category:edit' category.pk %}" title="Bearbeiten"><span class="glyphicon glyphicon-pencil"></span></a>
+            <a href="{% url 'championship:category:delete' category.pk %}" title="Löschen"><span class="glyphicon glyphicon-trash"></span></a>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+    <p>Es liegen momentan keine Kategorien vor.</p>
+{% endif %}
+{% endblock %}
+
+{% block sidebar %}
+<div class="sidebar-box">
+    <h4>Aktionen</h4>
+    <p><a href="{% url 'championship:category:add' %}">Kategorie hinzufügen</a></p>
+</div>
+{% endblock %}

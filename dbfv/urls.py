@@ -5,17 +5,13 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    # Examples:
-    # url(r'^$', 'dbfv.views.home', name='home'),
-    # url(r'^dbfv/', include('dbfv.foo.urls')),
-
-    # Uncomment the admin/doc line below to enable admin documentation:
-    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
 
+
     # The submission application
+    url(r'meisterschaft/', include('championship.urls', namespace='championship')),
     url(r'core/', include('core.urls', namespace='core')),
     url(r'^', include('submission.urls')),
 )

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load dbfv_extras %}
+
+{% block title %}Wahlgang {{ collection.round }} - {{ collection.category }}{% endblock %}
+
+{% block content %}
+<form action="{{form_action}}" method="post" class="form-horizontal">
+{{ formset.management_form }}
+{% csrf_token %}
+
+<table class="table">
+    <tr>
+        <th>Nr.</th>
+        <th>Name</th>
+        {% for judge in collection.championship.judge_set.all %}
+            <th>{{ judge }}</th>
+        {% endfor %}
+    </tr>
+    {% for participation, values in collection_data.iteritems %}
+    <tr>
+        <td>
+            {{ participation.participation_nr }}
+        </td>
+        <td>
+            {{ participation.submission.get_name }}
+        </td>
+        {% for placement in values.form_item.values %}
+        <td>
+            {{ placement.as_p }}
+        </td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+</table>
+{% render_form_submit %}
+</form>
+{% endblock %}
+
+{% block sidebar %}
+
+{% endblock %}

@@ -101,6 +101,35 @@
         </td>
     </tr>
 </table>
+
+{% if perms.championship.change_championship %}
+<h3>Meisterschaften</h3>
+<table class="table">
+    <tr>
+        <th>Name</th>
+        <th>Teilnehmernummer</th>
+    </tr>
+    {% for participation in object.participation_set.all %}
+        <tr>
+            <td style="width: 50%;">
+                <a href="{% url 'championship:championship:view' participation.championship.pk %}">{{ participation.championship }}</a>
+            </td>
+            <td>
+                <a href="{% url 'championship:participation:view' participation.pk %}">#{{ participation.pk }}</a>
+            </td>
+            <td></td>
+        </tr>
+    {% empty %}
+        <tr>
+            <td colspan="3">
+                <em>Noch keine Teilnahme an eine Meisterschaft vorhanden</em> -
+                <a href="{% url 'championship:participation:register' object.id %}">für Meisterschaft anmelden</a>
+            </td>
+        </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
 {% endblock %}
 
 {% block sidebar %}
@@ -108,7 +137,9 @@
 <div class="sidebar-box">
     <h4>Optionen</h4>
     <p><a href="{% url 'submission-edit' object.id %}"
-          title="Bearbeiten">Bearbeiten</a></p>    
+          title="Bearbeiten">Bearbeiten</a></p>
+    <p><a href="{% url 'championship:participation:register' object.id %}"
+          title="Bearbeiten">Für Meisterschaft anmelden</a></p>
     <p><a href="{% url 'submission-edit-status' object.id %}"
           title="Status bearbeiten">Status bearbeiten</a></p>
     <p><a href="{% url 'submission-export-mailmerge' object.id %}"
