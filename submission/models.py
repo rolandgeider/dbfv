@@ -314,6 +314,12 @@ class SubmissionStarter(AbstractSubmission):
         ('9', u'Männer Bodyklasse'),
         ('10', u'Wellness-Fitness'),
         ('11', u'Muscular-Physique'),
+        ('12', u'Masters-Männer BB'),
+        ('13', u'Masters-Männer Classic BB'),
+        ('14', u'Masters-Männer Physique'),
+        ('15', u'Masters-Frauen Physique'),
+        ('16', u'Masters-Frauen Bikini Fitness'),
+        ('17', u'Masters-Frauen Figur'),
     )
 
     FEE = 50
