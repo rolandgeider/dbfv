@@ -523,6 +523,12 @@ class SubmissionInternational(AbstractSubmission):
         ('12', u'Classic Bodybuilding'),
         ('13', u'Männer Physique'),
         ('14', u'Männer Bodybuilding'),
+        ('15', u'Masters-Männer BB'),
+        ('16', u'Masters-Männer Classic BB'),
+        ('17', u'Masters-Männer Physique'),
+        ('18', u'Masters-Frauen Physique'),
+        ('19', u'Masters-Frauen Bikini Fitness'),
+        ('20', u'Masters-Frauen Figur'),
     )
 
     FEE = 0
