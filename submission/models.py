@@ -289,6 +289,7 @@ class SubmissionStarter(AbstractSubmission):
                         'Geburtsdatum',
                         'Aktiv Seit',
                         'Straße',
+                        'Hausnummer',
                         'PLZ',
                         'Stadt',
                         'Telefon',
@@ -334,6 +335,8 @@ class SubmissionStarter(AbstractSubmission):
                                   max_length=30)
     street = models.CharField(_(u'Straße'),
                               max_length=30)
+    house_nr = models.CharField(_(u'Hausnummer'),
+                                max_length=30)
     zip_code = models.IntegerField(_(u'PLZ'))
     city = models.CharField(_(u'Ort'),
                             max_length=30)
@@ -462,6 +465,7 @@ class SubmissionStarter(AbstractSubmission):
                 self.date_of_birth,
                 self.active_since,
                 self.street,
+                self.house_nr,
                 self.zip_code,
                 self.city,
                 self.tel_number,
