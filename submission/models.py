@@ -304,24 +304,38 @@ class SubmissionStarter(AbstractSubmission):
                         'Jahr']
 
     SUBMISSION_CATEGORY = (
-        ('1', u'Bikini-Klasse'),
-        ('2', u'Frauen Fitness-Figur-Klasse'),
-        ('3', u'Frauen Bodyklasse'),
-        ('4', u'Frauen Physiqueklasse'),
-        ('5', u'Juniorenklasse'),
-        ('6', u'Classic-Bodybuilding'),
+
+        ('1', u'Bikini-Fitness Klasse I'),
+        ('19', u'Bikini-Fitness Klasse II'),
+        ('20', u'Bikini-Fitness Klasse III'),
+        ('21', u'Wellness-Fitness Klasse'),
+        ('2', u'Frauen Fitness-Figur Klasse I'),
+        ('22', u'Frauen Fitness-Figur Klasse II'),
+        # ('3', u'Frauen Bodyklasse'),
+        ('4', u'Frauen Physique'),
+        # ('5', u'Juniorenklasse'),
+        ('6', u'Classic-Bodybuilding Klasse I'),
+        ('23', u'Classic-Bodybuilding Klasse II'),
         ('7', u'Paare'),
-        ('8', u'Männer Physique'),
-        ('9', u'Männer Bodyklasse'),
-        ('10', u'Wellness-Fitness'),
+        ('8', u'Männer Physique Klassse I'),
+        ('24', u'Männer Physique Klasse II'),
+        ('25', u'Männer Physique Klasse III'),
+        # ('9', u'Männer Bodyklasse'),
+        # ('10', u'Wellness-Fitness'),
         ('11', u'Muscular-Physique'),
-        ('12', u'Masters-Männer BB'),
-        ('13', u'Masters-Männer Classic BB'),
-        ('14', u'Masters-Männer Physique'),
-        ('15', u'Masters-Frauen Physique'),
-        ('16', u'Masters-Frauen Bikini Fitness'),
-        ('17', u'Masters-Frauen Figur'),
+        # ('12', u'Masters-Männer BB'),
+        ('26', u'Männer Klasse I'),
+        ('27', u'Männer Klasse II'),
+        ('28', u'Männer Klasse III'),
+        ('29', u'Männer Klasse IV'),
+        ('29', u'Männer Klasse V'),
+        # ('13', u'Masters-Männer Classic BB'),
+        # ('14', u'Masters-Männer Physique'),
+        # ('15', u'Masters-Frauen Physique'),
+        # ('16', u'Masters-Frauen Bikini Fitness'),
+        # ('17', u'Masters-Frauen Figur'),
     )
+    # Commented out: out = [3, 5, 9, 10, 12, 13, 14, 15, 16, 17]
 
     FEE = 50
 
@@ -354,7 +368,8 @@ class SubmissionStarter(AbstractSubmission):
                                  decimal_places=2)
     category = models.CharField(_(u'Kategorie'),
                                 max_length=2,
-                                choices=SUBMISSION_CATEGORY)
+                                choices=SUBMISSION_CATEGORY,
+                                )
     terms_and_conditions = models.BooleanField('Hiermit erkläre ich mich mit den Regeln des DBFV e.V./IFBB',
                                                blank=False)
 
