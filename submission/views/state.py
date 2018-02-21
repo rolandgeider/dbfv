@@ -52,6 +52,7 @@ class StateUpdateView(DbfvFormMixin, generic.UpdateView):
     '''
 
     model = State
+    fields = ['name', 'short_name', 'email', 'bank_account']
     success_url = reverse_lazy('state-list')
     permission_required = 'submission.change_state'
 
