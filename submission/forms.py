@@ -67,10 +67,10 @@ class RegistrationForm(UserCreationForm, UserEmailForm):
                                                   'den Regeln</a> des DBFV e.V./IFBB einverstanden/',
                                         required=True)
 
-    captcha = ReCaptchaField(attrs={'theme': 'clean'},
-                             label=u'Sicherheitscheck',
-                             help_text=u'Geben Sie bitte die Wörter ein, das dient als '
-                                       u'Sicherheitsmaßname gegen Spam',)
+    #captcha = ReCaptchaField(attrs={'theme': 'clean'},
+    #                         label=u'Sicherheitscheck',
+    #                         help_text=u'Geben Sie bitte die Wörter ein, das dient als '
+    #                                   u'Sicherheitsmaßname gegen Spam',)
 
 
 

@@ -35,7 +35,7 @@ class ManagerEmail(models.Model):
 
     email = models.EmailField(_(u'Email'), max_length=30)
 
-    def __unicode__(self):
+    def __str__(self):
         '''
         Return a more human-readable representation
         '''
@@ -57,7 +57,7 @@ class BankAccount(models.Model):
     bank_name = models.CharField(verbose_name='Bankname',
                                  max_length=30,)
 
-    def __unicode__(self):
+    def __str__(self):
         '''
         Return a more human-readable representation
         '''
@@ -78,7 +78,7 @@ class State(models.Model):
                               blank=True)
     bank_account = models.ForeignKey(BankAccount, verbose_name='Bankkonto')
 
-    def __unicode__(self):
+    def __str__(self):
         '''
         Return a more human-readable representation
         '''
@@ -123,7 +123,7 @@ class Gym(models.Model):
     is_active = models.BooleanField(_('Ist aktiv'),
                                     default=True)
 
-    def __unicode__(self):
+    def __str__(self):
         '''
         Return a more human-readable representation
         '''
@@ -141,7 +141,7 @@ class Country(models.Model):
     # This field is required.
     name = models.CharField(max_length=40)
 
-    def __unicode__(self):
+    def __str__(self):
         '''
         Return a more human-readable representation
         '''
@@ -316,6 +316,7 @@ class SubmissionStarter(AbstractSubmission):
         # ('5', u'Juniorenklasse'),
         ('6', u'Classic-Bodybuilding Klasse I'),
         ('23', u'Classic-Bodybuilding Klasse II'),
+        ('30', u'Classic Physique'),
         ('7', u'Paare'),
         ('8', u'Männer Physique Klassse I'),
         ('24', u'Männer Physique Klasse II'),
@@ -337,7 +338,7 @@ class SubmissionStarter(AbstractSubmission):
     )
     # Commented out: out = [3, 5, 9, 10, 12, 13, 14, 15, 16, 17]
 
-    FEE = 50
+    FEE = 90
 
     # Personal information
     date_of_birth = models.DateField(_('Geburtsdatum'))
@@ -380,7 +381,7 @@ class SubmissionStarter(AbstractSubmission):
     gym = models.ForeignKey(Gym,
                             verbose_name='Studio')
 
-    def __unicode__(self):
+    def __str__(self):
         '''
         Return a more human-readable representation
         '''
@@ -534,13 +535,19 @@ class SubmissionInternational(AbstractSubmission):
         ('4',  u'Junioren-Bikini-Fitness'),
         ('5',  u'Junioren-Mens Physique'),
         ('6',  u'Junioren-Bodybuilding'),
+        ('23', u'Junioren-Classic Bodybuilding'),
+        ('21', u'Junioren-Frauen Fitness Figur'),
+        ('22', u'Junioren-Frauen Physique'),
         ('7',  u'Frauen-Bikini-Fitness'),
+        ('25', u'Frauen-Wellness'),
         ('8',  u'Frauen-Fitness-Figur'),
         ('9',  u'Frauen-Physique'),
         ('10', u'Paare'),
         ('11', u'Handicappt/Wheelchair'),
         ('12', u'Classic Bodybuilding'),
+        ('24', u'Classic Physique'),
         ('13', u'Männer Physique'),
+        ('24', u'Männer Muscular Physique'),
         ('14', u'Männer Bodybuilding'),
         ('15', u'Masters-Männer BB'),
         ('16', u'Masters-Männer Classic BB'),
@@ -591,7 +598,7 @@ class SubmissionInternational(AbstractSubmission):
     gym = models.ForeignKey(Gym,
                             verbose_name='Studio')
 
-    def __unicode__(self):
+    def __str__(self):
         '''
         Return a more human-readable representation
         '''
@@ -634,7 +641,11 @@ class SubmissionInternational(AbstractSubmission):
         '''
         Collects and returns a list with the recipients of notification emails
         '''
-        return ['info@dbfv.de', 'smash-fitness-park@t-online.de', self.email]
+        email_list = ['info@dbfv.de', 'dbfv.falk@gmail.com', "Margret.Netack@t-online.de", self.email]
+        if self.gym.state.email:
+            email_list.append(self.gym.state.email)
+        return email_list
+
 
     def notification_email_hook(self):
         '''
@@ -726,7 +737,7 @@ class SubmissionGym(AbstractSubmission):
                                blank=True,
                                null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         '''
         Return a more human-readable representation
         '''
@@ -813,7 +824,7 @@ class SubmissionJudge(AbstractSubmission):
                               null=True,
                               blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         '''
         Return a more human-readable representation
         '''
@@ -916,7 +927,7 @@ class UserProfile(models.Model):
                                                blank=False,
                                                default=False)
 
-    def __unicode__(self):
+    def __str__(self):
         '''
         Return a more human-readable representation
         '''
