@@ -15,9 +15,9 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
 from django.http import HttpResponseForbidden
+from django.urls import reverse_lazy
 
 from django.views import generic
-from django.core.urlresolvers import reverse_lazy
 
 from submission.forms import SubmissionGymForm, SubmissionGymFormBV
 from submission.models import SubmissionGym, Gym

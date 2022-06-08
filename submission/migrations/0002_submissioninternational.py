@@ -35,9 +35,9 @@ class Migration(migrations.Migration):
                 ('championship', models.CharField(max_length=150, verbose_name='Meisterschaft')),
                 ('championship_date', models.DateField(verbose_name='Datum der Meisterschaft')),
                 ('submission_last_year', models.BooleanField(default=False, verbose_name='Im Vorjahr wurde bereits eine Lizenz beantragt')),
-                ('gym', models.ForeignKey(verbose_name=b'Studio', to='submission.Gym')),
-                ('nationality', models.ForeignKey(default=37, verbose_name='Staatsangeh\xf6rigkeit', to='submission.Country')),
-                ('user', models.ForeignKey(editable=False, to=settings.AUTH_USER_MODEL, verbose_name='User')),
+                ('gym', models.ForeignKey(verbose_name=b'Studio', to='submission.Gym', on_delete=models.CASCADE)),
+                ('nationality', models.ForeignKey(default=37, verbose_name='Staatsangeh\xf6rigkeit', to='submission.Country', on_delete=models.CASCADE)),
+                ('user', models.ForeignKey(editable=False, to=settings.AUTH_USER_MODEL, verbose_name='User', on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ['creation_date', 'gym'],

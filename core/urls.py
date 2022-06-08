@@ -1,5 +1,7 @@
 # -*- coding: utf-8 *-*
 
+from django.conf.urls import include
+from django.contrib.auth.decorators import permission_required
 # This file is part of Kumasta.
 #
 # Kumasta is free software: you can redistribute it and/or modify
@@ -13,26 +15,20 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU Affero General Public License
-
+from django.urls import path
 from django.views.generic import TemplateView
-from django.conf.urls import patterns, url, include
-from django.contrib.auth.decorators import permission_required
-
-from core.forms import EmailListForm
-from core.views import email_lists
-
 
 # sub patterns for email lists
-patterns_email = patterns('',
-    url(r'^auswaehlen/$',
+patterns_email = [
+    path(r'^auswaehlen/$',
         permission_required('core.change_emailcron')(TemplateView.as_view(template_name="email/overview.html")),
         name='overview'),
-    url(r'^erstellen/(?P<type>(starter|studio))$',
-        permission_required('core.change_emailcron')(email_lists.EmailListFormPreview(EmailListForm)),
-        name='add'),
-)
+#    path(r'^erstellen/(?P<type>(starter|studio))$',
+#        permission_required('core.change_emailcron')(email_lists.EmailListFormPreview(EmailListForm)),
+#        name='add'),
+]
 
 
-urlpatterns = patterns('',
-    url(r'^email-listen/', include(patterns_email, namespace="email")),
-)
+urlpatterns = [
+    path(r'^email-listen/', include((patterns_email, 'email'), namespace="email")),
+]

@@ -14,17 +14,16 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
-
+from django.shortcuts import render
 from django.template import RequestContext
-from django.shortcuts import render_to_response
-from django.core.context_processors import csrf
-from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.contrib.auth import login as django_login
 from django.contrib.auth import logout as django_logout
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User as Django_User
 from django.contrib.auth.models import Group
+from django.template.context_processors import csrf
+from django.urls import reverse
 
 from submission.forms import RegistrationForm
 from submission.models import USER_TYPE_USER
@@ -51,7 +50,6 @@ def registration(request):
 
         # If the data is valid, log in and redirect
         if form.is_valid():
-
             # Create the user
             username = form.cleaned_data['username']
             password = form.cleaned_data['password1']
@@ -81,6 +79,5 @@ def registration(request):
 
     template_data['form'] = form
 
-    return render_to_response('form.html',
-                              template_data,
-                              context_instance=RequestContext(request))
+    return render('form.html',
+                  template_data)

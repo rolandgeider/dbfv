@@ -19,8 +19,8 @@ import datetime
 import json
 
 from django.http.response import HttpResponse, HttpResponseForbidden
+from django.urls import reverse_lazy
 from django.views import generic
-from django.core.urlresolvers import reverse_lazy
 from django.db.models import Q
 
 from submission.forms import SubmissionInternationalForm, SubmissionInternationalFormBV

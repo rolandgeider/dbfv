@@ -16,8 +16,8 @@
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
 import datetime
 
+from django.urls import reverse_lazy
 from django.views import generic
-from django.core.urlresolvers import reverse_lazy
 
 from submission.forms import SubmissionJudgeForm, SubmissionJudgeFormBV
 from submission.models import SubmissionJudge

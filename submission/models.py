@@ -21,10 +21,9 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.db import models
 from django.db.models.signals import post_save
-from django.db.models.signals import post_delete
-from django.utils.translation import ugettext_lazy as _
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth.models import User
+from django.utils.translation import gettext_lazy as _
 from django.core import mail
 
 
@@ -48,14 +47,14 @@ class BankAccount(models.Model):
     '''
 
     owner_name = models.CharField(verbose_name='Begünstigter',
-                                  max_length=100,)
+                                  max_length=100, )
     iban = models.CharField(verbose_name='IBAN',
-                            max_length=34,)
+                            max_length=34, )
     bic = models.CharField(verbose_name='BIC',
                            max_length=11,
                            help_text=u'Nur bei Auslandsüberweisung nötig')
     bank_name = models.CharField(verbose_name='Bankname',
-                                 max_length=30,)
+                                 max_length=30, )
 
     def __str__(self):
         '''
@@ -70,13 +69,17 @@ class State(models.Model):
     '''
 
     name = models.CharField(verbose_name='Name',
-                            max_length=100,)
+                            max_length=100, )
     short_name = models.CharField(verbose_name='Kürzel',
-                                  max_length=3,)
+                                  max_length=3, )
     email = models.EmailField(verbose_name='Email',
                               max_length=120,
                               blank=True)
-    bank_account = models.ForeignKey(BankAccount, verbose_name='Bankkonto')
+    bank_account = models.ForeignKey(
+        BankAccount,
+        verbose_name='Bankkonto',
+        on_delete=models.CASCADE
+    )
 
     def __str__(self):
         '''
@@ -98,12 +101,14 @@ class Gym(models.Model):
 
     # Properties
     name = models.CharField(verbose_name='Name',
-                            max_length=100,)
+                            max_length=100, )
     email = models.EmailField(verbose_name='Email',
                               blank=True,
                               null=True)
     state = models.ForeignKey(State,
-                              verbose_name='Bundesland')
+                              verbose_name='Bundesland',
+                              on_delete=models.CASCADE
+                              )
 
     owner = models.CharField(verbose_name='Inhaber',
                              max_length=100,
@@ -149,7 +154,6 @@ class Country(models.Model):
 
 
 def attachment_submission_dir(instance, filename):
-
     return "anlagen/antrag/%s/%s/%s" % (instance.gym.state.short_name, instance.gym_id, filename)
 
 
@@ -184,7 +188,8 @@ class AbstractSubmission(models.Model):
 
     user = models.ForeignKey(User,
                              verbose_name=_('User'),
-                             editable=False)
+                             editable=False,
+                             on_delete=models.CASCADE)
     creation_date = models.DateField(_('Creation date'),
                                      auto_now_add=True)
     submission_status = models.CharField(max_length=2,
@@ -361,7 +366,8 @@ class SubmissionStarter(AbstractSubmission):
                               max_length=120)
     nationality = models.ForeignKey(Country,
                                     verbose_name=u'Staatsangehörigkeit',
-                                    default=37  # Germany
+                                    default=37,  # Germany
+                                    on_delete = models.CASCADE
                                     )
     height = models.IntegerField(_(u'Größe (cm)'))
     weight = models.DecimalField(_(u'Wettkampfgewicht (kg)'),
@@ -371,15 +377,17 @@ class SubmissionStarter(AbstractSubmission):
                                 max_length=2,
                                 choices=SUBMISSION_CATEGORY,
                                 )
-    terms_and_conditions = models.BooleanField('Hiermit erkläre ich mich mit den Regeln des DBFV e.V./IFBB',
-                                               blank=False)
+    terms_and_conditions = models.BooleanField(
+        'Hiermit erkläre ich mich mit den Regeln des DBFV e.V./IFBB',
+        blank=False)
 
     # Other fields
     submission_last_year = models.BooleanField(u"Im Vorjahr wurde bereits eine Lizenz beantragt",
                                                default=False)
 
     gym = models.ForeignKey(Gym,
-                            verbose_name='Studio')
+                            verbose_name='Studio',
+                            on_delete=models.CASCADE)
 
     def __str__(self):
         '''
@@ -451,15 +459,15 @@ class SubmissionStarter(AbstractSubmission):
         '''
         if not self.gym.email:
             for email in ManagerEmail.objects.all():
-                    mail.send_mail('Studio hat keine Emailadresse',
-                                   u"Eine Starterlizenz wurde für ein Studio beantragt, dass\n"
-                                   u"keine Emailadresse im System hinterlegt hat.\n\n"
-                                   u"* Nr.:        {studio.pk}\n"
-                                   u"* Name:       {studio.name}\n"
-                                   u"* Bundesland: {studio.state.name}\n".format(studio=self.gym),
-                                   settings.DEFAULT_FROM_EMAIL,
-                                   [email.email],
-                                   fail_silently=True)
+                mail.send_mail('Studio hat keine Emailadresse',
+                               u"Eine Starterlizenz wurde für ein Studio beantragt, dass\n"
+                               u"keine Emailadresse im System hinterlegt hat.\n\n"
+                               u"* Nr.:        {studio.pk}\n"
+                               u"* Name:       {studio.name}\n"
+                               u"* Bundesland: {studio.state.name}\n".format(studio=self.gym),
+                               settings.DEFAULT_FROM_EMAIL,
+                               [email.email],
+                               fail_silently=True)
 
     def get_search_json(self):
         '''
@@ -529,19 +537,19 @@ class SubmissionInternational(AbstractSubmission):
                         'Datum der Meisterschaft']
 
     SUBMISSION_CATEGORY = (
-        ('1',  u'Jugend-Bikini-Fitness'),
-        ('2',  u'Jugend-Mens Physique'),
-        ('3',  u'Jugend-Bodybuilding'),
-        ('4',  u'Junioren-Bikini-Fitness'),
-        ('5',  u'Junioren-Mens Physique'),
-        ('6',  u'Junioren-Bodybuilding'),
+        ('1', u'Jugend-Bikini-Fitness'),
+        ('2', u'Jugend-Mens Physique'),
+        ('3', u'Jugend-Bodybuilding'),
+        ('4', u'Junioren-Bikini-Fitness'),
+        ('5', u'Junioren-Mens Physique'),
+        ('6', u'Junioren-Bodybuilding'),
         ('23', u'Junioren-Classic Bodybuilding'),
         ('21', u'Junioren-Frauen Fitness Figur'),
         ('22', u'Junioren-Frauen Physique'),
-        ('7',  u'Frauen-Bikini-Fitness'),
+        ('7', u'Frauen-Bikini-Fitness'),
         ('25', u'Frauen-Wellness'),
-        ('8',  u'Frauen-Fitness-Figur'),
-        ('9',  u'Frauen-Physique'),
+        ('8', u'Frauen-Fitness-Figur'),
+        ('9', u'Frauen-Physique'),
         ('10', u'Paare'),
         ('11', u'Handicappt/Wheelchair'),
         ('12', u'Classic Bodybuilding'),
@@ -576,7 +584,8 @@ class SubmissionInternational(AbstractSubmission):
                               max_length=120)
     nationality = models.ForeignKey(Country,
                                     verbose_name=u'Staatsangehörigkeit',
-                                    default=37  # Germany
+                                    default=37,  # Germany
+                                    on_delete=models.CASCADE
                                     )
     height = models.IntegerField(_(u'Größe (cm)'))
     weight = models.DecimalField(_(u'Wettkampfgewicht in kg (ca.)'),
@@ -593,10 +602,11 @@ class SubmissionInternational(AbstractSubmission):
     best_placement = models.CharField(u'Beste Platzierung',
                                       max_length=150,
                                       help_text='Beste Platzierung auf einer deutschen '
-        'DBFV/IFBB-Meisterschaft, mit Datum und Kategorie')
+                                                'DBFV/IFBB-Meisterschaft, mit Datum und Kategorie')
 
     gym = models.ForeignKey(Gym,
-                            verbose_name='Studio')
+                            verbose_name='Studio',
+                            on_delete=models.CASCADE)
 
     def __str__(self):
         '''
@@ -641,11 +651,11 @@ class SubmissionInternational(AbstractSubmission):
         '''
         Collects and returns a list with the recipients of notification emails
         '''
-        email_list = ['info@dbfv.de', 'dbfv.falk@gmail.com', "Margret.Netack@t-online.de", self.email]
+        email_list = ['info@dbfv.de', 'dbfv.falk@gmail.com', "Margret.Netack@t-online.de",
+                      self.email]
         if self.gym.state.email:
             email_list.append(self.gym.state.email)
         return email_list
-
 
     def notification_email_hook(self):
         '''
@@ -653,15 +663,15 @@ class SubmissionInternational(AbstractSubmission):
         '''
         if not self.gym.email:
             for email in ManagerEmail.objects.all():
-                    mail.send_mail('Studio hat keine Emailadresse',
-                                   u"Eine internationale Lizenz wurde für ein Studio beantragt, dass\n"
-                                   u"keine Emailadresse im System hinterlegt hat.\n\n"
-                                   u"* Nr.:        {studio.pk}\n"
-                                   u"* Name:       {studio.name}\n"
-                                   u"* Bundesland: {studio.state.name}\n".format(studio=self.gym),
-                                   settings.DEFAULT_FROM_EMAIL,
-                                   [email.email],
-                                   fail_silently=True)
+                mail.send_mail('Studio hat keine Emailadresse',
+                               u"Eine internationale Lizenz wurde für ein Studio beantragt, dass\n"
+                               u"keine Emailadresse im System hinterlegt hat.\n\n"
+                               u"* Nr.:        {studio.pk}\n"
+                               u"* Name:       {studio.name}\n"
+                               u"* Bundesland: {studio.state.name}\n".format(studio=self.gym),
+                               settings.DEFAULT_FROM_EMAIL,
+                               [email.email],
+                               fail_silently=True)
 
     def get_search_json(self):
         '''
@@ -699,7 +709,6 @@ class SubmissionInternational(AbstractSubmission):
                 self.championship_date]
 
 
-
 class SubmissionGym(AbstractSubmission):
     '''
     Model for a gym submission
@@ -709,7 +718,8 @@ class SubmissionGym(AbstractSubmission):
 
     # Personal information
     state = models.ForeignKey(State,
-                              verbose_name=_(u'Landesverband'))
+                              verbose_name=_(u'Landesverband'),
+                              on_delete=models.CASCADE)
     name = models.CharField(verbose_name=_('Name'),
                             max_length=30,
                             help_text=_('Name des Studios oder Verein'))
@@ -735,7 +745,8 @@ class SubmissionGym(AbstractSubmission):
                                verbose_name='Studio',
                                editable=False,
                                blank=True,
-                               null=True)
+                               null=True,
+                               on_delete=models.CASCADE)
 
     def __str__(self):
         '''
@@ -816,7 +827,8 @@ class SubmissionJudge(AbstractSubmission):
     city = models.CharField(u'Ort',
                             max_length=30)
     state = models.ForeignKey(State,
-                              verbose_name=u'Landesverband')
+                              verbose_name=u'Landesverband',
+                              on_delete=models.CASCADE)
     tel_number = models.CharField(u'Tel. Nr.',
                                   max_length=20)
     email = models.EmailField(u'Email',
@@ -875,7 +887,7 @@ class SubmissionJudge(AbstractSubmission):
             email_list.append(self.state.email)
 
         email_list.append(self.email)
-        email_list.append('dbfvkampfrichter@gmail.com')
+        email_list.append('kampfrichter@dbfv.de')
 
         # Hamburg
         if self.state.pk == 6:
@@ -912,7 +924,7 @@ class UserProfile(models.Model):
     '''
     Model for a user's profile
     '''
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     # User type
     type = models.IntegerField(choices=USER_TYPES,
@@ -921,11 +933,13 @@ class UserProfile(models.Model):
     # Personal information
     state = models.ForeignKey(State,
                               blank=True,
-                              null=True)
+                              null=True,
+                              on_delete=models.CASCADE)
 
-    terms_and_conditions = models.BooleanField('Hiermit erkläre ich mich mit den Regeln des DBFV e.V./IFBB',
-                                               blank=False,
-                                               default=False)
+    terms_and_conditions = models.BooleanField(
+        'Hiermit erkläre ich mich mit den Regeln des DBFV e.V./IFBB',
+        blank=False,
+        default=False)
 
     def __str__(self):
         '''
@@ -939,6 +953,7 @@ def create_user_profile(sender, instance, created, **kwargs):
     if created:
         UserProfile.objects.get_or_create(user=instance)
 
+
 post_save.connect(create_user_profile, sender=User)
 
 
@@ -946,7 +961,7 @@ def user_profile(user):
     '''
     Return the profile of user or None if the user is not authenticated.
     '''
-    if user.is_anonymous():
+    if not user.is_authenticated:
         return None
 
     # for authenticated users, look into the profile.

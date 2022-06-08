@@ -20,14 +20,14 @@ import datetime
 from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.core import mail
-from django.core.urlresolvers import reverse
-from formtools.preview import FormPreview
+from django.urls import reverse
+#from formtools.preview import FormPreview
 
 from core.models import EmailCron
 from submission.models import ManagerEmail, SubmissionStarter, Gym
 
 
-class EmailListFormPreview(FormPreview):
+class EmailListFormPreview(): #FormPreview
     preview_template = 'email/preview.html'
     form_template = 'email/form.html'
     list_type = None

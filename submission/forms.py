@@ -25,7 +25,7 @@ from django.forms import (
 )
 from django.contrib.auth.models import User as Django_User
 from django.contrib.auth.forms import UserCreationForm
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from captcha.fields import ReCaptchaField
 

@@ -17,10 +17,10 @@
 import csv
 import datetime
 
+from django.urls import reverse, reverse_lazy
 from django.views import generic
 from django.views.generic.base import TemplateResponseMixin, View
 from django.views.generic.edit import ModelFormMixin
-from django.core.urlresolvers import reverse, reverse_lazy
 from django.http import HttpResponseRedirect, HttpResponse
 from django.http import HttpResponseForbidden
 from submission.models import user_type, USER_TYPE_BUNDESVERBAND
@@ -194,7 +194,7 @@ class BaseCsvExportView(View):
         '''
         result = []
         for submission in submission_list:
-            result.append([unicode(s).encode("utf-8") for s in submission.get_mailmerge_row()])
+            result.append(submission.get_mailmerge_row())
         return result
 
     def get(self, request, *args, **kwargs):

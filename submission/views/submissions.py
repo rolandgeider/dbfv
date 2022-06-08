@@ -19,8 +19,8 @@ import datetime
 import json
 
 from django.http.response import HttpResponse, HttpResponseForbidden
+from django.urls import reverse_lazy
 from django.views import generic
-from django.core.urlresolvers import reverse_lazy
 from django.db.models import Q
 
 from submission.forms import SubmissionStarterForm, SubmissionStarterFormBV
@@ -44,6 +44,15 @@ class SubmissionListView(BaseSubmissionListView):
 
     model = SubmissionStarter
     template_name = 'submission/starter/list.html'
+    
+    def get_queryset(self):
+        '''
+        Show the submissions from the last two years
+        '''
+
+        diff = datetime.datetime.now() - datetime.timedelta(weeks=100)
+        return SubmissionStarter.objects.none()
+        #return SubmissionStarter.objects.filter(creation_date__gt=diff)
 
     def get_context_data(self, **kwargs):
         '''
@@ -51,7 +60,10 @@ class SubmissionListView(BaseSubmissionListView):
         '''
         context = super(SubmissionListView, self).get_context_data(**kwargs)
 
-        queryset = SubmissionStarter.objects.all().order_by('gym__state', 'creation_date')
+        diff = datetime.datetime.now() - datetime.timedelta(weeks=100)
+        queryset = SubmissionStarter.objects.filter(creation_date__gt=diff).order_by('gym__state', 'creation_date')
+
+        #queryset = SubmissionStarter.objects.all().order_by('gym__state', 'creation_date')
         if user_type(self.request.user) == USER_TYPE_USER:
             queryset = queryset.filter(user=self.request.user)
 
