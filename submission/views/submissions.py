@@ -14,26 +14,38 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
-import csv
 import datetime
 import json
+from io import BytesIO
 
-from django.http.response import HttpResponse, HttpResponseForbidden
-from django.urls import reverse_lazy
-from django.views import generic
+from django.contrib.sites.shortcuts import get_current_site
+from reportlab.graphics.barcode import qr
+
+import qrcode
 from django.db.models import Q
+from django.http.response import HttpResponse, HttpResponseForbidden
+from django.urls import reverse_lazy, reverse
+from django.views import generic
+from reportlab.graphics.shapes import Drawing
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.units import cm
+from reportlab.platypus import (
+    Paragraph,
+    SimpleDocTemplate,
+    Spacer, KeepTogether, )
 
 from submission.forms import SubmissionStarterForm, SubmissionStarterFormBV
-from submission.models import SubmissionStarter
 from submission.models import State
-from submission.models import user_type
+from submission.models import SubmissionStarter
 from submission.models import USER_TYPE_BUNDESVERBAND
 from submission.models import USER_TYPE_USER
-from submission.views.generic_views import DbfvViewMixin, BaseCsvExportView, BaseSubmissionListView
+from submission.models import user_type
 from submission.views.generic_views import BaseSubmissionCreateView
 from submission.views.generic_views import BaseSubmissionDeleteView
 from submission.views.generic_views import BaseSubmissionUpdateView
 from submission.views.generic_views import DbfvFormMixin
+from submission.views.generic_views import DbfvViewMixin, BaseCsvExportView, BaseSubmissionListView
 from submission.views.generic_views import get_overview_context
 
 
@@ -44,7 +56,7 @@ class SubmissionListView(BaseSubmissionListView):
 
     model = SubmissionStarter
     template_name = 'submission/starter/list.html'
-    
+
     def get_queryset(self):
         '''
         Show the submissions from the last two years
@@ -52,7 +64,7 @@ class SubmissionListView(BaseSubmissionListView):
 
         diff = datetime.datetime.now() - datetime.timedelta(weeks=100)
         return SubmissionStarter.objects.none()
-        #return SubmissionStarter.objects.filter(creation_date__gt=diff)
+        # return SubmissionStarter.objects.filter(creation_date__gt=diff)
 
     def get_context_data(self, **kwargs):
         '''
@@ -61,9 +73,10 @@ class SubmissionListView(BaseSubmissionListView):
         context = super(SubmissionListView, self).get_context_data(**kwargs)
 
         diff = datetime.datetime.now() - datetime.timedelta(weeks=100)
-        queryset = SubmissionStarter.objects.filter(creation_date__gt=diff).order_by('gym__state', 'creation_date')
+        queryset = SubmissionStarter.objects.filter(creation_date__gt=diff).order_by('gym__state',
+                                                                                     'creation_date')
 
-        #queryset = SubmissionStarter.objects.all().order_by('gym__state', 'creation_date')
+        # queryset = SubmissionStarter.objects.all().order_by('gym__state', 'creation_date')
         if user_type(self.request.user) == USER_TYPE_USER:
             queryset = queryset.filter(user=self.request.user)
 
@@ -102,9 +115,9 @@ class SubmissionListMonthView(SubmissionListView,
         # Count how many submissions were exported for each month
         month_list = []
         for date_obj in SubmissionStarter.objects.all().dates('creation_date', 'month'):
-            tmp_count = SubmissionStarter.objects.filter(mail_merge=True)\
-                                                 .filter(creation_date__month=date_obj.month)\
-                                                 .filter(creation_date__year=date_obj.year)
+            tmp_count = SubmissionStarter.objects.filter(mail_merge=True) \
+                .filter(creation_date__month=date_obj.month) \
+                .filter(creation_date__year=date_obj.year)
             month_list.append({'date': date_obj,
                                'export_count': tmp_count.count()})
         context['submission_list'] = self.get_queryset()
@@ -129,7 +142,7 @@ class SubmissionDetailView(DbfvViewMixin, generic.detail.DetailView):
         '''
         submission = self.get_object()
         if not request.user.has_perm('submission.delete_submissionstarter') \
-           and submission.user != request.user:
+                and submission.user != request.user:
             return HttpResponseForbidden()
 
         # Save submission data to the session
@@ -153,13 +166,14 @@ class SubmissionCreateView(BaseSubmissionCreateView):
         '''
         Set extra data needed for the email
         '''
+
         def get_option(option):
             for i in form.fields['championships'].choices:
                 if i[0] == option:
                     return i[1]
 
         self.extra_data = {'championships':
-                           [get_option(i) for i in form.cleaned_data['championships']]}
+                               [get_option(i) for i in form.cleaned_data['championships']]}
         return super(SubmissionCreateView, self).form_valid(form)
 
     def get_context_data(self, **kwargs):
@@ -234,7 +248,7 @@ def search(request):
         submissions = (SubmissionStarter.objects.filter(Q(first_name__icontains=q) |
                                                         Q(last_name__icontains=q) |
                                                         Q(gym__name__icontains=q))
-                                        .distinct())
+                       .distinct())
         results = []
         for submission in submissions[:30]:
             results.append(submission.get_search_json())
@@ -244,3 +258,38 @@ def search(request):
         data = []
 
     return HttpResponse(data, content_type='application/json')
+
+
+def pdf(request, pk):
+    '''
+    Search for a submission, return the result as a JSON list
+    '''
+    response = HttpResponse(content_type='application/pdf')
+
+    doc = SimpleDocTemplate(
+        response,
+        pagesize=A4,
+        rightMargin=50,
+        leftMargin=50,
+        topMargin=50,
+        bottomMargin=50
+    )
+
+    current_site = get_current_site(request)
+    styles = getSampleStyleSheet()
+    elements = [Paragraph("SomeTitle", styles["Heading2"]), Spacer(10 * cm, 0.5 * cm)]
+    #story.append(Spacer(1, 2))  # some space between lines
+
+    qr_code = qr.QrCodeWidget(current_site.domain + reverse('submission-view', kwargs={'pk': pk}), barLevel='H')
+    bounds = qr_code.getBounds()
+    width = bounds[2] - bounds[0]
+    height = bounds[3] - bounds[1]
+    qr_image = Drawing(100, 100, transform=[100. / width, 0, 0, 100. / height, 0, 0])
+    qr_image.add(qr_code)
+    elements.append(qr_image)
+    doc.build(elements)
+
+    #response['Content-Disposition'] = 'attachment; filename=Test-123.pdf'.format(id)
+    response['Content-Length'] = len(response.content)
+
+    return response

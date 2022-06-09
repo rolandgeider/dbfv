@@ -121,6 +121,9 @@ urlpatterns = [
     #
 
     # Starter
+    path('antrag/<int:pk>/pdf',
+         submissions.pdf,
+         name='submission-pdf'),
     path('antrag/liste/alle/',
          submissions.SubmissionListView.as_view(),
          name='submission-list'),
