@@ -17,9 +17,10 @@
 import django
 from django.conf import settings
 from django.conf.urls.static import static
+
 from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordResetView, \
     PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
-from django.urls import path, reverse_lazy
+from django.urls import path, reverse_lazy, re_path
 from django.views.generic import TemplateView
 
 from submission.views import (gym,
@@ -123,12 +124,12 @@ urlpatterns = [
     path('antrag/liste/alle/',
          submissions.SubmissionListView.as_view(),
          name='submission-list'),
-    path('antrag/liste/<int:year>/<int:month>/$',
+    path('antrag/liste/<int:year>/<int:month>/',
          submissions.SubmissionListMonthView.as_view(),
          name='submission-list-month'),
-    path(r'^antrag/neu/(?P<type>(starter|kapmfrichter|studio))lizenz$',
-         submissions.SubmissionCreateView.as_view(),
-         name='submission-add'),
+    re_path(r'^antrag/neu/(?P<type>(starter|kapmfrichter|studio))lizenz$',
+            submissions.SubmissionCreateView.as_view(),
+            name='submission-add'),
     path('antrag/<int:pk>/bearbeiten',
          submissions.SubmissionUpdateView.as_view(),
          name='submission-edit'),
@@ -155,9 +156,9 @@ urlpatterns = [
     path('antrag-international/liste/alle/',
          submissions_international.SubmissionListView.as_view(),
          name='submission-international-list'),
-    path(r'^antrag-international/liste/(?P<year>\d+)/(?P<month>\d+)/$',
-         submissions_international.SubmissionListMonthView.as_view(),
-         name='submission-international-list-month'),
+    re_path(r'^antrag-international/liste/(?P<year>\d+)/(?P<month>\d+)/$',
+            submissions_international.SubmissionListMonthView.as_view(),
+            name='submission-international-list-month'),
     path('antrag-international/neu/lizenz',
          submissions_international.SubmissionCreateView.as_view(),
          name='submission-international-add'),
@@ -244,36 +245,36 @@ urlpatterns = [
 # Password reset is implemented by Django, no need to cook our own soup here
 # (besides the templates)
 urlpatterns += [
-                                     path('anmelden/',
-                                        LoginView.as_view(
-                                                    template_name='user/login.html'
-                                                ),
-                                          name='login'),
+    path('anmelden/',
+         LoginView.as_view(
+             template_name='user/login.html'
+         ),
+         name='login'),
 
-                                     path('user/password/change',
-                                          PasswordChangeView.as_view(
-                                          template_name='user/change_password.html',
-                                           success_url= reverse_lazy('index')),
-                                          name='change-password'),
+    path('user/password/change',
+         PasswordChangeView.as_view(
+             template_name='user/change_password.html',
+             success_url=reverse_lazy('index')),
+         name='change-password'),
 
-                                     path('user/password/reset/',
-                                          PasswordResetView.as_view(
-                                          template_name='user/password_reset_form.html'),
-                                          name='password_reset'),
+    path('user/password/reset/',
+         PasswordResetView.as_view(
+             template_name='user/password_reset_form.html'),
+         name='password_reset'),
 
-                                     path('user/password/reset/done/',
-                                          PasswordResetDoneView.as_view(
-                                          template_name='user/password_reset_done.html'),
-                                          name='password_reset_done'),
+    path('user/password/reset/done/',
+         PasswordResetDoneView.as_view(
+             template_name='user/password_reset_done.html'),
+         name='password_reset_done'),
 
-                                     path(
-                                         r'^user/password/reset/check/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})$',
-                                         PasswordResetConfirmView.as_view(
-                                         template_name='user/password_reset_confirm.html'),
-                                         name='password_reset_confirm'),
+    re_path(
+        r'^user/password/reset/check/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})$',
+        PasswordResetConfirmView.as_view(
+            template_name='user/password_reset_confirm.html'),
+        name='password_reset_confirm'),
 
-                                     path('user/password/reset/complete/',
-                                          PasswordResetCompleteView.as_view(
-                                          template_name='user/password_reset_complete.html'),
-                                          name='password_reset_complete'),
-                                     ]
+    path('user/password/reset/complete/',
+         PasswordResetCompleteView.as_view(
+             template_name='user/password_reset_complete.html'),
+         name='password_reset_complete'),
+]

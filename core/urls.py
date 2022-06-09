@@ -20,15 +20,15 @@ from django.views.generic import TemplateView
 
 # sub patterns for email lists
 patterns_email = [
-    path(r'^auswaehlen/$',
-        permission_required('core.change_emailcron')(TemplateView.as_view(template_name="email/overview.html")),
-        name='overview'),
-#    path(r'^erstellen/(?P<type>(starter|studio))$',
-#        permission_required('core.change_emailcron')(email_lists.EmailListFormPreview(EmailListForm)),
-#        name='add'),
+    path('auswaehlen/',
+         permission_required('core.change_emailcron')(
+             TemplateView.as_view(template_name="email/overview.html")),
+         name='overview'),
+    #    path(r'^erstellen/(?P<type>(starter|studio))$',
+    #        permission_required('core.change_emailcron')(email_lists.EmailListFormPreview(EmailListForm)),
+    #        name='add'),
 ]
 
-
 urlpatterns = [
-    path(r'^email-listen/', include((patterns_email, 'email'), namespace="email")),
+    path('email-listen/', include((patterns_email, 'email'), namespace="email")),
 ]

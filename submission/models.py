@@ -16,6 +16,7 @@
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+from functools import wraps
 
 from django.conf import settings
 from django.template.loader import render_to_string
@@ -948,7 +949,26 @@ class UserProfile(models.Model):
         return 'Profile for %s' % self.user.username
 
 
+def disable_for_loaddata(signal_handler):
+    """
+    Decorator to prevent clashes when loading data with loaddata and
+    post_connect signals. See also:
+    http://stackoverflow.com/questions/3499791/how-do-i-prevent-fixtures-from-conflicting
+    """
+
+    @wraps(signal_handler)
+    def wrapper(*args, **kwargs):
+        if kwargs['raw']:
+            # print "Skipping signal for {0} {1}".format(args, kwargs)
+            return
+        signal_handler(*args, **kwargs)
+
+    return wrapper
+
+
+
 # Every new user gets a profile
+@disable_for_loaddata
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         UserProfile.objects.get_or_create(user=instance)
