@@ -35,7 +35,7 @@ class DbfvViewMixin(TemplateResponseMixin):
         Check for necessary permissions
         '''
         if self.login_required or self.permission_required:
-            if not request.user.is_authenticated():
+            if not request.user.is_authenticated:
                 return HttpResponseRedirect(reverse('login') + '?next=%s' % request.path)
 
             if self.permission_required and \
