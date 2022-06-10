@@ -29,23 +29,23 @@ from django.core import mail
 
 
 class ManagerEmail(models.Model):
-    '''
+    """
     Emails to be notified when a new submission is entered
-    '''
+    """
 
     email = models.EmailField(_(u'Email'), max_length=30)
 
     def __str__(self):
-        '''
+        """
         Return a more human-readable representation
-        '''
+        """
         return self.email
 
 
 class BankAccount(models.Model):
-    '''
+    """
     Model for a bank account
-    '''
+    """
 
     owner_name = models.CharField(verbose_name='Begünstigter',
                                   max_length=100, )
@@ -58,16 +58,16 @@ class BankAccount(models.Model):
                                  max_length=30, )
 
     def __str__(self):
-        '''
+        """
         Return a more human-readable representation
-        '''
+        """
         return "%s, BIC: %s" % (self.iban, self.bic)
 
 
 class State(models.Model):
-    '''
+    """
     Model for a state
-    '''
+    """
 
     name = models.CharField(verbose_name='Name',
                             max_length=100, )
@@ -83,21 +83,21 @@ class State(models.Model):
     )
 
     def __str__(self):
-        '''
+        """
         Return a more human-readable representation
-        '''
+        """
         return self.name
 
 
 class Gym(models.Model):
-    '''
+    """
     Model for a gym
-    '''
+    """
 
     class Meta:
-        '''
+        """
         Order first by state name, then by gym name
-        '''
+        """
         ordering = ["state__name", "name"]
 
     # Properties
@@ -130,9 +130,9 @@ class Gym(models.Model):
                                     default=True)
 
     def __str__(self):
-        '''
+        """
         Return a more human-readable representation
-        '''
+        """
         return u"{0} ({1}, {2})".format(self.name, self.city, self.state)
 
     def get_absolute_url(self):
@@ -140,17 +140,17 @@ class Gym(models.Model):
 
 
 class Country(models.Model):
-    '''
+    """
     Model for a country
-    '''
+    """
 
     # This field is required.
     name = models.CharField(max_length=40)
 
     def __str__(self):
-        '''
+        """
         Return a more human-readable representation
-        '''
+        """
         return self.name
 
 
@@ -164,15 +164,15 @@ def attachment_submission_dir(instance, filename):
 #
 #
 class AbstractSubmission(models.Model):
-    '''
+    """
     Abstract class with fields and logic common to all submissions types
     (starter, gym and judge)
-    '''
+    """
 
     class Meta:
-        '''
+        """
         This is an abstract class
-        '''
+        """
         abstract = True
 
     MAILMERGE_HEADER = []
@@ -200,55 +200,55 @@ class AbstractSubmission(models.Model):
                                      editable=False)
 
     def get_bank_designated_use(self):
-        '''
+        """
         Returns the designated use to be used when doing the bank transfer
-        '''
+        """
         return u'{0} {1}<br>\n{2}'.format(self.get_license_type(), self.pk, self.get_name)
 
     def get_email_list(self):
-        '''
+        """
         Collects and returns a list with the recipients of notification emails
-        '''
+        """
         raise NotImplementedError('You must implement this method in derived classes')
 
     def get_email_subject(self):
-        '''
+        """
         Returns the subject for the notification email
-        '''
+        """
         return u'Neue {0} beantragt von {1}'.format(self.get_license_type(), self.get_name)
 
     def get_email_template(self):
-        '''
+        """
         Returns the template used for the notification email
-        '''
+        """
         raise NotImplementedError('You must implement this method in derived classes')
 
     @staticmethod
     def get_license_type():
-        '''
+        """
         Returns the name of the license, this is used e.g. in the email subject
-        '''
+        """
         raise NotImplementedError('You must implement this method in derived classes')
 
     def get_search_json(self):
-        '''
+        """
         Returns the necessary JSON to be used in the search
-        '''
+        """
         return {'id': self.id,
                 'name': self.get_name,
                 'status': self.get_submission_status_display(),
                 'date': self.creation_date.strftime("%d.%m.%Y")}
 
     def notification_email_hook(self):
-        '''
+        """
         Hook to perform custom logic after sending the notification emails
-        '''
+        """
         pass
 
     def send_emails(self, extra_data=[]):
-        '''
+        """
         Send an email to the managers
-        '''
+        """
         context = {}
         context['submission'] = self
         context['fee'] = self.FEE
@@ -272,21 +272,21 @@ class AbstractSubmission(models.Model):
         self.notification_email_hook()
 
     def get_mailmerge_row(self):
-        '''
+        """
         Returns a row for the mailmerge CSV export
-        '''
+        """
         raise NotImplementedError('You must implement this method in derived classes')
 
 
 class SubmissionStarter(AbstractSubmission):
-    '''
+    """
     Model for a submission
-    '''
+    """
 
     class Meta:
-        '''
+        """
         Order first by state name, then by gym name
-        '''
+        """
         ordering = ["creation_date", "gym"]
 
     MAILMERGE_HEADER = ['ID',
@@ -391,9 +391,9 @@ class SubmissionStarter(AbstractSubmission):
                             on_delete=models.CASCADE)
 
     def __str__(self):
-        '''
+        """
         Return a more human-readable representation
-        '''
+        """
         return "%s - %s" % (self.creation_date, self.user)
 
     def get_absolute_url(self):
@@ -407,9 +407,9 @@ class SubmissionStarter(AbstractSubmission):
         return u"{0}, {1}".format(self.last_name, self.first_name)
 
     def get_bank_account(self):
-        '''
+        """
         Returns the correct bank account for this submission
-        '''
+        """
         bank_account = 1
         if self.gym.state_id == 10:
             bank_account = 2
@@ -418,21 +418,21 @@ class SubmissionStarter(AbstractSubmission):
 
     @staticmethod
     def get_license_type():
-        '''
+        """
         Returns the name of the license, this is used e.g. in the email subject
-        '''
+        """
         return 'Starterlizenz'
 
     def get_email_template(self):
-        '''
+        """
         Returns the template used for the notification email
-        '''
+        """
         return 'submission/starter/email_new_submission.html'
 
     def get_email_list(self):
-        '''
+        """
         Collects and returns a list with the recipients of notification emails
-        '''
+        """
         email_list = []
         for email in ManagerEmail.objects.all():
             email_list.append(email.email)
@@ -455,9 +455,9 @@ class SubmissionStarter(AbstractSubmission):
         return email_list
 
     def notification_email_hook(self):
-        '''
+        """
         Notify the managers if the selected gym has no email
-        '''
+        """
         if not self.gym.email:
             for email in ManagerEmail.objects.all():
                 mail.send_mail('Studio hat keine Emailadresse',
@@ -471,9 +471,9 @@ class SubmissionStarter(AbstractSubmission):
                                fail_silently=True)
 
     def get_search_json(self):
-        '''
+        """
         Returns the necessary JSON to be used in the search
-        '''
+        """
         data = super(SubmissionStarter, self).get_search_json()
         data['state'] = self.gym.state.name
         data['category'] = self.get_category_display()
@@ -481,9 +481,9 @@ class SubmissionStarter(AbstractSubmission):
         return data
 
     def get_mailmerge_row(self):
-        '''
+        """
         Returns a row for the mailmerge CSV export
-        '''
+        """
         return [self.pk,
                 self.first_name,
                 self.last_name,
@@ -506,14 +506,14 @@ class SubmissionStarter(AbstractSubmission):
 
 
 class SubmissionInternational(AbstractSubmission):
-    '''
+    """
     Model for a submission
-    '''
+    """
 
     class Meta:
-        '''
+        """
         Order first by state name, then by gym name
-        '''
+        """
         ordering = ["creation_date", "gym"]
 
     MAILMERGE_HEADER = ['ID',
@@ -610,9 +610,9 @@ class SubmissionInternational(AbstractSubmission):
                             on_delete=models.CASCADE)
 
     def __str__(self):
-        '''
+        """
         Return a more human-readable representation
-        '''
+        """
         return "%s - %s" % (self.creation_date, self.user)
 
     def get_absolute_url(self):
@@ -626,9 +626,9 @@ class SubmissionInternational(AbstractSubmission):
         return u"{0}, {1}".format(self.last_name, self.first_name)
 
     def get_bank_account(self):
-        '''
+        """
         Returns the correct bank account for this submission
-        '''
+        """
         bank_account = 1
         if self.gym.state_id == 10:
             bank_account = 2
@@ -637,21 +637,21 @@ class SubmissionInternational(AbstractSubmission):
 
     @staticmethod
     def get_license_type():
-        '''
+        """
         Returns the name of the license, this is used e.g. in the email subject
-        '''
+        """
         return 'Internationaler Start'
 
     def get_email_template(self):
-        '''
+        """
         Returns the template used for the notification email
-        '''
+        """
         return 'submission/international/email_new_submission.html'
 
     def get_email_list(self):
-        '''
+        """
         Collects and returns a list with the recipients of notification emails
-        '''
+        """
         email_list = ['info@dbfv.de', 'dbfv.falk@gmail.com', "Margret.Netack@t-online.de",
                       self.email]
         if self.gym.state.email:
@@ -659,9 +659,9 @@ class SubmissionInternational(AbstractSubmission):
         return email_list
 
     def notification_email_hook(self):
-        '''
+        """
         Notify the managers if the selected gym has no email
-        '''
+        """
         if not self.gym.email:
             for email in ManagerEmail.objects.all():
                 mail.send_mail('Studio hat keine Emailadresse',
@@ -675,9 +675,9 @@ class SubmissionInternational(AbstractSubmission):
                                fail_silently=True)
 
     def get_search_json(self):
-        '''
+        """
         Returns the necessary JSON to be used in the search
-        '''
+        """
         data = super(SubmissionStarter, self).get_search_json()
         data['state'] = self.gym.state.name
         data['category'] = self.get_category_display()
@@ -685,9 +685,9 @@ class SubmissionInternational(AbstractSubmission):
         return data
 
     def get_mailmerge_row(self):
-        '''
+        """
         Returns a row for the mailmerge CSV export
-        '''
+        """
         return [self.pk,
                 self.first_name,
                 self.last_name,
@@ -711,9 +711,9 @@ class SubmissionInternational(AbstractSubmission):
 
 
 class SubmissionGym(AbstractSubmission):
-    '''
+    """
     Model for a gym submission
-    '''
+    """
 
     FEE = 30
 
@@ -750,9 +750,9 @@ class SubmissionGym(AbstractSubmission):
                                on_delete=models.CASCADE)
 
     def __str__(self):
-        '''
+        """
         Return a more human-readable representation
-        '''
+        """
         return u"Studiolizenz {0}".format(self.get_name)
 
     def get_absolute_url(self):
@@ -766,28 +766,28 @@ class SubmissionGym(AbstractSubmission):
         return self.name
 
     def get_bank_account(self):
-        '''
+        """
         Returns the correct bank account for this submission
-        '''
+        """
         return self.state.bank_account.pk
 
     @staticmethod
     def get_license_type():
-        '''
+        """
         Returns the name of the license, this is used e.g. in the email subject
-        '''
+        """
         return 'Studiolizenz'
 
     def get_email_template(self):
-        '''
+        """
         Returns the template used for the notification email
-        '''
+        """
         return 'submission/gym/email_new_submission.html'
 
     def get_email_list(self):
-        '''
+        """
         Collects and returns a list with the recipients of notification emails
-        '''
+        """
         email_list = []
         for email in ManagerEmail.objects.all():
             email_list.append(email.email)
@@ -800,9 +800,9 @@ class SubmissionGym(AbstractSubmission):
 
 
 class SubmissionJudge(AbstractSubmission):
-    '''
+    """
     Model for a judge submission
-    '''
+    """
 
     MAILMERGE_HEADER = ['ID',
                         'Vorname',
@@ -838,9 +838,9 @@ class SubmissionJudge(AbstractSubmission):
                               blank=True)
 
     def __str__(self):
-        '''
+        """
         Return a more human-readable representation
-        '''
+        """
         return u"Kampfrichterlizenz {0}".format(self.get_name)
 
     def get_absolute_url(self):
@@ -854,9 +854,9 @@ class SubmissionJudge(AbstractSubmission):
         return u"{0}, {1}".format(self.last_name, self.first_name)
 
     def get_bank_account(self):
-        '''
+        """
         Returns the correct bank account for this submission
-        '''
+        """
         bank_account = 1
         if self.state.pk == 10:
             bank_account = 2
@@ -865,21 +865,21 @@ class SubmissionJudge(AbstractSubmission):
 
     @staticmethod
     def get_license_type():
-        '''
+        """
         Returns the name of the license, this is used e.g. in the email subject
-        '''
+        """
         return 'Kampfrichterlizenz'
 
     def get_email_template(self):
-        '''
+        """
         Returns the template used for the notification email
-        '''
+        """
         return 'submission/judge/email_new_submission.html'
 
     def get_email_list(self):
-        '''
+        """
         Collects and returns a list with the recipients of notification emails
-        '''
+        """
         email_list = []
         for email in ManagerEmail.objects.all():
             email_list.append(email.email)
@@ -897,9 +897,9 @@ class SubmissionJudge(AbstractSubmission):
         return email_list
 
     def get_mailmerge_row(self):
-        '''
+        """
         Returns a row for the mailmerge CSV export
-        '''
+        """
         return [self.pk,
                 self.first_name,
                 self.last_name,
@@ -922,9 +922,9 @@ USER_TYPES = ((USER_TYPE_BUNDESVERBAND, u'Bundesverband'),
 
 
 class UserProfile(models.Model):
-    '''
+    """
     Model for a user's profile
-    '''
+    """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     email_verified = models.BooleanField(default=False)
@@ -946,9 +946,9 @@ class UserProfile(models.Model):
         default=False)
 
     def __str__(self):
-        '''
+        """
         Return a more human-readable representation
-        '''
+        """
         return 'Profile for %s' % self.user.username
 
 
@@ -981,9 +981,9 @@ post_save.connect(create_user_profile, sender=User)
 
 
 def user_profile(user):
-    '''
+    """
     Return the profile of user or None if the user is not authenticated.
-    '''
+    """
     if not user.is_authenticated:
         return None
 
@@ -992,9 +992,9 @@ def user_profile(user):
 
 
 def user_type(user):
-    '''
+    """
     Return the type of user or None if the user is not authenticated.
-    '''
+    """
     profile = user_profile(user)
     if profile is None:
         return None

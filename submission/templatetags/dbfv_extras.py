@@ -29,14 +29,14 @@ register = template.Library()
 
 @register.simple_tag
 def render_submission_list(submissions, user, filter_mode, submission_type='starter'):
-    '''
+    """
     Render a table with submissions
 
     :param submissions: list with submissions
     :param user: current user
     :param filter_mode what submissions to list (open, closed, etc.)
     :param submission_type The type of the submission. Allowed values: starter, gym, judge
-    '''
+    """
 
     if submission_type == 'starter':
         url_fragment = ''
@@ -80,43 +80,43 @@ def render_submission_list(submissions, user, filter_mode, submission_type='star
 #
 @register.filter(name='form_field_add_css')
 def form_field_add_css(field, css):
-    '''
+    """
     Adds a CSS class to a form field. This is needed among other places for
     bootstrap 3, which needs a 'form-control' class in the field itself
-    '''
+    """
     return field.as_widget(attrs={"class": css})
 
 
 @register.filter(name='is_checkbox')
 def is_checkbox(field):
-    '''
+    """
     Tests if a field element is a checkbox, as it needs to be handled slightly different
 
     :param field: a form field
     :return: boolen
-    '''
+    """
     return field.field.widget.__class__.__name__ == CheckboxInput().__class__.__name__
 
 
 @register.filter(name='is_fileupload')
 def is_fileupload(field):
-    '''
+    """
     Tests if a field element is a file upload, as it needs to be handled slightly different
 
     :param field: a form field
     :return: boolen
-    '''
+    """
     return field.field.widget.__class__.__name__ == ClearableFileInput().__class__.__name__
 
 
 @register.inclusion_tag('tags/render_form_element.html')
 def render_form_field(field):
-    '''
+    """
     Renders a form field with all necessary labels, help texts and labels
     within 'form-group'.
 
     See bootstrap documentation for details: http://getbootstrap.com/css/#forms
-    '''
+    """
 
     return {'field': field}
 
@@ -159,7 +159,7 @@ def render_form_errors(form):
 
 @register.inclusion_tag('tags/render_form_fields.html')
 def render_form_fields(form, submit_text='Save', show_save=True):
-    '''
+    """
     Comfort function that renders all fields in a form, as well as the submit
     button
 
@@ -173,7 +173,7 @@ def render_form_fields(form, submit_text='Save', show_save=True):
 
     :param form: the form to be rendered
     :param save_text: the text to use on the submit button
-    '''
+    """
 
     return {'form': form,
             'show_save': show_save,

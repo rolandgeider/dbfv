@@ -24,9 +24,9 @@ from submission.views.generic_views import DbfvFormMixin
 
 
 class BankAccountListView(DbfvViewMixin, generic.ListView):
-    '''
+    """
     Shows a list with all bank accounts
-    '''
+    """
 
     context_object_name = "account_list"
     model = BankAccount
@@ -35,35 +35,35 @@ class BankAccountListView(DbfvViewMixin, generic.ListView):
 
 
 class BankAccountDetailView(DbfvViewMixin, generic.DetailView):
-    '''
+    """
     Detail view of a bank account
-    '''
+    """
 
     model = BankAccount
     login_required = True
 
     def get_template_names(self):
-        '''
+        """
         Return the correct template after submitting a new license
 
         Note: international starts are free so we check here (hackily) and return
         a different template that is basically just a confirmation screen.
-        '''
+        """
         if 'international' in self.request.session['designated-use'].lower():
             return 'bank_account/view_international.html'
         else:
             return 'bank_account/view.html'
 
     def get_object(self):
-        '''
+        """
         Load the account by the ID in the session
-        '''
+        """
         return BankAccount.objects.get(pk=self.request.session['bank-account'])
 
     def get_context_data(self, **kwargs):
-        '''
+        """
         Set the correct fee
-        '''
+        """
         context = super(BankAccountDetailView, self).get_context_data(**kwargs)
         context['fee'] = self.request.session['submission-fee']
         context['use'] = self.request.session['designated-use']
@@ -71,9 +71,9 @@ class BankAccountDetailView(DbfvViewMixin, generic.DetailView):
 
 
 class BankAccountCreateView(DbfvFormMixin, generic.CreateView):
-    '''
+    """
     Creates a new bank account
-    '''
+    """
 
     model = BankAccount
     success_url = reverse_lazy('bank-account-list')
@@ -82,9 +82,9 @@ class BankAccountCreateView(DbfvFormMixin, generic.CreateView):
 
 
 class BankAccountUpdateView(DbfvFormMixin, generic.UpdateView):
-    '''
+    """
     Edits a bank account
-    '''
+    """
 
     model = BankAccount
     success_url = reverse_lazy('bank-account-list')

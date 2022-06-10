@@ -33,15 +33,15 @@ class EmailListFormPreview(): #FormPreview
     list_type = None
 
     def parse_params(self, *args, **kwargs):
-        '''
+        """
         Save the current recipient type
-        '''
+        """
         self.list_type = kwargs['type']
 
     def get_context(self, request, form):
-        '''
+        """
         Context for template rendering.
-        '''
+        """
         context = super(EmailListFormPreview, self).get_context(request, form)
         context['form_action'] = reverse('core:email:add', kwargs={'type': self.list_type})
         context['email_type'] = self.list_type
@@ -49,9 +49,9 @@ class EmailListFormPreview(): #FormPreview
         return context
 
     def process_preview(self, request, form, context):
-        '''
+        """
         Send an email to the managers with the current content
-        '''
+        """
         for email in ManagerEmail.objects.all():
             mail.send_mail(form.cleaned_data['subject'],
                            form.cleaned_data['body'],
@@ -61,9 +61,9 @@ class EmailListFormPreview(): #FormPreview
         return context
 
     def done(self, request, cleaned_data):
-        '''
+        """
         Collect appropriate emails and save to database to send for later
-        '''
+        """
         email_list = []
 
         # Select all successful starter submissions for the current year

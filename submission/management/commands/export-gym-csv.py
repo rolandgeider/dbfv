@@ -23,25 +23,25 @@ from submission.models import Gym
 
 
 class Command(BaseCommand):
-    '''
+    """
     Export all submissions for the current year
-    '''
+    """
 
     def export_submission_mailmerge(self, gym_list):
-        '''
+        """
         Generates a list with starter submission fields to be used in mail merge
 
         :param submission_list: A list of Submissions
-        '''
+        """
         result = []
         for gym in gym_list:
             result.append([unicode(s).encode("utf-8") for s in [gym.name, gym.email, gym.state.name, gym.owner, gym.zip_code, gym.city, gym.street, gym.is_active]])
         return result
 
     def handle(self, *args, **options):
-        '''
+        """
         Process the options
-        '''
+        """
         #gym_list = Gym.objects.filter(state_id=1, is_active=True)
         gym_list = Gym.objects.filter(is_active=False)
 

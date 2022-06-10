@@ -19,9 +19,9 @@ from django.forms import Form, CharField, Textarea, ModelForm, DateField, widget
 
 
 class EmailListForm(Form):
-    '''
+    """
     Small form to send emails
-    '''
+    """
 
     subject = CharField(label='Betreff')
     body = CharField(widget=Textarea, label='Inhalt')

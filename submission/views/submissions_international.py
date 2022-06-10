@@ -38,17 +38,17 @@ from submission.views.generic_views import get_overview_context
 
 
 class SubmissionListView(BaseSubmissionListView):
-    '''
+    """
     Shows a list with all submissions
-    '''
+    """
 
     model = SubmissionInternational
     template_name = 'submission/international/list.html'
 
     def get_context_data(self, **kwargs):
-        '''
+        """
         Pass a list of all available dates
-        '''
+        """
         context = super(SubmissionListView, self).get_context_data(**kwargs)
 
         queryset = SubmissionInternational.objects.all().order_by('gym__state', 'creation_date')
@@ -65,12 +65,12 @@ class SubmissionListMonthView(SubmissionListView,
     permission_required = 'submission.change_submissioninternational'
 
     def get_queryset(self):
-        '''
+        """
         Change the queryset depending on the user's rights. The rules are the
         following:
             * A BV user sees all submissions
             * A regular user sees it's own submissions
-        '''
+        """
 
         queryset = SubmissionInternational.objects.filter(creation_date__month=self.get_month()) \
             .filter(creation_date__year=self.get_year()) \
@@ -81,9 +81,9 @@ class SubmissionListMonthView(SubmissionListView,
             return queryset.filter(user=self.request.user)
 
     def get_context_data(self, **kwargs):
-        '''
+        """
         Pass a list of all available dates
-        '''
+        """
 
         context = super(SubmissionListView, self).get_context_data(**kwargs)
 
@@ -104,17 +104,17 @@ class SubmissionListMonthView(SubmissionListView,
 
 
 class SubmissionDetailView(DbfvViewMixin, generic.detail.DetailView):
-    '''
+    """
     Show the detail view of a submission
-    '''
+    """
     login_required = True
     model = SubmissionInternational
     template_name = 'submission/international/view.html'
 
     def dispatch(self, request, *args, **kwargs):
-        '''
+        """
         Check for necessary permissions
-        '''
+        """
         submission = self.get_object()
         if not request.user.has_perm('submission.delete_submissioninternational') \
            and submission.user != request.user:
@@ -128,9 +128,9 @@ class SubmissionDetailView(DbfvViewMixin, generic.detail.DetailView):
 
 
 class SubmissionCreateView(BaseSubmissionCreateView):
-    '''
+    """
     Creates a new submission
-    '''
+    """
 
     model = SubmissionInternational
     form_class = SubmissionInternationalForm
@@ -138,34 +138,34 @@ class SubmissionCreateView(BaseSubmissionCreateView):
     template_name = 'submission/international/create.html'
 
     def get_context_data(self, **kwargs):
-        '''
+        """
         Pass a list of all states
-        '''
+        """
         context = super(SubmissionCreateView, self).get_context_data(**kwargs)
         context['states_list'] = State.objects.all()
         return context
 
 
 class SubmissionDeleteView(BaseSubmissionDeleteView):
-    '''
+    """
     Deletes a submission
-    '''
+    """
     model = SubmissionInternational
     success_url = reverse_lazy('submission-list')
 
 
 class SubmissionUpdateView(BaseSubmissionUpdateView):
-    '''
+    """
     Updates an existing submission
-    '''
+    """
     model = SubmissionInternational
     form_class = SubmissionInternationalForm
 
 
 class SubmissionUpdateStatusView(DbfvFormMixin, generic.UpdateView):
-    '''
+    """
     Updates an existing submissions
-    '''
+    """
 
     model = SubmissionInternational
     form_class = SubmissionInternationalFormBV
@@ -174,31 +174,31 @@ class SubmissionUpdateStatusView(DbfvFormMixin, generic.UpdateView):
 
 
 class SubmissionCsvExportView(BaseCsvExportView):
-    '''
+    """
     Exports all non-exported submissions to use for mail merge
-    '''
+    """
     model = SubmissionInternational
 
 
 class SubmissionCsvIndividualExportView(BaseCsvExportView):
-    '''
+    """
     Exports an individual submission to use for mail merge
-    '''
+    """
 
     model = SubmissionInternational
     update_submission_flag = False
 
     def get_submission_list(self):
-        '''
+        """
         Return the current submission to export.
-        '''
+        """
         return self.model.objects.filter(pk=self.kwargs['pk'])
 
 
 def search(request):
-    '''
+    """
     Search for a submission, return the result as a JSON list
-    '''
+    """
     if not request.user.has_perm('submission.change_submissioninternational'):
         return HttpResponseForbidden()
 

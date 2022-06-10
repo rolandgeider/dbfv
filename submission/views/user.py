@@ -31,17 +31,17 @@ from submission.models import USER_TYPE_USER
 
 
 def logout(request):
-    '''
+    """
     Logout the user
-    '''
+    """
     django_logout(request)
     return HttpResponseRedirect(reverse('logout-page'))
 
 
 def registration(request):
-    '''
+    """
     A form to allow for registration of new users
-    '''
+    """
 
     context = {}
     context.update(csrf(request))

@@ -24,9 +24,9 @@ from submission.views.generic_views import DbfvFormMixin
 
 
 class StateListView(DbfvViewMixin, generic.ListView):
-    '''
+    """
     Shows a list with all federal states
-    '''
+    """
 
     model = State
     context_object_name = "state_list"
@@ -36,9 +36,9 @@ class StateListView(DbfvViewMixin, generic.ListView):
 
 
 class StateCreateView(DbfvFormMixin, generic.CreateView):
-    '''
+    """
     Creates a new federal state
-    '''
+    """
 
     model = State
     success_url = reverse_lazy('state-list')
@@ -46,9 +46,9 @@ class StateCreateView(DbfvFormMixin, generic.CreateView):
 
 
 class StateUpdateView(DbfvFormMixin, generic.UpdateView):
-    '''
+    """
     Updates a federal state
-    '''
+    """
 
     model = State
     fields = ['name', 'short_name', 'email', 'bank_account']
@@ -57,9 +57,9 @@ class StateUpdateView(DbfvFormMixin, generic.UpdateView):
 
 
 class StateDeleteView(DbfvFormMixin, generic.DeleteView):
-    '''
+    """
     Deletes a state
-    '''
+    """
 
     model = State
     success_url = reverse_lazy('state-list')
@@ -67,9 +67,9 @@ class StateDeleteView(DbfvFormMixin, generic.DeleteView):
     template_name = 'delete.html'
 
     def get_context_data(self, **kwargs):
-        '''
+        """
         Pass the title to the context
-        '''
+        """
         context = super(StateDeleteView, self).get_context_data(**kwargs)
         context['title'] = u'Bundesland {0} löschen?'.format(self.object.name)
         context['delete_message'] = u'Das wird auch alle Anträge und Benutzer im ' \

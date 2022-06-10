@@ -24,9 +24,9 @@ from submission.views.generic_views import DbfvFormMixin
 
 
 class EmailListView(DbfvViewMixin, generic.ListView):
-    '''
+    """
     Shows a list with all manager emails
-    '''
+    """
 
     model = ManagerEmail
     context_object_name = "email_list"
@@ -36,9 +36,9 @@ class EmailListView(DbfvViewMixin, generic.ListView):
 
 
 class EmailCreateView(DbfvFormMixin, generic.CreateView):
-    '''
+    """
     Creates a new federal state
-    '''
+    """
 
     model = ManagerEmail
     success_url = reverse_lazy('email-list')
@@ -46,9 +46,9 @@ class EmailCreateView(DbfvFormMixin, generic.CreateView):
 
 
 class EmailUpdateView(DbfvFormMixin, generic.UpdateView):
-    '''
+    """
     Updates a federal state
-    '''
+    """
 
     model = ManagerEmail
     success_url = reverse_lazy('email-list')
@@ -56,9 +56,9 @@ class EmailUpdateView(DbfvFormMixin, generic.UpdateView):
 
 
 class EmailDeleteView(DbfvFormMixin, generic.DeleteView):
-    '''
+    """
     Deletes a state
-    '''
+    """
 
     model = ManagerEmail
     success_url = reverse_lazy('email-list')
@@ -66,9 +66,9 @@ class EmailDeleteView(DbfvFormMixin, generic.DeleteView):
     template_name = 'delete.html'
 
     def get_context_data(self, **kwargs):
-        '''
+        """
         Pass the title to the context
-        '''
+        """
         context = super(EmailDeleteView, self).get_context_data(**kwargs)
         context['title'] = u'Email {0} löschen?'.format(self.object.email)
         return context

@@ -31,9 +31,9 @@ class DbfvViewMixin(TemplateResponseMixin):
     login_required = False
 
     def dispatch(self, request, *args, **kwargs):
-        '''
+        """
         Check for necessary permissions
-        '''
+        """
         if self.login_required or self.permission_required:
             if not request.user.is_authenticated:
                 return HttpResponseRedirect(reverse('login') + '?next=%s' % request.path)
@@ -51,9 +51,9 @@ class DbfvFormMixin(DbfvViewMixin, ModelFormMixin):
     template_name = 'form.html'
 
     def get_context_data(self, **kwargs):
-        '''
+        """
         Set the context data
-        '''
+        """
 
         context = super(DbfvFormMixin, self).get_context_data(**kwargs)
         context['form_action'] = self.request.get_full_path()
@@ -67,24 +67,24 @@ class DbfvFormMixin(DbfvViewMixin, ModelFormMixin):
 #
 
 class BaseSubmissionCreateView(DbfvFormMixin, generic.CreateView):
-    '''
+    """
     Creates a new submissions
-    '''
+    """
 
     extra_data = []
 
     def form_valid(self, form):
-        '''
+        """
         Manually set the user when saving the form
-        '''
+        """
 
         form.instance.user = self.request.user
         return super(BaseSubmissionCreateView, self).form_valid(form)
 
     def get_success_url(self):
-        '''
+        """
         Redirect to bank account page and send appropriate emails
-        '''
+        """
         self.object.send_emails(self.extra_data)
         self.request.session['bank-account'] = self.object.get_bank_account()
         self.request.session['submission-fee'] = self.model.FEE
@@ -93,32 +93,32 @@ class BaseSubmissionCreateView(DbfvFormMixin, generic.CreateView):
         return reverse_lazy('bank-account-view')
 
     def get_context_data(self, **kwargs):
-        '''
+        """
         Pass a list of all states
-        '''
+        """
         context = super(BaseSubmissionCreateView, self).get_context_data(**kwargs)
         context['fee'] = self.model.FEE
         return context
 
     def get_initial(self):
-        '''
+        """
         Fill in some data
-        '''
+        """
         return {'email': self.request.user.email}
 
 
 class BaseSubmissionDeleteView(DbfvFormMixin, generic.DeleteView):
-    '''
+    """
     Deletes a submission
-    '''
+    """
 
     permission_required = 'submission.delete_submissiongym'
     template_name = 'delete.html'
 
     def get_context_data(self, **kwargs):
-        '''
+        """
         Pass the title to the context
-        '''
+        """
         context = super(BaseSubmissionDeleteView, self).get_context_data(**kwargs)
         context['title'] = u'Antrag {0} löschen?'.format(self.object.id)
         return context
@@ -130,20 +130,20 @@ class BaseSubmissionListView(DbfvViewMixin, generic.ListView):
 
 
 class BaseSubmissionUpdateView(DbfvFormMixin, generic.UpdateView):
-    '''
+    """
     Updates an existing submission
 
     The owner user can update his own submission while it is still in the
     pending state. Once it has been accepted, only the BV can edit it.
-    '''
+    """
 
     login_required = True
     page_title = 'Antrag bearbeiten'
 
     def dispatch(self, request, *args, **kwargs):
-        '''
+        """
         Check for necessary permissions
-        '''
+        """
         submission = self.get_object()
         if not request.user.has_perm('submission.delete_submissionstarter') \
             and (submission.submission_status != submission.SUBMISSION_STATUS_EINGEGANGEN
@@ -157,28 +157,28 @@ class BaseSubmissionUpdateView(DbfvFormMixin, generic.UpdateView):
 # CSV Export
 #
 class BaseCsvExportView(View):
-    '''
+    """
     Base view to implement the common CSV export logic
-    '''
+    """
     http_method_names = ['get']
     update_submission_flag = True
     model = None
 
     def dispatch(self, request, *args, **kwargs):
-        '''
+        """
         Check for necessary permissions
-        '''
+        """
         if not request.user.has_perm('submission.change_submissionstarter'):
             return HttpResponseForbidden()
 
         return super(BaseCsvExportView, self).dispatch(request, *args, **kwargs)
 
     def get_submission_list(self):
-        '''
+        """
         Return a list of submissions to export.
 
         Default: all non-exported submissions
-        '''
+        """
         submission_status = self.model.SUBMISSION_STATUS_BEWILLIGT
         submissions = self.model.objects.filter(mail_merge=False) \
                                         .filter(submission_status=submission_status) \
@@ -187,11 +187,11 @@ class BaseCsvExportView(View):
         return submissions
 
     def export_submission_mailmerge(self, submission_list):
-        '''
+        """
         Generates a list with starter submission fields to be used in mail merge
 
         :param submission_list: A list of Submissions
-        '''
+        """
         result = []
         for submission in submission_list:
             result.append(submission.get_mailmerge_row())
@@ -223,9 +223,9 @@ class BaseCsvExportView(View):
 
 
 def get_overview_context(model_class, queryset, user, **kwargs):
-    '''
+    """
     Pass a list of all available dates
-    '''
+    """
     context = {}
 
     # Count how many submissions were exported for each month

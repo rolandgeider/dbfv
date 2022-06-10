@@ -24,9 +24,9 @@ from submission.views.generic_views import DbfvFormMixin
 
 
 class GymListView(DbfvViewMixin, generic.ListView):
-    '''
+    """
     Shows a list with all gyms
-    '''
+    """
 
     context_object_name = "gym_list"
     model = Gym
@@ -34,24 +34,24 @@ class GymListView(DbfvViewMixin, generic.ListView):
     permission_required = 'submission.change_gym'
 
     def get_queryset(self):
-        '''
+        """
         Filter by state
-        '''
+        """
         return Gym.objects.filter(state=self.kwargs['state_pk'])
 
     def get_context_data(self, **kwargs):
-        '''
+        """
         Pass the state to the context
-        '''
+        """
         context = super(GymListView, self).get_context_data(**kwargs)
         context['state'] = State.objects.get(pk=self.kwargs['state_pk'])
         return context
 
 
 class GymDetailView(DbfvViewMixin, generic.DetailView):
-    '''
+    """
     Detail view of a gym
-    '''
+    """
 
     model = Gym
     template_name = 'gym/view.html'
@@ -59,9 +59,9 @@ class GymDetailView(DbfvViewMixin, generic.DetailView):
 
 
 class GymCreateView(DbfvFormMixin, generic.CreateView):
-    '''
+    """
     Shows a list with all konzepts
-    '''
+    """
 
     model = Gym
     permission_required = 'submission.add_gym'
@@ -70,9 +70,9 @@ class GymCreateView(DbfvFormMixin, generic.CreateView):
 
 
 class GymUpdateView(DbfvFormMixin, generic.UpdateView):
-    '''
+    """
     Edits an existing Gym
-    '''
+    """
 
     model = Gym
     permission_required = 'submission.change_gym'
@@ -81,9 +81,9 @@ class GymUpdateView(DbfvFormMixin, generic.UpdateView):
 
 
 class GymDeleteView(DbfvFormMixin, generic.DeleteView):
-    '''
+    """
     Deletes a gym
-    '''
+    """
 
     model = Gym
     success_url = reverse_lazy('gym-list')
@@ -92,9 +92,9 @@ class GymDeleteView(DbfvFormMixin, generic.DeleteView):
     fields = '__all__' 
 
     def get_context_data(self, **kwargs):
-        '''
+        """
         Pass the title to the context
-        '''
+        """
         context = super(GymDeleteView, self).get_context_data(**kwargs)
         context['title'] = u'Studio {0} löschen?'.format(self.object.name)
         context['delete_message'] = u'Das wird auch alle Anträge zu diesem Studio entfernen.'

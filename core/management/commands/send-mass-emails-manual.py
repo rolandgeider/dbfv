@@ -36,23 +36,23 @@ from submission.models import Gym
 
 
 class Command(BaseCommand):
-    '''
+    """
     Sends the prepared mass emails
-    '''
+    """
 
     def handle(self, *args, **options):
-        '''
+        """
         Send emails with inline images, manual steps needed
-        '''
+        """
         email_list = []
 
         ### Submissions
-        this_year = datetime.date.today().year
-        status = SubmissionStarter.SUBMISSION_STATUS_BEWILLIGT
-        for submission in SubmissionStarter.objects.filter(creation_date__year=this_year,
-                                                           submission_status=status):
-            if submission.email:
-                email_list.append(submission.email)
+        # this_year = datetime.date.today().year
+        # status = SubmissionStarter.SUBMISSION_STATUS_BEWILLIGT
+        # for submission in SubmissionStarter.objects.filter(creation_date__year=this_year,
+        #                                                    submission_status=status):
+        #     if submission.email:
+        #         email_list.append(submission.email)
         
 
         ### Gyms
@@ -62,10 +62,10 @@ class Command(BaseCommand):
         #print(email_list)
 
         # Debug mode
-        # email_list = []
-        #email_list.append('falkeohnee@aol.com')
-        # email_list.append('roland@geider.net')
-        # email_list.append('schrecksenmeister.eisspin@gmail.com')
+        email_list = []
+        email_list.append('falkeohnee@aol.com')
+        email_list.append('roland@geider.net')
+        email_list.append('schrecksenmeister.eisspin@gmail.com')
         #print(email_list)
 
         email_images = ['image1.jpg',]
@@ -75,7 +75,7 @@ class Command(BaseCommand):
         email_from = 'no-reply@dbfv.de'
         email_subject = 'Newsletter'
         email_text = u'Textversion nicht verfügbar, bitte öffnen Sie die HTML Variante'
-        ##email_text = '''
+        ##email_text = """
         ##    In Zusammenarbeit mit XXL Nutrition können wir unseren Mitgliedern
         ##    einen 10% Rabattcode anbieten. XXL Nutrition hat ein sehr breites
         ##    Sortiment an Ergänzungen von verschiedenen Marken.
@@ -87,8 +87,8 @@ class Command(BaseCommand):
 
         ##    Profitiert jetzt sofort beim XXL Nutrition Shop
         ##    https://xxlnutrition.com/de/deu
-        ##    '''
-        email_html = u'''
+        ##    """
+        email_html = u"""
             <p>Hallihallo! :)</p>
 
 <p>
@@ -145,7 +145,39 @@ euer nutriful Team
 
 
             <img src="cid:image1.jpg" style="width:100%;">
-            '''
+            """
+        email_html="""
+<p>Wir haben eine Kooperation mit dem DBFV e.V. geschlossen!</p>
+<p>Jedes assoziierte Mitglied erhält ein spezielles Angebot mit Regenerierten Fitnessgeräten von uns!</p>
+<p>Außerdem haben wir für Sie ein Sonderangebot für neue Fitnessgeräte -40%.</p>
+
+<p>Verwenden Sie den Code #DBFV, wenn Sie mit uns Kontakt aufnehmen.</p>
+
+<p>über uns:</p>
+<ul>
+    <li>Wir sind einer der größten Spieler  auf dem Markt für überholte Geräte.</li>
+    <li>Bei uns finden Sie alle Marken, nach denen Sie gesucht haben: Life Fitness, TechnoGym, Gym80, Matrix, Precor, Cybex, Hammerkraft, Freemotion, Star Track...</li>
+    <li>Wir beraten Sie über die Art der Finanzierung, Transport, Montage, Service, Hilfe bei den Formalitäten.</li>
+    <li>Wir statten Ihren Club auch mit Schließfächern, Rezeption, Beleuchtung aus... von A bis Z.</li>
+    <li>Wir haben neue, überholte und gebrauchte Geräte.</li>
+</ul>
+ 
+<p>Sehen Sie, wie wir arbeiten: <a href="https://youtu.be/f2LJ7QOg4Q4">https://youtu.be/f2LJ7QOg4Q4</a></p>
+
+
+ 
+<p>Kontaktieren Sie uns:</p>
+
+
+<p>
+📲 +48 33 486 90 07<br>
+📧 sklep@fitnessclub24.pl<br>
+👉 https://www.fitnessclub-24.de<br>
+Marketing: <a href="https://www.fitnessclub24.pl/info">https://www.fitnessclub24.pl/info</a>
+</p>
+
+<img src="cid:image1.jpg" style="width:100%;">
+"""
             ##<img src="cid:image1.jpg">
 
         # Process and send all emails

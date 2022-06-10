@@ -20,27 +20,27 @@ from django.db import models
 
 
 class EmailCron(models.Model):
-    '''
+    """
     List of emails to be sent bit by bit by a cron job
-    '''
+    """
 
     subject = models.CharField(max_length=100)
-    '''
+    """
     The email subject
-    '''
+    """
 
     body = models.TextField()
-    '''
+    """
     The email's body
-    '''
+    """
 
     email = models.EmailField()
-    '''
+    """
     The email address
-    '''
+    """
 
     def __unicode__(self):
-        '''
+        """
         Return a more human-readable representation
-        '''
+        """
         return self.email

@@ -22,14 +22,14 @@ from core.models import EmailCron
 
 
 class Command(BaseCommand):
-    '''
+    """
     Sends the prepared mass emails
-    '''
+    """
 
     def handle(self, *args, **options):
-        '''
+        """
         Send some mails and remove them from the list
-        '''
+        """
         if EmailCron.objects.count():
             for email in EmailCron.objects.all()[:100]:
                 mail.send_mail(email.subject,

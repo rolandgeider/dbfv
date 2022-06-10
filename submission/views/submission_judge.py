@@ -34,17 +34,17 @@ from submission.views.generic_views import get_overview_context
 
 
 class SubmissionListView(BaseSubmissionListView):
-    '''
+    """
     Shows a list with all submissions
-    '''
+    """
 
     model = SubmissionJudge
     template_name = 'submission/judge/list.html'
 
     def get_context_data(self, **kwargs):
-        '''
+        """
         Pass a list of all available dates
-        '''
+        """
         context = super(SubmissionListView, self).get_context_data(**kwargs)
 
         queryset = SubmissionJudge.objects.all().order_by('state', 'creation_date')
@@ -61,12 +61,12 @@ class SubmissionListMonthView(SubmissionListView,
     permission_required = 'submission.change_submissionjudge'
 
     def get_queryset(self):
-        '''
+        """
         Change the queryset depending on the user's rights. The rules are the
         following:
             * A BV user sees all submissions
             * A regular user sees it's own submissions
-        '''
+        """
 
         queryset = SubmissionJudge.objects.filter(creation_date__month=self.get_month()) \
             .filter(creation_date__year=self.get_year()) \
@@ -77,9 +77,9 @@ class SubmissionListMonthView(SubmissionListView,
             return queryset.filter(user=self.request.user)
 
     def get_context_data(self, **kwargs):
-        '''
+        """
         Pass a list of all available dates
-        '''
+        """
 
         context = super(SubmissionListView, self).get_context_data(**kwargs)
         context['month_list'] = SubmissionJudge.objects.all().dates('creation_date', 'month')
@@ -96,9 +96,9 @@ class SubmissionDetailView(DbfvViewMixin, generic.detail.DetailView):
 
 
 class SubmissionCreateView(BaseSubmissionCreateView):
-    '''
+    """
     Creates a new submissions
-    '''
+    """
 
     model = SubmissionJudge
     form_class = SubmissionJudgeForm
@@ -108,25 +108,25 @@ class SubmissionCreateView(BaseSubmissionCreateView):
 
 
 class SubmissionDeleteView(BaseSubmissionDeleteView):
-    '''
+    """
     Deletes a submission
-    '''
+    """
     model = SubmissionJudge
     success_url = reverse_lazy('submission-judge-list')
 
 
 class SubmissionUpdateView(BaseSubmissionUpdateView):
-    '''
+    """
     Updates an existing submission
-    '''
+    """
     model = SubmissionJudge
     form_class = SubmissionJudgeForm
 
 
 class SubmissionUpdateStatusView(DbfvFormMixin, generic.UpdateView):
-    '''
+    """
     Updates an existing submissions
-    '''
+    """
 
     model = SubmissionJudge
     form_class = SubmissionJudgeFormBV
@@ -136,22 +136,22 @@ class SubmissionUpdateStatusView(DbfvFormMixin, generic.UpdateView):
 
 
 class SubmissionCsvExportView(BaseCsvExportView):
-    '''
+    """
     Exports all non-exported submissions to use for mail merge
-    '''
+    """
     model = SubmissionJudge
 
 
 class SubmissionCsvIndividualExportView(BaseCsvExportView):
-    '''
+    """
     Exports an individual submission to use for mail merge
-    '''
+    """
 
     model = SubmissionJudge
     update_submission_flag = False
 
     def get_submission_list(self):
-        '''
+        """
         Return the current submission to export.
-        '''
+        """
         return self.model.objects.filter(pk=self.kwargs['pk'])

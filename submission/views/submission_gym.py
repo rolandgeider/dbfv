@@ -33,9 +33,9 @@ from submission.views.generic_views import DbfvFormMixin
 
 
 class SubmissionListView(DbfvViewMixin, generic.ListView):
-    '''
+    """
     Shows a list with all submissions
-    '''
+    """
 
     model = SubmissionGym
     context_object_name = "submission_list"
@@ -43,12 +43,12 @@ class SubmissionListView(DbfvViewMixin, generic.ListView):
     login_required = True
 
     def get_queryset(self):
-        '''
+        """
         Change the queryset depending on the user's rights. The rules are the
         follwing:
             * A BV user sees all submissions
             * A regular user sees it's own submissions
-        '''
+        """
 
         if user_type(self.request.user) == USER_TYPE_BUNDESVERBAND:
             return SubmissionGym.objects.all()
@@ -58,12 +58,12 @@ class SubmissionListView(DbfvViewMixin, generic.ListView):
 
 class SubmissionListYearView(SubmissionListView, generic.dates.YearMixin):
     def get_queryset(self):
-        '''
+        """
         Change the queryset depending on the user's rights. The rules are the
         follwing:
             * A BV user sees all submissions
             * A regular user sees it's own submissions
-        '''
+        """
 
         # Get queryset from parent class
         if user_type(self.request.user) == USER_TYPE_BUNDESVERBAND:
@@ -79,9 +79,9 @@ class SubmissionDetailView(DbfvViewMixin, generic.detail.DetailView):
     template_name = 'submission/gym/view.html'
 
     def dispatch(self, request, *args, **kwargs):
-        '''
+        """
         Check for necessary permissions
-        '''
+        """
         submission = self.get_object()
         if not request.user.has_perm('submission.delete_submissiongym') \
            and submission.user != request.user:
@@ -95,9 +95,9 @@ class SubmissionDetailView(DbfvViewMixin, generic.detail.DetailView):
 
 
 class SubmissionCreateView(BaseSubmissionCreateView):
-    '''
+    """
     Creates a new submissions
-    '''
+    """
 
     model = SubmissionGym
     form_class = SubmissionGymForm
@@ -106,11 +106,11 @@ class SubmissionCreateView(BaseSubmissionCreateView):
     page_title = 'Antrag auf Erwerb einer Studiolizenz'
 
     def get_success_url(self):
-        '''
+        """
         If the form is valid, create a new gym with the form data.
 
         Performing the logic here because we need access to the submission PK
-        '''
+        """
 
         gym = Gym()
         gym.name = self.object.name
@@ -131,25 +131,25 @@ class SubmissionCreateView(BaseSubmissionCreateView):
 
 
 class SubmissionDeleteView(BaseSubmissionDeleteView):
-    '''
+    """
     Deletes a submission
-    '''
+    """
     model = SubmissionGym
     success_url = reverse_lazy('submission-studio-list')
 
 
 class SubmissionUpdateView(BaseSubmissionUpdateView):
-    '''
+    """
     Updates an existing submission
-    '''
+    """
     model = SubmissionGym
     form_class = SubmissionGymForm
 
 
 class SubmissionUpdateStatusView(DbfvFormMixin, generic.UpdateView):
-    '''
+    """
     Updates an existing submissions
-    '''
+    """
 
     model = SubmissionGym
     form_class = SubmissionGymFormBV
@@ -157,9 +157,9 @@ class SubmissionUpdateStatusView(DbfvFormMixin, generic.UpdateView):
     permission_required = 'submission.change_submissiongym'
 
     def form_valid(self, form):
-        '''
+        """
         If the submission is accepted, activate the gym
-        '''
+        """
 
         if form.cleaned_data['submission_status'] == SubmissionGym.SUBMISSION_STATUS_BEWILLIGT:
             gym = form.instance.gym

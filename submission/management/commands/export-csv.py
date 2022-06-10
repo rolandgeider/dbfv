@@ -23,25 +23,25 @@ from submission.models import SubmissionStarter
 
 
 class Command(BaseCommand):
-    '''
+    """
     Export all submissions for the current year
-    '''
+    """
 
     def export_submission_mailmerge(self, submission_list):
-        '''
+        """
         Generates a list with starter submission fields to be used in mail merge
 
         :param submission_list: A list of Submissions
-        '''
+        """
         result = []
         for submission in submission_list:
             result.append([unicode(s).encode("utf-8") for s in submission.get_mailmerge_row()])
         return result
 
     def handle(self, *args, **options):
-        '''
+        """
         Process the options
-        '''
+        """
         list = SubmissionStarter.objects.filter(creation_date__year=2014,
                                                 submission_status=SubmissionStarter.SUBMISSION_STATUS_BEWILLIGT).order_by('id')
 
