@@ -2,3 +2,4 @@ Django==4.0.5
 django-recaptcha
 django-formtools
 reportlab==3.6.10
+django-email-verification==0.2.2

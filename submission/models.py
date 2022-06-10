@@ -927,9 +927,12 @@ class UserProfile(models.Model):
     '''
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
+    email_verified = models.BooleanField(default=False)
+    """Flag indicating whether the user's email has been verified"""
+
     # User type
     type = models.IntegerField(choices=USER_TYPES,
-                               default=USER_TYPE_UNKNOWN)
+                               default=USER_TYPE_USER)
 
     # Personal information
     state = models.ForeignKey(State,

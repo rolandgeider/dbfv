@@ -17,6 +17,8 @@ from django.contrib.auth.decorators import permission_required
 # You should have received a copy of the GNU Affero General Public License
 from django.urls import path
 from django.views.generic import TemplateView
+from core.views import email_verification
+from django_email_verification import urls as email_urls
 
 # sub patterns for email lists
 patterns_email = [
@@ -28,7 +30,16 @@ patterns_email = [
     #        permission_required('core.change_emailcron')(email_lists.EmailListFormPreview(EmailListForm)),
     #        name='add'),
 ]
+# sub patterns for email lists
+patterns_email_verification = [
+    path('confirm', email_verification.confirm_email, name='confirm-email'),
+
+    #    path(r'^erstellen/(?P<type>(starter|studio))$',
+    #        permission_required('core.change_emailcron')(email_lists.EmailListFormPreview(EmailListForm)),
+    #        name='add'),
+]
 
 urlpatterns = [
     path('email-listen/', include((patterns_email, 'email'), namespace="email")),
+    path('email/', include((patterns_email_verification, 'verification'), namespace="verification")),
 ]

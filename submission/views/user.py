@@ -24,6 +24,7 @@ from django.contrib.auth.models import User as Django_User
 from django.contrib.auth.models import Group
 from django.template.context_processors import csrf
 from django.urls import reverse
+from django_email_verification import send_email
 
 from submission.forms import RegistrationForm
 from submission.models import USER_TYPE_USER
@@ -42,8 +43,8 @@ def registration(request):
     A form to allow for registration of new users
     '''
 
-    template_data = {}
-    template_data.update(csrf(request))
+    context = {}
+    context.update(csrf(request))
 
     if request.method == 'POST':
         form = RegistrationForm(data=request.POST)
@@ -71,13 +72,13 @@ def registration(request):
 
             # Login the new user and redirect
             user = authenticate(username=username, password=password)
+            send_email(user)
             django_login(request, user)
-            come_from_register = True
             return HttpResponseRedirect(reverse('index'))
     else:
         form = RegistrationForm()
 
-    template_data['form'] = form
+    context['form'] = form
 
     return render('form.html',
-                  template_data)
+                  context)

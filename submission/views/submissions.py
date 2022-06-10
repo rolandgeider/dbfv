@@ -16,16 +16,13 @@
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
 import datetime
 import json
-from io import BytesIO
 
 from django.contrib.sites.shortcuts import get_current_site
-from reportlab.graphics.barcode import qr
-
-import qrcode
 from django.db.models import Q
 from django.http.response import HttpResponse, HttpResponseForbidden
 from django.urls import reverse_lazy, reverse
 from django.views import generic
+from reportlab.graphics.barcode import qr
 from reportlab.graphics.shapes import Drawing
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet
@@ -33,7 +30,7 @@ from reportlab.lib.units import cm
 from reportlab.platypus import (
     Paragraph,
     SimpleDocTemplate,
-    Spacer, KeepTogether, )
+    Spacer, )
 
 from submission.forms import SubmissionStarterForm, SubmissionStarterFormBV
 from submission.models import State

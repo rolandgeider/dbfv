@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}Email Bestätigung{% endblock %}
+
+{#        #}
+{# Header #}
+{#        #}
+{% block header %}
+{% endblock %}
+
+
+{#         #}
+{# Content #}
+{#         #}
+{% block content %}
+{% if success %}
+    Deine Email wurde bestätigt, {{ user.username }}
+{% else %}
+    Das Validierungs-Token ist fehlerhaft
+{% endif %}
+{% endblock %}

@@ -17,24 +17,36 @@
 
 <h3>Starterlizenz</h3>
     {% if perms.submission.add_submissionstarter %}
-        <a class="btn btn-success" href="{% url 'submission-add' 'starter' %}">Antrag auf Starterlizenz stellen &raquo;</a>
+        {% if not user.userprofile.email_verified %}
+            <a class="btn btn-info" href="{% url 'core:verification:confirm-email' %}">Sie müssen Ihre Email bestätigen &raquo;</a>
+        {% else %}
+            <a class="btn btn-success" href="{% url 'submission-add' 'starter' %}">Antrag auf Starterlizenz stellen &raquo;</a>
+        {% endif %}
     {% else %}
         <a href="{% url 'login' %}" class="btn btn-danger">Sie müssen sich anmelden</a>
     {% endif %}
 
 <h3>Kampfrichterlizenz</h3>
     {% if perms.submission.add_submissiongym %}
-        <p><a class="btn btn-success" href="{% url 'submission-judge-add' %}">Antrag auf Kampfrichterlizenz stellen &raquo;</a></p>
+        {% if not user.userprofile.email_verified %}
+            <a class="btn btn-info" href="{% url 'core:verification:confirm-email' %}">Sie müssen Ihre Email bestätigen &raquo;</a>
+        {% else %}
+            <p><a class="btn btn-success" href="{% url 'submission-judge-add' %}">Antrag auf Kampfrichterlizenz stellen &raquo;</a></p>
+        {% endif %}
     {% else %}
         <p><a href="{% url 'login' %}" class="btn btn-danger">Sie müssen sich anmelden</a></p>
     {% endif %}
 
 <h3>Internationale Starts</h3>
-{% if perms.submission.add_submissioninternational %}
-        <p><a class="btn btn-success" href="{% url 'submission-international-add' %}">Antrag für einen internationalen Start stellen &raquo;</a></p>
+    {% if perms.submission.add_submissioninternational %}
+        {% if not user.userprofile.email_verified %}
+            <a class="btn btn-info" href="{% url 'core:verification:confirm-email' %}">Sie müssen Ihre Email bestätigen &raquo;</a>
         {% else %}
-        <p><a href="{% url 'login' %}" class="btn btn-danger">Sie müssen sich anmelden</a></p>
+            <p><a class="btn btn-success" href="{% url 'submission-international-add' %}">Antrag für einen internationalen Start stellen &raquo;</a></p>
         {% endif %}
+    {% else %}
+        <p><a href="{% url 'login' %}" class="btn btn-danger">Sie müssen sich anmelden</a></p>
+    {% endif %}
 
 {% endblock %}
 
