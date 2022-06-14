@@ -14,11 +14,17 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 
+# Standard Library
 import csv
 import datetime
 
-from django.core.management.base import BaseCommand, CommandError
+# Django
+from django.core.management.base import (
+    BaseCommand,
+    CommandError,
+)
 
+# dbfv
 from submission.models import Gym
 
 

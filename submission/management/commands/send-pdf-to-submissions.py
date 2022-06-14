@@ -14,19 +14,23 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 
-import csv
-import datetime
+# Standard Library
 import logging
 from email.mime.application import MIMEApplication
 
+# Django
 from django.conf import settings
-
 from django.core.mail import EmailMultiAlternatives
-from django.core.management.base import BaseCommand, CommandError
-from django.http import HttpRequest, HttpResponse
+from django.core.management.base import BaseCommand
+from django.http import (
+    HttpRequest,
+    HttpResponse,
+)
 
+# dbfv
 from submission.helpers import build_submission_pdf
-from submission.models import Gym, SubmissionStarter
+from submission.models import SubmissionStarter
+
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +59,10 @@ class Command(BaseCommand):
                 f'Sending PDF for submission {submission.id} - ({submission.user.email})'
             )
             msg = EmailMultiAlternatives(
-                email_subject, email_text, settings.DEFAULT_FROM_EMAIL, [submission.user.email]
+                email_subject,
+                email_text,
+                settings.DEFAULT_FROM_EMAIL,
+                [submission.user.email],
             )
             msg.mixed_subtype = 'related'
 

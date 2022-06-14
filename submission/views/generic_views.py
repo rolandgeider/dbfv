@@ -14,16 +14,32 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
+# Standard Library
 import csv
 import datetime
 
-from django.urls import reverse, reverse_lazy
+# Django
+from django.http import (
+    HttpResponse,
+    HttpResponseForbidden,
+    HttpResponseRedirect,
+)
+from django.urls import (
+    reverse,
+    reverse_lazy,
+)
 from django.views import generic
-from django.views.generic.base import TemplateResponseMixin, View
+from django.views.generic.base import (
+    TemplateResponseMixin,
+    View,
+)
 from django.views.generic.edit import ModelFormMixin
-from django.http import HttpResponseRedirect, HttpResponse
-from django.http import HttpResponseForbidden
-from submission.models import user_type, USER_TYPE_BUNDESVERBAND
+
+# dbfv
+from submission.models import (
+    USER_TYPE_BUNDESVERBAND,
+    user_type,
+)
 
 
 class DbfvViewMixin(TemplateResponseMixin):

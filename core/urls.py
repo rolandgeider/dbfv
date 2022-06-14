@@ -1,5 +1,6 @@
 # -*- coding: utf-8 *-*
 
+# Django
 from django.conf.urls import include
 from django.contrib.auth.decorators import permission_required
 # This file is part of Kumasta.
@@ -17,8 +18,13 @@ from django.contrib.auth.decorators import permission_required
 # You should have received a copy of the GNU Affero General Public License
 from django.urls import path
 from django.views.generic import TemplateView
-from core.views import email_verification
+
+# Third Party
 from django_email_verification import urls as email_urls
+
+# dbfv
+from core.views import email_verification
+
 
 # sub patterns for email lists
 patterns_email = [

@@ -14,19 +14,30 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
-from django.core.exceptions import ValidationError
-
-from django.forms import (
-    ModelForm, MultipleChoiceField, EmailField, BooleanField, ModelChoiceField
-)
-from django.contrib.auth.models import User as Django_User
+# Django
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User as Django_User
+from django.core.exceptions import ValidationError
+from django.forms import (
+    BooleanField,
+    EmailField,
+    ModelChoiceField,
+    ModelForm,
+    MultipleChoiceField,
+)
 from django.utils.translation import gettext as _
 
+# Third Party
 from captcha.fields import ReCaptchaField
 
+# dbfv
 from submission.models import (
-    State, Gym, SubmissionStarter, SubmissionGym, SubmissionJudge, SubmissionInternational
+    Gym,
+    State,
+    SubmissionGym,
+    SubmissionInternational,
+    SubmissionJudge,
+    SubmissionStarter,
 )
 
 

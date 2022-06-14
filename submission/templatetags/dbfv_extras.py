@@ -14,15 +14,23 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 
+# Django
 from django import template
-from django.forms.widgets import CheckboxInput, ClearableFileInput
-from django.template.loader import render_to_string
 from django.forms.formsets import BaseFormSet
+from django.forms.widgets import (
+    CheckboxInput,
+    ClearableFileInput,
+)
+from django.template.loader import render_to_string
 
-from submission.models import SubmissionStarter
-from submission.models import user_type
-from submission.models import USER_TYPE_BUNDESVERBAND
-from submission.models import USER_TYPE_USER
+# dbfv
+from submission.models import (
+    USER_TYPE_BUNDESVERBAND,
+    USER_TYPE_USER,
+    SubmissionStarter,
+    user_type,
+)
+
 
 register = template.Library()
 

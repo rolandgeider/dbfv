@@ -1,8 +1,12 @@
+# Django
+from django.conf import settings
 from django.conf.urls import include
 from django.conf.urls.static import static
 from django.urls import path
-from django.conf import settings
+
+# Third Party
 from django_email_verification import urls as email_urls
+
 
 # Uncomment the next two lines to enable the admin:
 #from django.contrib import admin

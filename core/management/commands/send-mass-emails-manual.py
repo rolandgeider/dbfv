@@ -18,21 +18,14 @@
 # from email.MIMEText import MIMEText
 # from email.MIMEImage import MIMEImage
 
-import datetime
+# Standard Library
 import os
-from django.core.mail import EmailMultiAlternatives
-from django.template.loader import render_to_string
-#from email.MIMEImage import MIMEImage
-from email.mime.image import MIMEImage
 from email.mime.application import MIMEApplication
+from email.mime.image import MIMEImage
 
-from django.core import mail
-from django.conf import settings
-
+# Django
+from django.core.mail import EmailMultiAlternatives
 from django.core.management.base import BaseCommand
-from core.models import EmailCron
-from submission.models import SubmissionStarter
-from submission.models import Gym
 
 
 class Command(BaseCommand):

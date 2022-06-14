@@ -14,12 +14,19 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
+# Django
 from django.urls import reverse_lazy
 from django.views import generic
 
-from submission.models import Gym, State
-from submission.views.generic_views import DbfvViewMixin
-from submission.views.generic_views import DbfvFormMixin
+# dbfv
+from submission.models import (
+    Gym,
+    State,
+)
+from submission.views.generic_views import (
+    DbfvFormMixin,
+    DbfvViewMixin,
+)
 
 
 class GymListView(DbfvViewMixin, generic.ListView):

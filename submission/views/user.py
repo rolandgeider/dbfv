@@ -14,18 +14,26 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
+# Django
+from django.contrib.auth import (
+    authenticate,
+    login as django_login,
+    logout as django_logout,
+)
+from django.contrib.auth.models import (
+    Group,
+    User as Django_User,
+)
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.template import RequestContext
-from django.http import HttpResponseRedirect
-from django.contrib.auth import login as django_login
-from django.contrib.auth import logout as django_logout
-from django.contrib.auth import authenticate
-from django.contrib.auth.models import User as Django_User
-from django.contrib.auth.models import Group
 from django.template.context_processors import csrf
 from django.urls import reverse
+
+# Third Party
 from django_email_verification import send_email
 
+# dbfv
 from submission.forms import RegistrationForm
 from submission.models import USER_TYPE_USER
 

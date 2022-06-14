@@ -14,19 +14,38 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 
+# Django
 import django
 from django.conf import settings
 from django.conf.urls.static import static
-
-from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordResetView, \
-    PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
-from django.urls import path, reverse_lazy, re_path
+from django.contrib.auth.views import (
+    LoginView,
+    PasswordChangeView,
+    PasswordResetCompleteView,
+    PasswordResetConfirmView,
+    PasswordResetDoneView,
+    PasswordResetView,
+)
+from django.urls import (
+    path,
+    re_path,
+    reverse_lazy,
+)
 from django.views.generic import TemplateView
 
+# dbfv
 from submission.views import (
-    gym, state, bank_account, submissions, submission_gym, submission_judge,
-    submissions_international, user, emails
+    bank_account,
+    emails,
+    gym,
+    state,
+    submission_gym,
+    submission_judge,
+    submissions,
+    submissions_international,
+    user,
 )
+
 
 urlpatterns = [
 

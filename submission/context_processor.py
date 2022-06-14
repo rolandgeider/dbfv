@@ -15,12 +15,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
 
-from submission.models import user_type
-
-from submission.models import USER_TYPE_BUNDESVERBAND
-from submission.models import USER_TYPE_USER
-
-from submission.models import SubmissionStarter
+# dbfv
+from submission.models import (
+    USER_TYPE_BUNDESVERBAND,
+    USER_TYPE_USER,
+    SubmissionStarter,
+    user_type,
+)
 
 
 def processor(request):

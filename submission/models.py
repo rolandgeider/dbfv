@@ -15,17 +15,19 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
 
+# Standard Library
 import os
 from functools import wraps
 
+# Django
 from django.conf import settings
-from django.template.loader import render_to_string
+from django.contrib.auth.models import User
+from django.core import mail
 from django.db import models
 from django.db.models.signals import post_save
+from django.template.loader import render_to_string
 from django.urls import reverse
-from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
-from django.core import mail
 
 
 class ManagerEmail(models.Model):

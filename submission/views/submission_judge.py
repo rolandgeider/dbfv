@@ -14,23 +14,35 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
+# Standard Library
 import datetime
 
+# Django
 from django.urls import reverse_lazy
 from django.views import generic
 
-from submission.forms import SubmissionJudgeForm, SubmissionJudgeFormBV
-from submission.models import SubmissionJudge
-from submission.models import State
-from submission.models import user_type
-from submission.models import USER_TYPE_BUNDESVERBAND
-from submission.models import USER_TYPE_USER
-from submission.views.generic_views import DbfvViewMixin, BaseCsvExportView, BaseSubmissionListView
-from submission.views.generic_views import BaseSubmissionDeleteView
-from submission.views.generic_views import BaseSubmissionUpdateView
-from submission.views.generic_views import DbfvFormMixin
-from submission.views.generic_views import BaseSubmissionCreateView
-from submission.views.generic_views import get_overview_context
+# dbfv
+from submission.forms import (
+    SubmissionJudgeForm,
+    SubmissionJudgeFormBV,
+)
+from submission.models import (
+    USER_TYPE_BUNDESVERBAND,
+    USER_TYPE_USER,
+    State,
+    SubmissionJudge,
+    user_type,
+)
+from submission.views.generic_views import (
+    BaseCsvExportView,
+    BaseSubmissionCreateView,
+    BaseSubmissionDeleteView,
+    BaseSubmissionListView,
+    BaseSubmissionUpdateView,
+    DbfvFormMixin,
+    DbfvViewMixin,
+    get_overview_context,
+)
 
 
 class SubmissionListView(BaseSubmissionListView):

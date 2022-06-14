@@ -15,16 +15,26 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
 
+# Standard Library
 import datetime
 
+# Django
 from django.conf import settings
-from django.http import HttpResponseRedirect
 from django.core import mail
+from django.http import HttpResponseRedirect
 from django.urls import reverse
+
+# dbfv
+from core.models import EmailCron
+from submission.models import (
+    Gym,
+    ManagerEmail,
+    SubmissionStarter,
+)
+
+
 #from formtools.preview import FormPreview
 
-from core.models import EmailCron
-from submission.models import ManagerEmail, SubmissionStarter, Gym
 
 
 class EmailListFormPreview():  #FormPreview

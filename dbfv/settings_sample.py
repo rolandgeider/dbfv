@@ -1,6 +1,8 @@
 # Django settings for dbfv project.
 
+# dbfv
 from dbfv.settings_global import *
+
 
 DATABASES = {
     'default': {

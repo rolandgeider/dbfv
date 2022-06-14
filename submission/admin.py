@@ -12,10 +12,13 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 
-from submission.models import UserProfile
-
+# Django
+from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
-from django.contrib import admin
+
+# dbfv
+from submission.models import UserProfile
+
 
 admin.site.register(UserProfile)

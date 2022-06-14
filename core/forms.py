@@ -15,7 +15,15 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.forms import Form, CharField, Textarea, ModelForm, DateField, widgets
+# Django
+from django.forms import (
+    CharField,
+    DateField,
+    Form,
+    ModelForm,
+    Textarea,
+    widgets,
+)
 
 
 class EmailListForm(Form):

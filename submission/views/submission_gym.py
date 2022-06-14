@@ -14,22 +14,31 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
+# Django
 from django.http import HttpResponseForbidden
 from django.urls import reverse_lazy
-
 from django.views import generic
 
-from submission.forms import SubmissionGymForm, SubmissionGymFormBV
-from submission.models import SubmissionGym, Gym
-from submission.models import State
-from submission.models import user_type
-from submission.models import USER_TYPE_BUNDESVERBAND
-from submission.models import USER_TYPE_USER
-from submission.views.generic_views import DbfvViewMixin
-from submission.views.generic_views import BaseSubmissionCreateView
-from submission.views.generic_views import BaseSubmissionDeleteView
-from submission.views.generic_views import BaseSubmissionUpdateView
-from submission.views.generic_views import DbfvFormMixin
+# dbfv
+from submission.forms import (
+    SubmissionGymForm,
+    SubmissionGymFormBV,
+)
+from submission.models import (
+    USER_TYPE_BUNDESVERBAND,
+    USER_TYPE_USER,
+    Gym,
+    State,
+    SubmissionGym,
+    user_type,
+)
+from submission.views.generic_views import (
+    BaseSubmissionCreateView,
+    BaseSubmissionDeleteView,
+    BaseSubmissionUpdateView,
+    DbfvFormMixin,
+    DbfvViewMixin,
+)
 
 
 class SubmissionListView(DbfvViewMixin, generic.ListView):

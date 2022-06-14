@@ -14,13 +14,16 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
+# Django
 from django.urls import reverse_lazy
 from django.views import generic
 
+# dbfv
 from submission.models import BankAccount
-
-from submission.views.generic_views import DbfvViewMixin
-from submission.views.generic_views import DbfvFormMixin
+from submission.views.generic_views import (
+    DbfvFormMixin,
+    DbfvViewMixin,
+)
 
 
 class BankAccountListView(DbfvViewMixin, generic.ListView):
