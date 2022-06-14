@@ -382,6 +382,13 @@ class SubmissionStarter(AbstractSubmission):
         'Hiermit erkläre ich mich mit den Regeln des DBFV e.V./IFBB',
         blank=False)
 
+    pdf_sent = models.BooleanField(
+       default=False
+    )
+    """
+    Flag indicating whether the athlete has received the confirmation PDF
+    """
+
     # Other fields
     submission_last_year = models.BooleanField(u"Im Vorjahr wurde bereits eine Lizenz beantragt",
                                                default=False)

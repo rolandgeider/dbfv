@@ -17,22 +17,13 @@
 import datetime
 import json
 
-from django.contrib.sites.shortcuts import get_current_site
 from django.db.models import Q
 from django.http.response import HttpResponse, HttpResponseForbidden
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse_lazy
 from django.views import generic
-from reportlab.graphics.barcode import qr
-from reportlab.graphics.shapes import Drawing
-from reportlab.lib.pagesizes import A4
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib.units import cm
-from reportlab.platypus import (
-    Paragraph,
-    SimpleDocTemplate,
-    Spacer, )
 
 from submission.forms import SubmissionStarterForm, SubmissionStarterFormBV
+from submission.helpers import build_submission_pdf
 from submission.models import State
 from submission.models import SubmissionStarter
 from submission.models import USER_TYPE_BUNDESVERBAND
@@ -263,30 +254,11 @@ def pdf(request, pk):
     """
     response = HttpResponse(content_type='application/pdf')
 
-    doc = SimpleDocTemplate(
-        response,
-        pagesize=A4,
-        rightMargin=50,
-        leftMargin=50,
-        topMargin=50,
-        bottomMargin=50
-    )
-
-    current_site = get_current_site(request)
-    styles = getSampleStyleSheet()
-    elements = [Paragraph("SomeTitle", styles["Heading2"]), Spacer(10 * cm, 0.5 * cm)]
-    #story.append(Spacer(1, 2))  # some space between lines
-
-    qr_code = qr.QrCodeWidget(current_site.domain + reverse('submission-view', kwargs={'pk': pk}), barLevel='H')
-    bounds = qr_code.getBounds()
-    width = bounds[2] - bounds[0]
-    height = bounds[3] - bounds[1]
-    qr_image = Drawing(100, 100, transform=[100. / width, 0, 0, 100. / height, 0, 0])
-    qr_image.add(qr_code)
-    elements.append(qr_image)
-    doc.build(elements)
+    build_submission_pdf(request, pk, response)
 
     #response['Content-Disposition'] = 'attachment; filename=Test-123.pdf'.format(id)
     response['Content-Length'] = len(response.content)
 
     return response
+
+
