@@ -71,5 +71,5 @@ class Command(BaseCommand):
             msg.send()
 
             # Flag the submission as sent
-            #submission.pdf_sent = True
-            #submission.save()
+            submission.pdf_sent = True
+            submission.save()
