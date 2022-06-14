@@ -24,7 +24,9 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='bankaccount',
             name='bic',
-            field=models.CharField(help_text='Nur bei Auslandsüberweisung nötig', max_length=11, verbose_name='BIC'),
+            field=models.CharField(
+                help_text='Nur bei Auslandsüberweisung nötig', max_length=11, verbose_name='BIC'
+            ),
         ),
         migrations.AlterField(
             model_name='bankaccount',
@@ -54,12 +56,20 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='gym',
             name='state',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='submission.state', verbose_name='Bundesland'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='submission.state',
+                verbose_name='Bundesland'
+            ),
         ),
         migrations.AlterField(
             model_name='state',
             name='bank_account',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='submission.bankaccount', verbose_name='Bankkonto'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='submission.bankaccount',
+                verbose_name='Bankkonto'
+            ),
         ),
         migrations.AlterField(
             model_name='state',
@@ -79,32 +89,74 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='submissiongym',
             name='gym',
-            field=models.OneToOneField(blank=True, editable=False, null=True, on_delete=django.db.models.deletion.CASCADE, to='submission.gym', verbose_name='Studio'),
+            field=models.OneToOneField(
+                blank=True,
+                editable=False,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='submission.gym',
+                verbose_name='Studio'
+            ),
         ),
         migrations.AlterField(
             model_name='submissiongym',
             name='submission_status',
-            field=models.CharField(choices=[('1', 'Eingegangen'), ('2', 'Bewilligt'), ('3', 'Abgelehnt')], default='1', max_length=2),
+            field=models.CharField(
+                choices=[('1', 'Eingegangen'), ('2', 'Bewilligt'), ('3', 'Abgelehnt')],
+                default='1',
+                max_length=2
+            ),
         ),
         migrations.AlterField(
             model_name='submissioninternational',
             name='best_placement',
-            field=models.CharField(help_text='Beste Platzierung auf einer deutschen DBFV/IFBB-Meisterschaft, mit Datum und Kategorie', max_length=150, verbose_name='Beste Platzierung'),
+            field=models.CharField(
+                help_text=
+                'Beste Platzierung auf einer deutschen DBFV/IFBB-Meisterschaft, mit Datum und Kategorie',
+                max_length=150,
+                verbose_name='Beste Platzierung'
+            ),
         ),
         migrations.AlterField(
             model_name='submissioninternational',
             name='category',
-            field=models.CharField(choices=[('1', 'Jugend-Bikini-Fitness'), ('2', 'Jugend-Mens Physique'), ('3', 'Jugend-Bodybuilding'), ('4', 'Junioren-Bikini-Fitness'), ('5', 'Junioren-Mens Physique'), ('6', 'Junioren-Bodybuilding'), ('23', 'Junioren-Classic Bodybuilding'), ('21', 'Junioren-Frauen Fitness Figur'), ('22', 'Junioren-Frauen Physique'), ('7', 'Frauen-Bikini-Fitness'), ('25', 'Frauen-Wellness'), ('8', 'Frauen-Fitness-Figur'), ('9', 'Frauen-Physique'), ('10', 'Paare'), ('11', 'Handicappt/Wheelchair'), ('12', 'Classic Bodybuilding'), ('24', 'Classic Physique'), ('13', 'Männer Physique'), ('24', 'Männer Muscular Physique'), ('14', 'Männer Bodybuilding'), ('15', 'Masters-Männer BB'), ('16', 'Masters-Männer Classic BB'), ('17', 'Masters-Männer Physique'), ('18', 'Masters-Frauen Physique'), ('19', 'Masters-Frauen Bikini Fitness'), ('20', 'Masters-Frauen Figur')], max_length=2, verbose_name='Kategorie'),
+            field=models.CharField(
+                choices=[
+                    ('1', 'Jugend-Bikini-Fitness'), ('2', 'Jugend-Mens Physique'),
+                    ('3', 'Jugend-Bodybuilding'), ('4', 'Junioren-Bikini-Fitness'),
+                    ('5', 'Junioren-Mens Physique'), ('6', 'Junioren-Bodybuilding'),
+                    ('23', 'Junioren-Classic Bodybuilding'),
+                    ('21', 'Junioren-Frauen Fitness Figur'), ('22', 'Junioren-Frauen Physique'),
+                    ('7', 'Frauen-Bikini-Fitness'), ('25', 'Frauen-Wellness'),
+                    ('8', 'Frauen-Fitness-Figur'), ('9', 'Frauen-Physique'), ('10', 'Paare'),
+                    ('11', 'Handicappt/Wheelchair'), ('12', 'Classic Bodybuilding'),
+                    ('24', 'Classic Physique'), ('13', 'Männer Physique'),
+                    ('24', 'Männer Muscular Physique'), ('14', 'Männer Bodybuilding'),
+                    ('15', 'Masters-Männer BB'), ('16', 'Masters-Männer Classic BB'),
+                    ('17', 'Masters-Männer Physique'), ('18', 'Masters-Frauen Physique'),
+                    ('19', 'Masters-Frauen Bikini Fitness'), ('20', 'Masters-Frauen Figur')
+                ],
+                max_length=2,
+                verbose_name='Kategorie'
+            ),
         ),
         migrations.AlterField(
             model_name='submissioninternational',
             name='gym',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='submission.gym', verbose_name='Studio'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='submission.gym',
+                verbose_name='Studio'
+            ),
         ),
         migrations.AlterField(
             model_name='submissioninternational',
             name='submission_status',
-            field=models.CharField(choices=[('1', 'Eingegangen'), ('2', 'Bewilligt'), ('3', 'Abgelehnt')], default='1', max_length=2),
+            field=models.CharField(
+                choices=[('1', 'Eingegangen'), ('2', 'Bewilligt'), ('3', 'Abgelehnt')],
+                default='1',
+                max_length=2
+            ),
         ),
         migrations.AlterField(
             model_name='submissionjudge',
@@ -119,31 +171,64 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='submissionjudge',
             name='submission_status',
-            field=models.CharField(choices=[('1', 'Eingegangen'), ('2', 'Bewilligt'), ('3', 'Abgelehnt')], default='1', max_length=2),
+            field=models.CharField(
+                choices=[('1', 'Eingegangen'), ('2', 'Bewilligt'), ('3', 'Abgelehnt')],
+                default='1',
+                max_length=2
+            ),
         ),
         migrations.AlterField(
             model_name='submissionstarter',
             name='category',
-            field=models.CharField(choices=[('1', 'Bikini-Fitness Klasse I'), ('19', 'Bikini-Fitness Klasse II'), ('20', 'Bikini-Fitness Klasse III'), ('21', 'Wellness-Fitness Klasse'), ('2', 'Frauen Fitness-Figur Klasse I'), ('22', 'Frauen Fitness-Figur Klasse II'), ('4', 'Frauen Physique'), ('6', 'Classic-Bodybuilding Klasse I'), ('23', 'Classic-Bodybuilding Klasse II'), ('30', 'Classic Physique'), ('7', 'Paare'), ('8', 'Männer Physique Klassse I'), ('24', 'Männer Physique Klasse II'), ('25', 'Männer Physique Klasse III'), ('11', 'Muscular-Physique'), ('26', 'Männer Klasse I'), ('27', 'Männer Klasse II'), ('28', 'Männer Klasse III'), ('29', 'Männer Klasse IV'), ('29', 'Männer Klasse V')], max_length=2, verbose_name='Kategorie'),
+            field=models.CharField(
+                choices=[
+                    ('1', 'Bikini-Fitness Klasse I'), ('19', 'Bikini-Fitness Klasse II'),
+                    ('20', 'Bikini-Fitness Klasse III'), ('21', 'Wellness-Fitness Klasse'),
+                    ('2', 'Frauen Fitness-Figur Klasse I'),
+                    ('22', 'Frauen Fitness-Figur Klasse II'), ('4', 'Frauen Physique'),
+                    ('6', 'Classic-Bodybuilding Klasse I'),
+                    ('23', 'Classic-Bodybuilding Klasse II'), ('30', 'Classic Physique'),
+                    ('7', 'Paare'), ('8', 'Männer Physique Klassse I'),
+                    ('24', 'Männer Physique Klasse II'), ('25', 'Männer Physique Klasse III'),
+                    ('11', 'Muscular-Physique'), ('26', 'Männer Klasse I'),
+                    ('27', 'Männer Klasse II'), ('28', 'Männer Klasse III'),
+                    ('29', 'Männer Klasse IV'), ('29', 'Männer Klasse V')
+                ],
+                max_length=2,
+                verbose_name='Kategorie'
+            ),
         ),
         migrations.AlterField(
             model_name='submissionstarter',
             name='gym',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='submission.gym', verbose_name='Studio'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='submission.gym',
+                verbose_name='Studio'
+            ),
         ),
         migrations.AlterField(
             model_name='submissionstarter',
             name='submission_status',
-            field=models.CharField(choices=[('1', 'Eingegangen'), ('2', 'Bewilligt'), ('3', 'Abgelehnt')], default='1', max_length=2),
+            field=models.CharField(
+                choices=[('1', 'Eingegangen'), ('2', 'Bewilligt'), ('3', 'Abgelehnt')],
+                default='1',
+                max_length=2
+            ),
         ),
         migrations.AlterField(
             model_name='submissionstarter',
             name='terms_and_conditions',
-            field=models.BooleanField(verbose_name='Hiermit erkläre ich mich mit den Regeln des DBFV e.V./IFBB'),
+            field=models.BooleanField(
+                verbose_name='Hiermit erkläre ich mich mit den Regeln des DBFV e.V./IFBB'
+            ),
         ),
         migrations.AlterField(
             model_name='userprofile',
             name='terms_and_conditions',
-            field=models.BooleanField(default=False, verbose_name='Hiermit erkläre ich mich mit den Regeln des DBFV e.V./IFBB'),
+            field=models.BooleanField(
+                default=False,
+                verbose_name='Hiermit erkläre ich mich mit den Regeln des DBFV e.V./IFBB'
+            ),
         ),
     ]

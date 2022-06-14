@@ -14,7 +14,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='submissioninternational',
             name='best_placement',
-            field=models.CharField(default='', max_length=150, verbose_name='Beste Platzierung auf einer deutschen DBFV/IFBB-Meisterschaft, Datum und Kategorie'),
+            field=models.CharField(
+                default='',
+                max_length=150,
+                verbose_name=
+                'Beste Platzierung auf einer deutschen DBFV/IFBB-Meisterschaft, Datum und Kategorie'
+            ),
             preserve_default=False,
         ),
     ]

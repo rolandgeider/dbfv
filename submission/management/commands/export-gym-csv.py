@@ -35,7 +35,14 @@ class Command(BaseCommand):
         """
         result = []
         for gym in gym_list:
-            result.append([unicode(s).encode("utf-8") for s in [gym.name, gym.email, gym.state.name, gym.owner, gym.zip_code, gym.city, gym.street, gym.is_active]])
+            result.append(
+                [
+                    unicode(s).encode("utf-8") for s in [
+                        gym.name, gym.email, gym.state.name, gym.owner, gym.zip_code, gym.city,
+                        gym.street, gym.is_active
+                    ]
+                ]
+            )
         return result
 
     def handle(self, *args, **options):
@@ -46,9 +53,11 @@ class Command(BaseCommand):
         gym_list = Gym.objects.filter(is_active=False)
 
         with open('gym.csv', 'w') as csv_file:
-            writer = csv.writer(csv_file, delimiter='\t',quoting=csv.QUOTE_ALL)
+            writer = csv.writer(csv_file, delimiter='\t', quoting=csv.QUOTE_ALL)
 
             # Write the CSV file
-            writer.writerow(['Name', 'E-Mail', 'Bundesland', 'Inhaber', 'PLZ', 'Stadt', 'Adresse', 'Aktiv'])
+            writer.writerow(
+                ['Name', 'E-Mail', 'Bundesland', 'Inhaber', 'PLZ', 'Stadt', 'Adresse', 'Aktiv']
+            )
             for line in self.export_submission_mailmerge(gym_list):
                 writer.writerow(line)

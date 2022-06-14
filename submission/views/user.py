@@ -55,9 +55,7 @@ def registration(request):
             username = form.cleaned_data['username']
             password = form.cleaned_data['password1']
             email = form.cleaned_data['email']
-            user = Django_User.objects.create_user(username,
-                                                   email,
-                                                   password)
+            user = Django_User.objects.create_user(username, email, password)
             user.save()
 
             # New users are added to the 'User' group
@@ -80,5 +78,4 @@ def registration(request):
 
     context['form'] = form
 
-    return render('form.html',
-                  context)
+    return render('form.html', context)

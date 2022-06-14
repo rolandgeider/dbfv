@@ -42,11 +42,13 @@ class Command(BaseCommand):
         """
         Process the options
         """
-        list = SubmissionStarter.objects.filter(creation_date__year=2014,
-                                                submission_status=SubmissionStarter.SUBMISSION_STATUS_BEWILLIGT).order_by('id')
+        list = SubmissionStarter.objects.filter(
+            creation_date__year=2014,
+            submission_status=SubmissionStarter.SUBMISSION_STATUS_BEWILLIGT
+        ).order_by('id')
 
         with open('starter.csv', 'w') as csv_file:
-            writer = csv.writer(csv_file, delimiter='\t',quoting=csv.QUOTE_ALL)
+            writer = csv.writer(csv_file, delimiter='\t', quoting=csv.QUOTE_ALL)
             today = datetime.date.today()
             submissions = list
 

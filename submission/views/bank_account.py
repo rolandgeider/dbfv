@@ -89,4 +89,4 @@ class BankAccountUpdateView(DbfvFormMixin, generic.UpdateView):
     model = BankAccount
     success_url = reverse_lazy('bank-account-list')
     permission_required = 'submission.change_bankaccount'
-    fields = ['owner_name', 'iban', 'bic', 'bank_name' ]
+    fields = ['owner_name', 'iban', 'bic', 'bank_name']

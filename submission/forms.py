@@ -17,11 +17,7 @@
 from django.core.exceptions import ValidationError
 
 from django.forms import (
-    ModelForm,
-    MultipleChoiceField,
-    EmailField,
-    BooleanField,
-    ModelChoiceField
+    ModelForm, MultipleChoiceField, EmailField, BooleanField, ModelChoiceField
 )
 from django.contrib.auth.models import User as Django_User
 from django.contrib.auth.forms import UserCreationForm
@@ -30,20 +26,17 @@ from django.utils.translation import gettext as _
 from captcha.fields import ReCaptchaField
 
 from submission.models import (
-    State,
-    Gym,
-    SubmissionStarter,
-    SubmissionGym,
-    SubmissionJudge,
-    SubmissionInternational
+    State, Gym, SubmissionStarter, SubmissionGym, SubmissionJudge, SubmissionInternational
 )
 
 
 class UserEmailForm(ModelForm):
-    email = EmailField(label=_("Email"),
-                       help_text=u"Wird nur gebraucht, wenn Sie das Passwort vergessen "
-                                 u"und zurücksetzen müssen",
-                       required=False)
+    email = EmailField(
+        label=_("Email"),
+        help_text=u"Wird nur gebraucht, wenn Sie das Passwort vergessen "
+        u"und zurücksetzen müssen",
+        required=False
+    )
 
     def clean_email(self):
         # Email must be unique systemwide
@@ -58,21 +51,20 @@ class UserEmailForm(ModelForm):
 
 
 class RegistrationForm(UserCreationForm, UserEmailForm):
-    state = ModelChoiceField(label=_("Bundesverband"),
-                             queryset=State.objects.all())
+    state = ModelChoiceField(label=_("Bundesverband"), queryset=State.objects.all())
 
-    terms_and_conditions = BooleanField(label=u'Regeln des DBFV e.V./IFBB',
-                                        help_text=u'Hiermit erkläre ich mich mit '
-                                                  '<a href="/rules">'
-                                                  'den Regeln</a> des DBFV e.V./IFBB einverstanden/',
-                                        required=True)
+    terms_and_conditions = BooleanField(
+        label=u'Regeln des DBFV e.V./IFBB',
+        help_text=u'Hiermit erkläre ich mich mit '
+        '<a href="/rules">'
+        'den Regeln</a> des DBFV e.V./IFBB einverstanden/',
+        required=True
+    )
 
     #captcha = ReCaptchaField(attrs={'theme': 'clean'},
     #                         label=u'Sicherheitscheck',
     #                         help_text=u'Geben Sie bitte die Wörter ein, das dient als '
     #                                   u'Sicherheitsmaßname gegen Spam',)
-
-
 
 
 class SubmissionStarterForm(ModelForm):
@@ -90,66 +82,71 @@ class SubmissionStarterForm(ModelForm):
         ('10', u'NRW Newcomer-Wertung für Männer am 06.05.2017 in Duisburg-Rheinhausen'),
     )
 
-    gym = ModelChoiceField(queryset=Gym.objects.filter(is_active=True),
-                           label='Studio')
+    gym = ModelChoiceField(queryset=Gym.objects.filter(is_active=True), label='Studio')
 
-    championships = MultipleChoiceField(label='Meisterschaften',
-                                        choices=CHAMPIONSHIPS,
-                                        required=False)
+    championships = MultipleChoiceField(
+        label='Meisterschaften', choices=CHAMPIONSHIPS, required=False
+    )
 
-    terms_and_conditions = BooleanField(label=u'Regeln des DBFV e.V./IFBB',
-                                        help_text=u'Hiermit erkläre ich mich mit '
-                                                  '<a href="/rules">'
-                                                  'den Regeln</a> des DBFV e.V./IFBB einverstanden/',
-                                        required=True)
+    terms_and_conditions = BooleanField(
+        label=u'Regeln des DBFV e.V./IFBB',
+        help_text=u'Hiermit erkläre ich mich mit '
+        '<a href="/rules">'
+        'den Regeln</a> des DBFV e.V./IFBB einverstanden/',
+        required=True
+    )
 
     class Meta:
         model = SubmissionStarter
-        exclude = ('submission_status',)
+        exclude = ('submission_status', )
 
 
 class SubmissionInternationalForm(ModelForm):
 
-    gym = ModelChoiceField(queryset=Gym.objects.filter(is_active=True),
-                           label='Studio')
+    gym = ModelChoiceField(queryset=Gym.objects.filter(is_active=True), label='Studio')
 
     class Meta:
         model = SubmissionInternational
-        exclude = ('submission_status',)
+        exclude = ('submission_status', )
 
 
 class SubmissionInternationalFormBV(ModelForm):
 
     class Meta:
         model = SubmissionInternational
-        exclude = ('submission_status',)
+        exclude = ('submission_status', )
 
 
 class SubmissionStarterFormBV(ModelForm):
+
     class Meta:
         model = SubmissionStarter
         fields = ('submission_status', )
 
 
 class SubmissionGymForm(ModelForm):
+
     class Meta:
         model = SubmissionGym
-        exclude = ('submission_status',)
+        exclude = ('submission_status', )
 
 
 class SubmissionGymFormBV(ModelForm):
+
     class Meta:
         model = SubmissionGym
         fields = ('submission_status', )
 
 
 class SubmissionJudgeForm(ModelForm):
+
     class Meta:
         model = SubmissionJudge
-        exclude = ('submission_status',)
+        exclude = ('submission_status', )
 
 
 class SubmissionJudgeFormBV(ModelForm):
+
     class Meta:
         model = SubmissionJudge
         fields = ('submission_status', )

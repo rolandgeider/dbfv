@@ -47,15 +47,21 @@ class BankAccount(models.Model):
     Model for a bank account
     """
 
-    owner_name = models.CharField(verbose_name='Begünstigter',
-                                  max_length=100, )
-    iban = models.CharField(verbose_name='IBAN',
-                            max_length=34, )
-    bic = models.CharField(verbose_name='BIC',
-                           max_length=11,
-                           help_text=u'Nur bei Auslandsüberweisung nötig')
-    bank_name = models.CharField(verbose_name='Bankname',
-                                 max_length=30, )
+    owner_name = models.CharField(
+        verbose_name='Begünstigter',
+        max_length=100,
+    )
+    iban = models.CharField(
+        verbose_name='IBAN',
+        max_length=34,
+    )
+    bic = models.CharField(
+        verbose_name='BIC', max_length=11, help_text=u'Nur bei Auslandsüberweisung nötig'
+    )
+    bank_name = models.CharField(
+        verbose_name='Bankname',
+        max_length=30,
+    )
 
     def __str__(self):
         """
@@ -69,17 +75,17 @@ class State(models.Model):
     Model for a state
     """
 
-    name = models.CharField(verbose_name='Name',
-                            max_length=100, )
-    short_name = models.CharField(verbose_name='Kürzel',
-                                  max_length=3, )
-    email = models.EmailField(verbose_name='Email',
-                              max_length=120,
-                              blank=True)
+    name = models.CharField(
+        verbose_name='Name',
+        max_length=100,
+    )
+    short_name = models.CharField(
+        verbose_name='Kürzel',
+        max_length=3,
+    )
+    email = models.EmailField(verbose_name='Email', max_length=120, blank=True)
     bank_account = models.ForeignKey(
-        BankAccount,
-        verbose_name='Bankkonto',
-        on_delete=models.CASCADE
+        BankAccount, verbose_name='Bankkonto', on_delete=models.CASCADE
     )
 
     def __str__(self):
@@ -101,33 +107,18 @@ class Gym(models.Model):
         ordering = ["state__name", "name"]
 
     # Properties
-    name = models.CharField(verbose_name='Name',
-                            max_length=100, )
-    email = models.EmailField(verbose_name='Email',
-                              blank=True,
-                              null=True)
-    state = models.ForeignKey(State,
-                              verbose_name='Bundesland',
-                              on_delete=models.CASCADE
-                              )
+    name = models.CharField(
+        verbose_name='Name',
+        max_length=100,
+    )
+    email = models.EmailField(verbose_name='Email', blank=True, null=True)
+    state = models.ForeignKey(State, verbose_name='Bundesland', on_delete=models.CASCADE)
 
-    owner = models.CharField(verbose_name='Inhaber',
-                             max_length=100,
-                             blank=True,
-                             null=True)
-    zip_code = models.IntegerField(_(u'PLZ'),
-                                   blank=True,
-                                   null=True)
-    city = models.CharField(_(u'Ort'),
-                            max_length=30,
-                            blank=True,
-                            null=True)
-    street = models.CharField(_(u'Straße'),
-                              max_length=30,
-                              blank=True,
-                              null=True)
-    is_active = models.BooleanField(_('Ist aktiv'),
-                                    default=True)
+    owner = models.CharField(verbose_name='Inhaber', max_length=100, blank=True, null=True)
+    zip_code = models.IntegerField(_(u'PLZ'), blank=True, null=True)
+    city = models.CharField(_(u'Ort'), max_length=30, blank=True, null=True)
+    street = models.CharField(_(u'Straße'), max_length=30, blank=True, null=True)
+    is_active = models.BooleanField(_('Ist aktiv'), default=True)
 
     def __str__(self):
         """
@@ -187,17 +178,12 @@ class AbstractSubmission(models.Model):
         (SUBMISSION_STATUS_ABGELEHNT, 'Abgelehnt'),
     )
 
-    user = models.ForeignKey(User,
-                             verbose_name=_('User'),
-                             editable=False,
-                             on_delete=models.CASCADE)
-    creation_date = models.DateField(_('Creation date'),
-                                     auto_now_add=True)
-    submission_status = models.CharField(max_length=2,
-                                         choices=SUBMISSION_STATUS,
-                                         default=SUBMISSION_STATUS_EINGEGANGEN)
-    mail_merge = models.BooleanField(default=False,
-                                     editable=False)
+    user = models.ForeignKey(User, verbose_name=_('User'), editable=False, on_delete=models.CASCADE)
+    creation_date = models.DateField(_('Creation date'), auto_now_add=True)
+    submission_status = models.CharField(
+        max_length=2, choices=SUBMISSION_STATUS, default=SUBMISSION_STATUS_EINGEGANGEN
+    )
+    mail_merge = models.BooleanField(default=False, editable=False)
 
     def get_bank_designated_use(self):
         """
@@ -234,10 +220,12 @@ class AbstractSubmission(models.Model):
         """
         Returns the necessary JSON to be used in the search
         """
-        return {'id': self.id,
-                'name': self.get_name,
-                'status': self.get_submission_status_display(),
-                'date': self.creation_date.strftime("%d.%m.%Y")}
+        return {
+            'id': self.id,
+            'name': self.get_name,
+            'status': self.get_submission_status_display(),
+            'date': self.creation_date.strftime("%d.%m.%Y")
+        }
 
     def notification_email_hook(self):
         """
@@ -262,11 +250,12 @@ class AbstractSubmission(models.Model):
                 context['is_user'] = False
 
             message = render_to_string(self.get_email_template(), context)
-            mail.send_mail(self.get_email_subject(),
-                           message,
-                           settings.DEFAULT_FROM_EMAIL,
-                           [email],
-                           fail_silently=True)
+            mail.send_mail(
+                self.get_email_subject(),
+                message,
+                settings.DEFAULT_FROM_EMAIL, [email],
+                fail_silently=True
+            )
 
         # Perform custom logic
         self.notification_email_hook()
@@ -289,28 +278,13 @@ class SubmissionStarter(AbstractSubmission):
         """
         ordering = ["creation_date", "gym"]
 
-    MAILMERGE_HEADER = ['ID',
-                        'Vorname',
-                        'Nachname',
-                        'Geburtsdatum',
-                        'Aktiv Seit',
-                        'Straße',
-                        'Hausnummer',
-                        'PLZ',
-                        'Stadt',
-                        'Telefon',
-                        'Email',
-                        'Nationalität',
-                        'Größe',
-                        'Gewicht',
-                        'Kategorie',
-                        'Studio',
-                        'Bundesverband',
-                        'Datum',
-                        'Jahr']
+    MAILMERGE_HEADER = [
+        'ID', 'Vorname', 'Nachname', 'Geburtsdatum', 'Aktiv Seit', 'Straße', 'Hausnummer', 'PLZ',
+        'Stadt', 'Telefon', 'Email', 'Nationalität', 'Größe', 'Gewicht', 'Kategorie', 'Studio',
+        'Bundesverband', 'Datum', 'Jahr'
+    ]
 
     SUBMISSION_CATEGORY = (
-
         ('1', u'Bikini-Fitness Klasse I'),
         ('19', u'Bikini-Fitness Klasse II'),
         ('20', u'Bikini-Fitness Klasse III'),
@@ -348,54 +322,43 @@ class SubmissionStarter(AbstractSubmission):
 
     # Personal information
     date_of_birth = models.DateField(_('Geburtsdatum'))
-    active_since = models.CharField(_('Aktiv seit'),
-                                    max_length=20)
-    last_name = models.CharField(_('Familienname'),
-                                 max_length=30)
-    first_name = models.CharField(_('Vorname'),
-                                  max_length=30)
-    street = models.CharField(_(u'Straße'),
-                              max_length=30)
-    house_nr = models.CharField(_(u'Hausnummer'),
-                                max_length=30)
+    active_since = models.CharField(_('Aktiv seit'), max_length=20)
+    last_name = models.CharField(_('Familienname'), max_length=30)
+    first_name = models.CharField(_('Vorname'), max_length=30)
+    street = models.CharField(_(u'Straße'), max_length=30)
+    house_nr = models.CharField(_(u'Hausnummer'), max_length=30)
     zip_code = models.IntegerField(_(u'PLZ'))
-    city = models.CharField(_(u'Ort'),
-                            max_length=30)
-    tel_number = models.CharField(_(u'Tel. Nr.'),
-                                  max_length=20)
-    email = models.EmailField(_(u'Email'),
-                              max_length=120)
-    nationality = models.ForeignKey(Country,
-                                    verbose_name=u'Staatsangehörigkeit',
-                                    default=37,  # Germany
-                                    on_delete = models.CASCADE
-                                    )
-    height = models.IntegerField(_(u'Größe (cm)'))
-    weight = models.DecimalField(_(u'Wettkampfgewicht (kg)'),
-                                 max_digits=5,
-                                 decimal_places=2)
-    category = models.CharField(_(u'Kategorie'),
-                                max_length=2,
-                                choices=SUBMISSION_CATEGORY,
-                                )
-    terms_and_conditions = models.BooleanField(
-        'Hiermit erkläre ich mich mit den Regeln des DBFV e.V./IFBB',
-        blank=False)
-
-    pdf_sent = models.BooleanField(
-       default=False
+    city = models.CharField(_(u'Ort'), max_length=30)
+    tel_number = models.CharField(_(u'Tel. Nr.'), max_length=20)
+    email = models.EmailField(_(u'Email'), max_length=120)
+    nationality = models.ForeignKey(
+        Country,
+        verbose_name=u'Staatsangehörigkeit',
+        default=37,  # Germany
+        on_delete=models.CASCADE
     )
+    height = models.IntegerField(_(u'Größe (cm)'))
+    weight = models.DecimalField(_(u'Wettkampfgewicht (kg)'), max_digits=5, decimal_places=2)
+    category = models.CharField(
+        _(u'Kategorie'),
+        max_length=2,
+        choices=SUBMISSION_CATEGORY,
+    )
+    terms_and_conditions = models.BooleanField(
+        'Hiermit erkläre ich mich mit den Regeln des DBFV e.V./IFBB', blank=False
+    )
+
+    pdf_sent = models.BooleanField(default=False)
     """
     Flag indicating whether the athlete has received the confirmation PDF
     """
 
     # Other fields
-    submission_last_year = models.BooleanField(u"Im Vorjahr wurde bereits eine Lizenz beantragt",
-                                               default=False)
+    submission_last_year = models.BooleanField(
+        u"Im Vorjahr wurde bereits eine Lizenz beantragt", default=False
+    )
 
-    gym = models.ForeignKey(Gym,
-                            verbose_name='Studio',
-                            on_delete=models.CASCADE)
+    gym = models.ForeignKey(Gym, verbose_name='Studio', on_delete=models.CASCADE)
 
     def __str__(self):
         """
@@ -467,15 +430,16 @@ class SubmissionStarter(AbstractSubmission):
         """
         if not self.gym.email:
             for email in ManagerEmail.objects.all():
-                mail.send_mail('Studio hat keine Emailadresse',
-                               u"Eine Starterlizenz wurde für ein Studio beantragt, dass\n"
-                               u"keine Emailadresse im System hinterlegt hat.\n\n"
-                               u"* Nr.:        {studio.pk}\n"
-                               u"* Name:       {studio.name}\n"
-                               u"* Bundesland: {studio.state.name}\n".format(studio=self.gym),
-                               settings.DEFAULT_FROM_EMAIL,
-                               [email.email],
-                               fail_silently=True)
+                mail.send_mail(
+                    'Studio hat keine Emailadresse',
+                    u"Eine Starterlizenz wurde für ein Studio beantragt, dass\n"
+                    u"keine Emailadresse im System hinterlegt hat.\n\n"
+                    u"* Nr.:        {studio.pk}\n"
+                    u"* Name:       {studio.name}\n"
+                    u"* Bundesland: {studio.state.name}\n".format(studio=self.gym),
+                    settings.DEFAULT_FROM_EMAIL, [email.email],
+                    fail_silently=True
+                )
 
     def get_search_json(self):
         """
@@ -491,25 +455,13 @@ class SubmissionStarter(AbstractSubmission):
         """
         Returns a row for the mailmerge CSV export
         """
-        return [self.pk,
-                self.first_name,
-                self.last_name,
-                self.date_of_birth,
-                self.active_since,
-                self.street,
-                self.house_nr,
-                self.zip_code,
-                self.city,
-                self.tel_number,
-                self.email,
-                self.nationality.name,
-                self.height,
-                self.weight,
-                self.get_category_display(),
-                self.gym.name,
-                self.gym.state,
-                self.creation_date,
-                self.creation_date.year]
+        return [
+            self.pk, self.first_name, self.last_name, self.date_of_birth, self.active_since,
+            self.street, self.house_nr, self.zip_code, self.city, self.tel_number, self.email,
+            self.nationality.name, self.height, self.weight,
+            self.get_category_display(), self.gym.name, self.gym.state, self.creation_date,
+            self.creation_date.year
+        ]
 
 
 class SubmissionInternational(AbstractSubmission):
@@ -523,26 +475,11 @@ class SubmissionInternational(AbstractSubmission):
         """
         ordering = ["creation_date", "gym"]
 
-    MAILMERGE_HEADER = ['ID',
-                        'Vorname',
-                        'Nachname',
-                        'Geburtsdatum',
-                        'Aktiv Seit',
-                        'Straße',
-                        'PLZ',
-                        'Stadt',
-                        'Telefon',
-                        'Email',
-                        'Nationalität',
-                        'Größe',
-                        'Gewicht',
-                        'Kategorie',
-                        'Studio',
-                        'Bundesverband',
-                        'Datum',
-                        'Jahr',
-                        'Meisterschaft',
-                        'Datum der Meisterschaft']
+    MAILMERGE_HEADER = [
+        'ID', 'Vorname', 'Nachname', 'Geburtsdatum', 'Aktiv Seit', 'Straße', 'PLZ', 'Stadt',
+        'Telefon', 'Email', 'Nationalität', 'Größe', 'Gewicht', 'Kategorie', 'Studio',
+        'Bundesverband', 'Datum', 'Jahr', 'Meisterschaft', 'Datum der Meisterschaft'
+    ]
 
     SUBMISSION_CATEGORY = (
         ('1', u'Jugend-Bikini-Fitness'),
@@ -577,44 +514,35 @@ class SubmissionInternational(AbstractSubmission):
 
     # Personal information
     date_of_birth = models.DateField(_('Geburtsdatum'))
-    last_name = models.CharField(_('Familienname'),
-                                 max_length=30)
-    first_name = models.CharField(_('Vorname'),
-                                  max_length=30)
-    street = models.CharField(_(u'Straße'),
-                              max_length=30)
+    last_name = models.CharField(_('Familienname'), max_length=30)
+    first_name = models.CharField(_('Vorname'), max_length=30)
+    street = models.CharField(_(u'Straße'), max_length=30)
     zip_code = models.IntegerField(_(u'PLZ'))
-    city = models.CharField(_(u'Ort'),
-                            max_length=30)
-    tel_number = models.CharField(_(u'Tel. Nr.'),
-                                  max_length=20)
-    email = models.EmailField(_(u'Email'),
-                              max_length=120)
-    nationality = models.ForeignKey(Country,
-                                    verbose_name=u'Staatsangehörigkeit',
-                                    default=37,  # Germany
-                                    on_delete=models.CASCADE
-                                    )
+    city = models.CharField(_(u'Ort'), max_length=30)
+    tel_number = models.CharField(_(u'Tel. Nr.'), max_length=20)
+    email = models.EmailField(_(u'Email'), max_length=120)
+    nationality = models.ForeignKey(
+        Country,
+        verbose_name=u'Staatsangehörigkeit',
+        default=37,  # Germany
+        on_delete=models.CASCADE
+    )
     height = models.IntegerField(_(u'Größe (cm)'))
-    weight = models.DecimalField(_(u'Wettkampfgewicht in kg (ca.)'),
-                                 max_digits=5,
-                                 decimal_places=2)
-    category = models.CharField(_(u'Kategorie'),
-                                max_length=2,
-                                choices=SUBMISSION_CATEGORY)
-    championship = models.CharField(_(u'Meisterschaft'),
-                                    help_text=u'Meisterschaft in der Du starten möchtest',
-                                    max_length=150)
+    weight = models.DecimalField(_(u'Wettkampfgewicht in kg (ca.)'), max_digits=5, decimal_places=2)
+    category = models.CharField(_(u'Kategorie'), max_length=2, choices=SUBMISSION_CATEGORY)
+    championship = models.CharField(
+        _(u'Meisterschaft'), help_text=u'Meisterschaft in der Du starten möchtest', max_length=150
+    )
     championship_date = models.DateField(_(u'Datum der Meisterschaft'))
 
-    best_placement = models.CharField(u'Beste Platzierung',
-                                      max_length=150,
-                                      help_text='Beste Platzierung auf einer deutschen '
-                                                'DBFV/IFBB-Meisterschaft, mit Datum und Kategorie')
+    best_placement = models.CharField(
+        u'Beste Platzierung',
+        max_length=150,
+        help_text='Beste Platzierung auf einer deutschen '
+        'DBFV/IFBB-Meisterschaft, mit Datum und Kategorie'
+    )
 
-    gym = models.ForeignKey(Gym,
-                            verbose_name='Studio',
-                            on_delete=models.CASCADE)
+    gym = models.ForeignKey(Gym, verbose_name='Studio', on_delete=models.CASCADE)
 
     def __str__(self):
         """
@@ -659,8 +587,9 @@ class SubmissionInternational(AbstractSubmission):
         """
         Collects and returns a list with the recipients of notification emails
         """
-        email_list = ['info@dbfv.de', 'dbfv.falk@gmail.com', "Margret.Netack@t-online.de",
-                      self.email]
+        email_list = [
+            'info@dbfv.de', 'dbfv.falk@gmail.com', "Margret.Netack@t-online.de", self.email
+        ]
         if self.gym.state.email:
             email_list.append(self.gym.state.email)
         return email_list
@@ -671,15 +600,16 @@ class SubmissionInternational(AbstractSubmission):
         """
         if not self.gym.email:
             for email in ManagerEmail.objects.all():
-                mail.send_mail('Studio hat keine Emailadresse',
-                               u"Eine internationale Lizenz wurde für ein Studio beantragt, dass\n"
-                               u"keine Emailadresse im System hinterlegt hat.\n\n"
-                               u"* Nr.:        {studio.pk}\n"
-                               u"* Name:       {studio.name}\n"
-                               u"* Bundesland: {studio.state.name}\n".format(studio=self.gym),
-                               settings.DEFAULT_FROM_EMAIL,
-                               [email.email],
-                               fail_silently=True)
+                mail.send_mail(
+                    'Studio hat keine Emailadresse',
+                    u"Eine internationale Lizenz wurde für ein Studio beantragt, dass\n"
+                    u"keine Emailadresse im System hinterlegt hat.\n\n"
+                    u"* Nr.:        {studio.pk}\n"
+                    u"* Name:       {studio.name}\n"
+                    u"* Bundesland: {studio.state.name}\n".format(studio=self.gym),
+                    settings.DEFAULT_FROM_EMAIL, [email.email],
+                    fail_silently=True
+                )
 
     def get_search_json(self):
         """
@@ -695,26 +625,13 @@ class SubmissionInternational(AbstractSubmission):
         """
         Returns a row for the mailmerge CSV export
         """
-        return [self.pk,
-                self.first_name,
-                self.last_name,
-                self.date_of_birth,
-                self.active_since,
-                self.street,
-                self.zip_code,
-                self.city,
-                self.tel_number,
-                self.email,
-                self.nationality.name,
-                self.height,
-                self.weight,
-                self.get_category_display(),
-                self.gym.name,
-                self.gym.state,
-                self.creation_date,
-                self.creation_date.year,
-                self.championship,
-                self.championship_date]
+        return [
+            self.pk, self.first_name, self.last_name, self.date_of_birth, self.active_since,
+            self.street, self.zip_code, self.city, self.tel_number, self.email,
+            self.nationality.name, self.height, self.weight,
+            self.get_category_display(), self.gym.name, self.gym.state, self.creation_date,
+            self.creation_date.year, self.championship, self.championship_date
+        ]
 
 
 class SubmissionGym(AbstractSubmission):
@@ -725,36 +642,28 @@ class SubmissionGym(AbstractSubmission):
     FEE = 30
 
     # Personal information
-    state = models.ForeignKey(State,
-                              verbose_name=_(u'Landesverband'),
-                              on_delete=models.CASCADE)
-    name = models.CharField(verbose_name=_('Name'),
-                            max_length=30,
-                            help_text=_('Name des Studios oder Verein'))
+    state = models.ForeignKey(State, verbose_name=_(u'Landesverband'), on_delete=models.CASCADE)
+    name = models.CharField(
+        verbose_name=_('Name'), max_length=30, help_text=_('Name des Studios oder Verein')
+    )
     founded = models.DateField(_(u'Gegründet am'))
-    street = models.CharField(_(u'Straße'),
-                              max_length=30)
+    street = models.CharField(_(u'Straße'), max_length=30)
     zip_code = models.IntegerField(_(u'PLZ'))
-    city = models.CharField(_(u'Ort'),
-                            max_length=30)
-    tel_number = models.CharField(_(u'Tel. Nr.'),
-                                  max_length=20)
-    fax_number = models.CharField(_(u'Fax. Nr.'),
-                                  max_length=20)
-    email = models.EmailField(_(u'Email'),
-                              max_length=120)
-    members = models.IntegerField(verbose_name=_(u'Anzahl Mitglieder'),
-                                  help_text=_('Dient nur statistischen Zwecken'),
-                                  null=True,
-                                  blank=True)
+    city = models.CharField(_(u'Ort'), max_length=30)
+    tel_number = models.CharField(_(u'Tel. Nr.'), max_length=20)
+    fax_number = models.CharField(_(u'Fax. Nr.'), max_length=20)
+    email = models.EmailField(_(u'Email'), max_length=120)
+    members = models.IntegerField(
+        verbose_name=_(u'Anzahl Mitglieder'),
+        help_text=_('Dient nur statistischen Zwecken'),
+        null=True,
+        blank=True
+    )
 
     # Other fields
-    gym = models.OneToOneField(Gym,
-                               verbose_name='Studio',
-                               editable=False,
-                               blank=True,
-                               null=True,
-                               on_delete=models.CASCADE)
+    gym = models.OneToOneField(
+        Gym, verbose_name='Studio', editable=False, blank=True, null=True, on_delete=models.CASCADE
+    )
 
     def __str__(self):
         """
@@ -811,38 +720,21 @@ class SubmissionJudge(AbstractSubmission):
     Model for a judge submission
     """
 
-    MAILMERGE_HEADER = ['ID',
-                        'Vorname',
-                        'Nachname',
-                        'Straße',
-                        'PLZ',
-                        'Stadt',
-                        'Telefon',
-                        'Email',
-                        'Bundesverband',
-                        'Datum',
-                        'Jahr']
+    MAILMERGE_HEADER = [
+        'ID', 'Vorname', 'Nachname', 'Straße', 'PLZ', 'Stadt', 'Telefon', 'Email', 'Bundesverband',
+        'Datum', 'Jahr'
+    ]
 
     FEE = 20
 
-    last_name = models.CharField('Familienname',
-                                 max_length=30)
-    first_name = models.CharField('Vorname',
-                                  max_length=30)
-    street = models.CharField(u'Straße',
-                              max_length=30)
+    last_name = models.CharField('Familienname', max_length=30)
+    first_name = models.CharField('Vorname', max_length=30)
+    street = models.CharField(u'Straße', max_length=30)
     zip_code = models.IntegerField(u'PLZ')
-    city = models.CharField(u'Ort',
-                            max_length=30)
-    state = models.ForeignKey(State,
-                              verbose_name=u'Landesverband',
-                              on_delete=models.CASCADE)
-    tel_number = models.CharField(u'Tel. Nr.',
-                                  max_length=20)
-    email = models.EmailField(u'Email',
-                              max_length=120,
-                              null=True,
-                              blank=True)
+    city = models.CharField(u'Ort', max_length=30)
+    state = models.ForeignKey(State, verbose_name=u'Landesverband', on_delete=models.CASCADE)
+    tel_number = models.CharField(u'Tel. Nr.', max_length=20)
+    email = models.EmailField(u'Email', max_length=120, null=True, blank=True)
 
     def __str__(self):
         """
@@ -907,25 +799,20 @@ class SubmissionJudge(AbstractSubmission):
         """
         Returns a row for the mailmerge CSV export
         """
-        return [self.pk,
-                self.first_name,
-                self.last_name,
-                self.street,
-                self.zip_code,
-                self.city,
-                self.tel_number,
-                self.email,
-                self.state.name,
-                self.creation_date,
-                self.creation_date.year]
+        return [
+            self.pk, self.first_name, self.last_name, self.street, self.zip_code, self.city,
+            self.tel_number, self.email, self.state.name, self.creation_date,
+            self.creation_date.year
+        ]
 
 
 USER_TYPE_UNKNOWN = -1
 USER_TYPE_BUNDESVERBAND = 2
 USER_TYPE_USER = 3
-USER_TYPES = ((USER_TYPE_BUNDESVERBAND, u'Bundesverband'),
-              (USER_TYPE_USER, u'User'),
-              (USER_TYPE_UNKNOWN, u'Unbekannt'))
+USER_TYPES = (
+    (USER_TYPE_BUNDESVERBAND, u'Bundesverband'), (USER_TYPE_USER, u'User'),
+    (USER_TYPE_UNKNOWN, u'Unbekannt')
+)
 
 
 class UserProfile(models.Model):
@@ -938,19 +825,14 @@ class UserProfile(models.Model):
     """Flag indicating whether the user's email has been verified"""
 
     # User type
-    type = models.IntegerField(choices=USER_TYPES,
-                               default=USER_TYPE_USER)
+    type = models.IntegerField(choices=USER_TYPES, default=USER_TYPE_USER)
 
     # Personal information
-    state = models.ForeignKey(State,
-                              blank=True,
-                              null=True,
-                              on_delete=models.CASCADE)
+    state = models.ForeignKey(State, blank=True, null=True, on_delete=models.CASCADE)
 
     terms_and_conditions = models.BooleanField(
-        'Hiermit erkläre ich mich mit den Regeln des DBFV e.V./IFBB',
-        blank=False,
-        default=False)
+        'Hiermit erkläre ich mich mit den Regeln des DBFV e.V./IFBB', blank=False, default=False
+    )
 
     def __str__(self):
         """
@@ -974,7 +856,6 @@ def disable_for_loaddata(signal_handler):
         signal_handler(*args, **kwargs)
 
     return wrapper
-
 
 
 # Every new user gets a profile

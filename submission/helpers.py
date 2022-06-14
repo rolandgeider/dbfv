@@ -29,12 +29,7 @@ def build_submission_pdf(request: HttpRequest, pk: int, response):
     current_site = get_current_site(request)
     url = current_site.domain + reverse('submission-view', kwargs={'pk': pk})
     doc = SimpleDocTemplate(
-        response,
-        pagesize=A4,
-        rightMargin=50,
-        leftMargin=50,
-        topMargin=50,
-        bottomMargin=50
+        response, pagesize=A4, rightMargin=50, leftMargin=50, topMargin=50, bottomMargin=50
     )
     styles = getSampleStyleSheet()
     elements = [Paragraph("Some Title 123", styles["Heading2"]), Spacer(10 * cm, 0.5 * cm)]

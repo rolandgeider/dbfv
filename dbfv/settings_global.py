@@ -9,7 +9,6 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
@@ -61,13 +60,12 @@ STATICFILES_DIRS = (
 LOGIN_URL = '/anmelden/'
 LOGIN_REDIRECT_URL = '/'
 
-
 # List of finder classes that know how to find static files in
 # various locations.
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 # Primary keys are AutoFields
@@ -104,7 +102,6 @@ TEMPLATES = [
     },
 ]
 
-
 MIDDLEWARE = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -121,7 +118,6 @@ ROOT_URLCONF = 'dbfv.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'dbfv.wsgi.application'
-
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -147,11 +143,10 @@ INSTALLED_APPS = (
 
     # Email verification
     'django_email_verification',
-
 )
 
 DEBUG_TOOLBAR_CONFIG = {'INTERCEPT_REDIRECTS': False}
-INTERNAL_IPS = ('127.0.0.1',)
+INTERNAL_IPS = ('127.0.0.1', )
 
 
 # Email verification

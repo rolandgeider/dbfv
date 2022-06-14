@@ -14,6 +14,16 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='submissionstarter',
             name='category',
-            field=models.CharField(max_length=2, verbose_name='Kategorie', choices=[(b'1', 'Bikini-Klasse'), (b'2', 'Frauen Fitness-Figur-Klasse'), (b'3', 'Frauen Bodyklasse'), (b'4', 'Frauen Physiqueklasse'), (b'5', 'Juniorenklasse'), (b'6', 'Classic-Bodybuilding'), (b'7', 'Paare'), (b'8', 'M\xe4nner Physique'), (b'9', 'M\xe4nner Bodyklasse'), (b'10', 'Wellness-Fitness'), (b'11', 'Muscular-Physique')]),
+            field=models.CharField(
+                max_length=2,
+                verbose_name='Kategorie',
+                choices=[
+                    (b'1', 'Bikini-Klasse'), (b'2', 'Frauen Fitness-Figur-Klasse'),
+                    (b'3', 'Frauen Bodyklasse'), (b'4', 'Frauen Physiqueklasse'),
+                    (b'5', 'Juniorenklasse'), (b'6', 'Classic-Bodybuilding'), (b'7', 'Paare'),
+                    (b'8', 'M\xe4nner Physique'), (b'9', 'M\xe4nner Bodyklasse'),
+                    (b'10', 'Wellness-Fitness'), (b'11', 'Muscular-Physique')
+                ]
+            ),
         ),
     ]

@@ -22,10 +22,13 @@ from django_email_verification import urls as email_urls
 
 # sub patterns for email lists
 patterns_email = [
-    path('auswaehlen/',
-         permission_required('core.change_emailcron')(
-             TemplateView.as_view(template_name="email/overview.html")),
-         name='overview'),
+    path(
+        'auswaehlen/',
+        permission_required('core.change_emailcron')(
+            TemplateView.as_view(template_name="email/overview.html")
+        ),
+        name='overview'
+    ),
     #    path(r'^erstellen/(?P<type>(starter|studio))$',
     #        permission_required('core.change_emailcron')(email_lists.EmailListFormPreview(EmailListForm)),
     #        name='add'),
@@ -41,5 +44,7 @@ patterns_email_verification = [
 
 urlpatterns = [
     path('email-listen/', include((patterns_email, 'email'), namespace="email")),
-    path('email/', include((patterns_email_verification, 'verification'), namespace="verification")),
+    path(
+        'email/', include((patterns_email_verification, 'verification'), namespace="verification")
+    ),
 ]

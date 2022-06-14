@@ -15,7 +15,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
 
-
 from submission.models import user_type
 
 from submission.models import USER_TYPE_BUNDESVERBAND
@@ -37,5 +36,4 @@ def processor(request):
         'SUBMISSION_STATUS_EINGEGANGEN': SubmissionStarter.SUBMISSION_STATUS_EINGEGANGEN,
         'SUBMISSION_STATUS_BEWILLIGT': SubmissionStarter.SUBMISSION_STATUS_BEWILLIGT,
         'SUBMISSION_STATUS_ABGELEHNT': SubmissionStarter.SUBMISSION_STATUS_ABGELEHNT,
-
     }

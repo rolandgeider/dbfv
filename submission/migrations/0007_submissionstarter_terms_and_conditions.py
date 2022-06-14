@@ -14,7 +14,10 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='submissionstarter',
             name='terms_and_conditions',
-            field=models.BooleanField(default=False, verbose_name=b'Hiermit erkl\xc3\xa4re ich mich mit den Regeln des DBFV e.V./IFBB'),
+            field=models.BooleanField(
+                default=False,
+                verbose_name=b'Hiermit erkl\xc3\xa4re ich mich mit den Regeln des DBFV e.V./IFBB'
+            ),
             preserve_default=False,
         ),
     ]

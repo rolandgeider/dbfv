@@ -28,7 +28,6 @@ from django.http import HttpRequest, HttpResponse
 from submission.helpers import build_submission_pdf
 from submission.models import Gym, SubmissionStarter
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -48,20 +47,24 @@ class Command(BaseCommand):
 ...
 """
 
-        for submission in SubmissionStarter.objects.filter(pdf_sent=False, submission_status=SubmissionStarter.SUBMISSION_STATUS_BEWILLIGT):
+        for submission in SubmissionStarter.objects.filter(
+            pdf_sent=False, submission_status=SubmissionStarter.SUBMISSION_STATUS_BEWILLIGT
+        ):
 
-            logger.warning(f'Sending PDF for submission {submission.id} - ({submission.user.email})')
-            msg = EmailMultiAlternatives(email_subject,
-                                         email_text,
-                                         settings.DEFAULT_FROM_EMAIL,
-                                         [submission.user.email])
+            logger.warning(
+                f'Sending PDF for submission {submission.id} - ({submission.user.email})'
+            )
+            msg = EmailMultiAlternatives(
+                email_subject, email_text, settings.DEFAULT_FROM_EMAIL, [submission.user.email]
+            )
             msg.mixed_subtype = 'related'
 
             # Build the PDF and attach it to the email
             response = HttpResponse(content_type='application/pdf')
             build_submission_pdf(HttpRequest(), submission.pk, response)
             msg_part = MIMEApplication(response.content)
-            msg_part['Content-Disposition'] = f'attachment; filename="Starterlizenz-{submission.id}.pdf"'
+            msg_part['Content-Disposition'
+                     ] = f'attachment; filename="Starterlizenz-{submission.id}.pdf"'
             msg.attach(msg_part)
 
             # Send the email
@@ -70,4 +73,3 @@ class Command(BaseCommand):
             # Flag the submission as sent
             #submission.pdf_sent = True
             #submission.save()
-

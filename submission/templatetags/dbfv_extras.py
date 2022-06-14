@@ -55,11 +55,15 @@ def render_submission_list(submissions, user, filter_mode, submission_type='star
     submission_list = []
     if submissions:
         if filter_mode == 'open':
-            submission_list = [i for i in submissions if i.submission_status ==
-                               SubmissionStarter.SUBMISSION_STATUS_EINGEGANGEN]
+            submission_list = [
+                i for i in submissions
+                if i.submission_status == SubmissionStarter.SUBMISSION_STATUS_EINGEGANGEN
+            ]
         elif filter_mode == 'closed':
-            submission_list = [i for i in submissions if i.submission_status !=
-                               SubmissionStarter.SUBMISSION_STATUS_EINGEGANGEN]
+            submission_list = [
+                i for i in submissions
+                if i.submission_status != SubmissionStarter.SUBMISSION_STATUS_EINGEGANGEN
+            ]
         else:
             submission_list = [i for i in submissions]
 
@@ -130,19 +134,12 @@ def render_form_submit(save_text='Save', button_class='default'):
     :param save_text: the text to use on the submit button
     :param button_class: CSS class to apply to the button, default 'default'
     """
-    if button_class in ('default',
-                        'primary',
-                        'success',
-                        'info',
-                        'warning',
-                        'danger',
-                        'link'):
+    if button_class in ('default', 'primary', 'success', 'info', 'warning', 'danger', 'link'):
         button_class = button_class
     else:
         button_class = 'default'
 
-    return {'save_text': save_text,
-            'button_class': button_class}
+    return {'save_text': save_text, 'button_class': button_class}
 
 
 @register.inclusion_tag('tags/render_form_errors.html')
@@ -175,6 +172,4 @@ def render_form_fields(form, submit_text='Save', show_save=True):
     :param save_text: the text to use on the submit button
     """
 
-    return {'form': form,
-            'show_save': show_save,
-            'submit_text': submit_text}
+    return {'form': form, 'show_save': show_save, 'submit_text': submit_text}

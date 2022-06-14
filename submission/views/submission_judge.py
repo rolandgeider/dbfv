@@ -55,9 +55,9 @@ class SubmissionListView(BaseSubmissionListView):
         return context
 
 
-class SubmissionListMonthView(SubmissionListView,
-                              generic.dates.MonthMixin,
-                              generic.dates.YearMixin):
+class SubmissionListMonthView(
+    SubmissionListView, generic.dates.MonthMixin, generic.dates.YearMixin
+):
     permission_required = 'submission.change_submissionjudge'
 
     def get_queryset(self):

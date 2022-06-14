@@ -53,7 +53,6 @@ class Command(BaseCommand):
         #                                                    submission_status=status):
         #     if submission.email:
         #         email_list.append(submission.email)
-        
 
         ### Gyms
         #for gym in Gym.objects.filter(is_active=True):
@@ -68,10 +67,12 @@ class Command(BaseCommand):
         email_list.append('schrecksenmeister.eisspin@gmail.com')
         #print(email_list)
 
-        email_images = ['image1.jpg',]
+        email_images = [
+            'image1.jpg',
+        ]
         #email_images = []
         #email_files_others = ['Infos_Homepage.pdf', ]
-        email_files_others = [ ]
+        email_files_others = []
         email_from = 'no-reply@dbfv.de'
         email_subject = 'Newsletter'
         email_text = u'Textversion nicht verfügbar, bitte öffnen Sie die HTML Variante'
@@ -146,7 +147,7 @@ euer nutriful Team
 
             <img src="cid:image1.jpg" style="width:100%;">
             """
-        email_html="""
+        email_html = """
 <p>Wir haben eine Kooperation mit dem DBFV e.V. geschlossen!</p>
 <p>Jedes assoziierte Mitglied erhält ein spezielles Angebot mit Regenerierten Fitnessgeräten von uns!</p>
 <p>Außerdem haben wir für Sie ein Sonderangebot für neue Fitnessgeräte -40%.</p>
@@ -178,16 +179,15 @@ Marketing: <a href="https://www.fitnessclub24.pl/info">https://www.fitnessclub24
 
 <img src="cid:image1.jpg" style="width:100%;">
 """
-            ##<img src="cid:image1.jpg">
+        ##<img src="cid:image1.jpg">
 
         # Process and send all emails
         counter = 1
         for email_recipient in email_list:
-            print('Sending mail {0} from {1} ({2})'.format(counter, len(email_list), email_recipient))
-            msg = EmailMultiAlternatives(email_subject,
-                                         email_text,
-                                         email_from,
-                                         [email_recipient])
+            print(
+                'Sending mail {0} from {1} ({2})'.format(counter, len(email_list), email_recipient)
+            )
+            msg = EmailMultiAlternatives(email_subject, email_text, email_from, [email_recipient])
             msg.attach_alternative(email_html, "text/html")
             msg.mixed_subtype = 'related'
             for image_file in email_images:
@@ -196,7 +196,7 @@ Marketing: <a href="https://www.fitnessclub24.pl/info">https://www.fitnessclub24
                 fp.close()
                 msg_img.add_header('Content-ID', '<{}>'.format(image_file))
                 msg.attach(msg_img)
-            
+
             for other_file in email_files_others:
                 fp = open(os.path.join(os.path.dirname(__file__), other_file), 'rb')
                 msg_part = MIMEApplication(fp.read())

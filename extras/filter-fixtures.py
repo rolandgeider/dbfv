@@ -13,7 +13,6 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU Affero General Public License
-
 """
 Simple script that filters the output of django's dumpdata command into more
 manageable chunks.
@@ -33,6 +32,7 @@ def filter_dump(data, model_list, filename):
     with open(filename, 'w') as outfile:
         json.dump(filter_data, outfile, indent=4)
 
+
 # This is a full dump of the DB
 fixture = open('data.json')
 data = json.load(fixture)
@@ -41,14 +41,14 @@ fixture.close()
 #
 # Submission
 #
-filter_dump(data, ('submission.manageremail',), 'manageremail.json')
-filter_dump(data, ('submission.bankaccount',), 'bank_account.json')
-filter_dump(data, ('submission.state',), 'federal_states.json')
-filter_dump(data, ('submission.gym',), 'gyms.json')
-filter_dump(data, ('submission.submissiongym',), 'submission_gym.json')
-filter_dump(data, ('submission.submissionstarter',), 'submission_starter.json')
+filter_dump(data, ('submission.manageremail', ), 'manageremail.json')
+filter_dump(data, ('submission.bankaccount', ), 'bank_account.json')
+filter_dump(data, ('submission.state', ), 'federal_states.json')
+filter_dump(data, ('submission.gym', ), 'gyms.json')
+filter_dump(data, ('submission.submissiongym', ), 'submission_gym.json')
+filter_dump(data, ('submission.submissionstarter', ), 'submission_starter.json')
 
 #
 # Auth
 #
-filter_dump(data, ('auth.group',), 'groups.json')
+filter_dump(data, ('auth.group', ), 'groups.json')

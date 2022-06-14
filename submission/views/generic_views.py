@@ -66,6 +66,7 @@ class DbfvFormMixin(DbfvViewMixin, ModelFormMixin):
 # Submissions
 #
 
+
 class BaseSubmissionCreateView(DbfvFormMixin, generic.CreateView):
     """
     Creates a new submissions
@@ -213,10 +214,9 @@ class BaseCsvExportView(View):
             submissions.update(mail_merge=True)
 
         license_type = self.model.get_license_type()
-        filename = 'attachment; filename=Export-{0}-{1}-{2}-{3}.csv'.format(license_type,
-                                                                            today.year,
-                                                                            today.month,
-                                                                            today.day)
+        filename = 'attachment; filename=Export-{0}-{1}-{2}-{3}.csv'.format(
+            license_type, today.year, today.month, today.day
+        )
         response['Content-Disposition'] = filename
         response['Content-Length'] = len(response.content)
         return response
@@ -235,8 +235,7 @@ def get_overview_context(model_class, queryset, user, **kwargs):
                                        .filter(creation_date__month=date_obj.month)\
                                        .filter(creation_date__year=date_obj.year)
 
-        month_list.append({'date': date_obj,
-                           'export_count': tmp_count.count()})
+        month_list.append({'date': date_obj, 'export_count': tmp_count.count()})
     context['submission_list'] = queryset
     context['month_list'] = month_list
     context['current_year'] = datetime.date.today().year

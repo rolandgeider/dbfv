@@ -24,7 +24,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='submissiongym',
             name='members',
-            field=models.IntegerField(help_text='Dient nur statistischen Zwecken', null=True, verbose_name='Anzahl Mitglieder', blank=True),
+            field=models.IntegerField(
+                help_text='Dient nur statistischen Zwecken',
+                null=True,
+                verbose_name='Anzahl Mitglieder',
+                blank=True
+            ),
         ),
         migrations.AlterField(
             model_name='submissiongym',
@@ -59,6 +64,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='userprofile',
             name='type',
-            field=models.IntegerField(default=-1, choices=[(2, 'Bundesverband'), (3, 'User'), (-1, 'Unbekannt')]),
+            field=models.IntegerField(
+                default=-1, choices=[(2, 'Bundesverband'), (3, 'User'), (-1, 'Unbekannt')]
+            ),
         ),
     ]

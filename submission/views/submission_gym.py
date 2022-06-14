@@ -57,6 +57,7 @@ class SubmissionListView(DbfvViewMixin, generic.ListView):
 
 
 class SubmissionListYearView(SubmissionListView, generic.dates.YearMixin):
+
     def get_queryset(self):
         """
         Change the queryset depending on the user's rights. The rules are the
@@ -69,8 +70,9 @@ class SubmissionListYearView(SubmissionListView, generic.dates.YearMixin):
         if user_type(self.request.user) == USER_TYPE_BUNDESVERBAND:
             return SubmissionGym.objects.filter(creation_date__year=self.get_year())
         elif user_type(self.request.user) == USER_TYPE_USER:
-            return SubmissionGym.objects.filter(user=self.request.user,
-                                                creation_date__year=self.get_year())
+            return SubmissionGym.objects.filter(
+                user=self.request.user, creation_date__year=self.get_year()
+            )
 
 
 class SubmissionDetailView(DbfvViewMixin, generic.detail.DetailView):

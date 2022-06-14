@@ -27,7 +27,7 @@ from core.models import EmailCron
 from submission.models import ManagerEmail, SubmissionStarter, Gym
 
 
-class EmailListFormPreview(): #FormPreview
+class EmailListFormPreview():  #FormPreview
     preview_template = 'email/preview.html'
     form_template = 'email/form.html'
     list_type = None
@@ -53,11 +53,12 @@ class EmailListFormPreview(): #FormPreview
         Send an email to the managers with the current content
         """
         for email in ManagerEmail.objects.all():
-            mail.send_mail(form.cleaned_data['subject'],
-                           form.cleaned_data['body'],
-                           settings.DEFAULT_FROM_EMAIL,
-                           [email.email],
-                           fail_silently=False)
+            mail.send_mail(
+                form.cleaned_data['subject'],
+                form.cleaned_data['body'],
+                settings.DEFAULT_FROM_EMAIL, [email.email],
+                fail_silently=False
+            )
         return context
 
     def done(self, request, cleaned_data):
@@ -70,8 +71,9 @@ class EmailListFormPreview(): #FormPreview
         if self.list_type == 'starter':
             this_year = datetime.date.today().year
             status = SubmissionStarter.SUBMISSION_STATUS_BEWILLIGT
-            for submission in SubmissionStarter.objects.filter(creation_date__year=this_year,
-                                                               submission_status=status):
+            for submission in SubmissionStarter.objects.filter(
+                creation_date__year=this_year, submission_status=status
+            ):
                 if submission.email:
                     email_list.append(submission.email)
 

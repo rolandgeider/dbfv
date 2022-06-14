@@ -8,7 +8,6 @@ from django_email_verification import urls as email_urls
 #from django.contrib import admin
 #admin.autodiscover()
 
-
 urlpatterns = [
     # Examples:
     # url(r'^$', 'dbfv.views.home', name='home'),
@@ -23,7 +22,6 @@ urlpatterns = [
     # The submission application
     path('core/', include(('core.urls', 'core'), namespace='core')),
     path('', include('submission.urls')),
-
     path('email-verification/', include(email_urls)),
 ]
 

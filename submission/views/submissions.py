@@ -61,8 +61,8 @@ class SubmissionListView(BaseSubmissionListView):
         context = super(SubmissionListView, self).get_context_data(**kwargs)
 
         diff = datetime.datetime.now() - datetime.timedelta(weeks=100)
-        queryset = SubmissionStarter.objects.filter(creation_date__gt=diff).order_by('gym__state',
-                                                                                     'creation_date')
+        queryset = SubmissionStarter.objects.filter(creation_date__gt=diff
+                                                    ).order_by('gym__state', 'creation_date')
 
         # queryset = SubmissionStarter.objects.all().order_by('gym__state', 'creation_date')
         if user_type(self.request.user) == USER_TYPE_USER:
@@ -72,9 +72,9 @@ class SubmissionListView(BaseSubmissionListView):
         return context
 
 
-class SubmissionListMonthView(SubmissionListView,
-                              generic.dates.MonthMixin,
-                              generic.dates.YearMixin):
+class SubmissionListMonthView(
+    SubmissionListView, generic.dates.MonthMixin, generic.dates.YearMixin
+):
     permission_required = 'submission.change_submissionstarter'
 
     def get_queryset(self):
@@ -106,8 +106,7 @@ class SubmissionListMonthView(SubmissionListView,
             tmp_count = SubmissionStarter.objects.filter(mail_merge=True) \
                 .filter(creation_date__month=date_obj.month) \
                 .filter(creation_date__year=date_obj.year)
-            month_list.append({'date': date_obj,
-                               'export_count': tmp_count.count()})
+            month_list.append({'date': date_obj, 'export_count': tmp_count.count()})
         context['submission_list'] = self.get_queryset()
         context['month_list'] = month_list
         context['current_year'] = datetime.date.today().year
@@ -160,8 +159,9 @@ class SubmissionCreateView(BaseSubmissionCreateView):
                 if i[0] == option:
                     return i[1]
 
-        self.extra_data = {'championships':
-                               [get_option(i) for i in form.cleaned_data['championships']]}
+        self.extra_data = {
+            'championships': [get_option(i) for i in form.cleaned_data['championships']]
+        }
         return super(SubmissionCreateView, self).form_valid(form)
 
     def get_context_data(self, **kwargs):
@@ -233,10 +233,11 @@ def search(request):
     q = request.GET.get('q', '')
 
     if q:
-        submissions = (SubmissionStarter.objects.filter(Q(first_name__icontains=q) |
-                                                        Q(last_name__icontains=q) |
-                                                        Q(gym__name__icontains=q))
-                       .distinct())
+        submissions = (
+            SubmissionStarter.objects.filter(
+                Q(first_name__icontains=q) | Q(last_name__icontains=q) | Q(gym__name__icontains=q)
+            ).distinct()
+        )
         results = []
         for submission in submissions[:30]:
             results.append(submission.get_search_json())
@@ -260,5 +261,3 @@ def pdf(request, pk):
     response['Content-Length'] = len(response.content)
 
     return response
-
-

@@ -32,9 +32,10 @@ class Command(BaseCommand):
         """
         if EmailCron.objects.count():
             for email in EmailCron.objects.all()[:100]:
-                mail.send_mail(email.subject,
-                               email.body,
-                               settings.DEFAULT_FROM_EMAIL,
-                               [email.email],
-                               fail_silently=True)
+                mail.send_mail(
+                    email.subject,
+                    email.body,
+                    settings.DEFAULT_FROM_EMAIL, [email.email],
+                    fail_silently=True
+                )
                 email.delete()
