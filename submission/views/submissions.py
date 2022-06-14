@@ -23,7 +23,9 @@ from django.db.models import Q
 from django.http.response import (
     HttpResponse,
     HttpResponseForbidden,
+    HttpResponseRedirect,
 )
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views import generic
 
@@ -276,3 +278,16 @@ def pdf(request, pk):
     response['Content-Length'] = len(response.content)
 
     return response
+
+
+def send_pdf(request, pk):
+    """
+    Re-sends the PDF to the given submission
+    """
+    if not request.user.has_perm('submission.change_submissionstarter'):
+        return HttpResponseForbidden()
+
+    submission = get_object_or_404(SubmissionStarter, pk=pk)
+    submission.send_pdf_email()
+
+    return HttpResponseRedirect(submission.get_absolute_url())

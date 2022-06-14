@@ -45,38 +45,12 @@ class Command(BaseCommand):
         Process the options
         """
 
-        email_subject = 'Titel der Email'
-        email_text = """Sehr geehrte Damen und Herren,
-
-...
-"""
-
         for submission in SubmissionStarter.objects.filter(
             pdf_sent=False, submission_status=SubmissionStarter.SUBMISSION_STATUS_BEWILLIGT
         ):
+            # Send the PDF for the submission
+            submission.send_pdf_email()
 
-            logger.warning(
-                f'Sending PDF for submission {submission.id} - ({submission.user.email})'
-            )
-            msg = EmailMultiAlternatives(
-                email_subject,
-                email_text,
-                settings.DEFAULT_FROM_EMAIL,
-                [submission.user.email],
-            )
-            msg.mixed_subtype = 'related'
-
-            # Build the PDF and attach it to the email
-            response = HttpResponse(content_type='application/pdf')
-            build_submission_pdf(HttpRequest(), submission.pk, response)
-            msg_part = MIMEApplication(response.content)
-            msg_part['Content-Disposition'
-                     ] = f'attachment; filename="Starterlizenz-{submission.id}.pdf"'
-            msg.attach(msg_part)
-
-            # Send the email
-            msg.send()
-
-            # Flag the submission as sent
+            # Flag it as sent
             submission.pdf_sent = True
             submission.save()

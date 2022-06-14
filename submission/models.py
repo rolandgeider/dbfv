@@ -16,18 +16,31 @@
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
 
 # Standard Library
+import logging
 import os
+from email.mime.application import MIMEApplication
 from functools import wraps
 
 # Django
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core import mail
+from django.core.mail import EmailMultiAlternatives
 from django.db import models
 from django.db.models.signals import post_save
+from django.http import (
+    HttpRequest,
+    HttpResponse,
+)
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+
+# dbfv
+from submission.helpers import build_submission_pdf
+
+
+logger = logging.getLogger(__name__)
 
 
 class ManagerEmail(models.Model):
@@ -395,11 +408,40 @@ class SubmissionStarter(AbstractSubmission):
         """
         return 'Starterlizenz'
 
-    def get_email_template(self):
+    @staticmethod
+    def get_email_template():
         """
         Returns the template used for the notification email
         """
         return 'submission/starter/email_new_submission.html'
+
+    def send_pdf_email(self):
+        """
+        Sends the confirmation PDF to the user
+        """
+        email_subject = 'Titel der Email'
+        email_text = """Sehr geehrte Damen und Herren,
+
+        ...
+        """
+        logger.warning(f'Sending PDF for submission {self.id} - ({self.user.email})')
+        msg = EmailMultiAlternatives(
+            email_subject,
+            email_text,
+            settings.DEFAULT_FROM_EMAIL,
+            [self.user.email],
+        )
+        msg.mixed_subtype = 'related'
+
+        # Build the PDF and attach it to the email
+        response = HttpResponse(content_type='application/pdf')
+        build_submission_pdf(HttpRequest(), self.pk, response)
+        msg_part = MIMEApplication(response.content)
+        msg_part['Content-Disposition'] = f'attachment; filename="Starterlizenz-{self.id}.pdf"'
+        msg.attach(msg_part)
+
+        # Send the email
+        msg.send()
 
     def get_email_list(self):
         """
@@ -458,11 +500,25 @@ class SubmissionStarter(AbstractSubmission):
         Returns a row for the mailmerge CSV export
         """
         return [
-            self.pk, self.first_name, self.last_name, self.date_of_birth, self.active_since,
-            self.street, self.house_nr, self.zip_code, self.city, self.tel_number, self.email,
-            self.nationality.name, self.height, self.weight,
-            self.get_category_display(), self.gym.name, self.gym.state, self.creation_date,
-            self.creation_date.year
+            self.pk,
+            self.first_name,
+            self.last_name,
+            self.date_of_birth,
+            self.active_since,
+            self.street,
+            self.house_nr,
+            self.zip_code,
+            self.city,
+            self.tel_number,
+            self.email,
+            self.nationality.name,
+            self.height,
+            self.weight,
+            self.get_category_display(),
+            self.gym.name,
+            self.gym.state,
+            self.creation_date,
+            self.creation_date.year,
         ]
 
 

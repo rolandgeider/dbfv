@@ -14,10 +14,6 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 
-# from email.MIMEMultipart import MIMEMultipart
-# from email.MIMEText import MIMEText
-# from email.MIMEImage import MIMEImage
-
 # Standard Library
 import os
 from email.mime.application import MIMEApplication

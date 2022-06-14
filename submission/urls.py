@@ -114,6 +114,7 @@ urlpatterns = [
 
     # Starter
     path('antrag/<int:pk>/pdf', submissions.pdf, name='submission-pdf'),
+    path('antrag/<int:pk>/resend-pdf', submissions.send_pdf, name='submission-resend-pdf'),
     path('antrag/liste/alle/', submissions.SubmissionListView.as_view(), name='submission-list'),
     path(
         'antrag/liste/<int:year>/<int:month>/',

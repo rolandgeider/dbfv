@@ -36,7 +36,6 @@ from submission.models import (
 #from formtools.preview import FormPreview
 
 
-
 class EmailListFormPreview():  #FormPreview
     preview_template = 'email/preview.html'
     form_template = 'email/form.html'
