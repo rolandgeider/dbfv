@@ -69,29 +69,6 @@ $(document).ready(function() {
 <h4>Suche</h4>
 <input type="text" id="term" name="term" placeholder="Suchbegriff eingeben" class="no-bootstrap-focus">
 
-<h4>Info</h4>
-<div class="bg-light p-2">
-    <h5>Serienbriefexport</h5>
-    {% if mailmerge_count > 0 %}
-        <p>
-            Anträge, die noch nicht für Serienbriefe für Microsoft Word exportiert wurden:
-            <strong>{{mailmerge_count}}</strong>
-        </p>
-        <p>
-            <a href="{% url 'submission-export-mailmerge-new' %}" class="btn btn-default btn-block">Neue Anträge exportieren</a>
-
-            <div class="alert alert-error">
-            <strong>Achtung!</strong> Die Liste kann nur
-            einmal generiert werden, Datei sorgfältig aufbewahren.
-            </div>
-        </p>
-
-    {% else %}
-        <p>
-            Alle Anträge wurden bereits für den Serienbrief exportiert.
-        </p>
-    {% endif %}
-</div>
 
 <div class="well">
 <p>Klicken Sie auf einen Monat, um die entsprechenden Anträge zu sehen. Die Zahl in

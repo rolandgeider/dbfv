@@ -16,15 +16,12 @@ from django.contrib.auth.decorators import permission_required
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU Affero General Public License
-from django.urls import path, re_path
+from django.urls import path
 from django.views.generic import TemplateView
 
-# Third Party
-from django_email_verification import urls as email_urls
-
 # dbfv
-from core.forms import EmailListForm
-from core.views import email_verification, email_lists
+from core.views import email_verification
+
 
 # sub patterns for email lists
 patterns_email = [

@@ -75,11 +75,13 @@ class SubmissionListView(BaseSubmissionListView):
         """
         Pass a list of all available dates
         """
-        context = super(SubmissionListView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         diff = datetime.datetime.now() - datetime.timedelta(weeks=100)
-        queryset = SubmissionStarter.objects.filter(creation_date__gt=diff
-                                                    ).order_by('gym__state', 'creation_date')
+        queryset = SubmissionStarter.objects.filter(creation_date__gt=diff).order_by(
+            'gym__state',
+            'creation_date',
+        )
 
         # queryset = SubmissionStarter.objects.all().order_by('gym__state', 'creation_date')
         if user_type(self.request.user) == USER_TYPE_USER:
@@ -90,7 +92,9 @@ class SubmissionListView(BaseSubmissionListView):
 
 
 class SubmissionListMonthView(
-    SubmissionListView, generic.dates.MonthMixin, generic.dates.YearMixin
+    SubmissionListView,
+    generic.dates.MonthMixin,
+    generic.dates.YearMixin,
 ):
     permission_required = 'submission.change_submissionstarter'
 
@@ -115,7 +119,7 @@ class SubmissionListMonthView(
         Pass a list of all available dates
         """
 
-        context = super(SubmissionListView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         # Count how many submissions were exported for each month
         month_list = []

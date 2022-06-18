@@ -15,9 +15,6 @@
 # You should have received a copy of the GNU Affero General Public License
 
 # Django
-import django
-from django.conf import settings
-from django.conf.urls.static import static
 from django.contrib.auth.views import (
     LoginView,
     PasswordChangeView,
@@ -34,7 +31,11 @@ from django.urls import (
 from django.views.generic import TemplateView
 
 # dbfv
-from submission.forms import DbfvAuthenticationForm, DbfvPasswordResetForm, DbfvSetPasswordForm
+from submission.forms import (
+    DbfvAuthenticationForm,
+    DbfvPasswordResetForm,
+    DbfvSetPasswordForm,
+)
 from submission.views import (
     bank_account,
     emails,
@@ -46,7 +47,6 @@ from submission.views import (
     submissions_international,
     user,
 )
-
 
 urlpatterns = [
 
@@ -302,11 +302,11 @@ urlpatterns = [
 # Password reset is implemented by Django, no need to cook our own soup here
 # (besides the templates)
 urlpatterns += [
-    path('anmelden/', LoginView.as_view(
-        form_class=DbfvAuthenticationForm,
-        template_name='user/login.html'),
-         name='login',
-         ),
+    path(
+        'anmelden/',
+        LoginView.as_view(form_class=DbfvAuthenticationForm, template_name='user/login.html'),
+        name='login',
+    ),
     path(
         'user/password/change',
         PasswordChangeView.as_view(

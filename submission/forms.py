@@ -15,8 +15,12 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
 # Django
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordResetForm, \
-    SetPasswordForm
+from django.contrib.auth.forms import (
+    AuthenticationForm,
+    PasswordResetForm,
+    SetPasswordForm,
+    UserCreationForm,
+)
 from django.contrib.auth.models import User as Django_User
 from django.core.exceptions import ValidationError
 from django.forms import (
@@ -30,25 +34,28 @@ from django.utils.translation import gettext as _
 
 # Third Party
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Row, Column
-
+from crispy_forms.layout import (
+    Column,
+    Layout,
+    Row,
+    Submit,
+)
 
 # dbfv
 from submission.models import (
+    BankAccount,
     Gym,
+    ManagerEmail,
     State,
     SubmissionGym,
     SubmissionInternational,
     SubmissionJudge,
-    SubmissionStarter, BankAccount, ManagerEmail,
+    SubmissionStarter,
 )
 
 
 class UserEmailForm(ModelForm):
-    email = EmailField(
-        label=_("Email"),
-        required=True
-    )
+    email = EmailField(label=_("Email"), required=True)
 
     def clean_email(self):
         # Email must be unique systemwide
@@ -90,7 +97,6 @@ class RegistrationForm(UserCreationForm, UserEmailForm):
             )
         )
 
-
     #captcha = ReCaptchaField(attrs={'theme': 'clean'},
     #                         label=u'Sicherheitscheck',
     #                         help_text=u'Geben Sie bitte die Wörter ein, das dient als '
@@ -102,7 +108,6 @@ class SubmissionStarterForm(ModelForm):
     class Meta:
         model = SubmissionStarter
         exclude = ('submission_status', 'pdf_sent')
-
 
     CHAMPIONSHIPS = (
         # ('1', u'Deutsche Junioren und Masters am 18.04.2015 in Berlin'),
@@ -202,11 +207,7 @@ class SubmissionInternationalFormBV(ModelForm):
 
         self.helper = FormHelper()
         self.helper.add_input(Submit('submit', 'Speichern', css_class='btn-success'))
-        self.helper.layout = Layout(
-            Row(
-                Column('submission_status', css_class='col-12'),
-            )
-        )
+        self.helper.layout = Layout(Row(Column('submission_status', css_class='col-12'), ))
 
 
 class SubmissionStarterFormBV(ModelForm):
@@ -221,10 +222,7 @@ class SubmissionStarterFormBV(ModelForm):
         self.helper = FormHelper()
         self.helper.add_input(Submit('submit', 'Speichern', css_class='btn-success'))
         self.helper.layout = Layout(
-            Row(
-                Column('submission_status', css_class='col-12'),
-                css_class='form-row'
-            )
+            Row(Column('submission_status', css_class='col-12'), css_class='form-row')
         )
 
 
@@ -260,11 +258,7 @@ class SubmissionJudgeFormBV(ModelForm):
 
         self.helper = FormHelper()
         self.helper.add_input(Submit('submit', 'Speichern', css_class='btn-success'))
-        self.helper.layout = Layout(
-            Row(
-                Column('submission_status', css_class='col-12'),
-            )
-        )
+        self.helper.layout = Layout(Row(Column('submission_status', css_class='col-12'), ))
 
 
 class GymForm(ModelForm):
@@ -282,7 +276,8 @@ class GymForm(ModelForm):
             'zip_code',
             'city',
             'street',
-            'is_active',]
+            'is_active',
+        ]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -311,12 +306,7 @@ class StateForm(ModelForm):
 
     class Meta:
         model = State
-        fields = [
-            'name',
-            'short_name',
-            'email',
-            'bank_account'
-        ]
+        fields = ['name', 'short_name', 'email', 'bank_account']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -341,12 +331,7 @@ class BankAccountForm(ModelForm):
 
     class Meta:
         model = BankAccount
-        fields = [
-            'owner_name',
-            'iban',
-            'bic',
-            'bank_name'
-        ]
+        fields = ['owner_name', 'iban', 'bic', 'bank_name']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -380,18 +365,14 @@ class ManagerEmailForm(ModelForm):
 
         self.helper = FormHelper()
         self.helper.add_input(Submit('submit', 'Speichern', css_class='btn-success'))
-        self.helper.layout = Layout(
-            Row(
-                Column('email', css_class='col-12'),
-                css_class='form-row'
-            )
-        )
+        self.helper.layout = Layout(Row(Column('email', css_class='col-12'), css_class='form-row'))
 
 
 class DbfvAuthenticationForm(AuthenticationForm):
     """
     Form used for logging in to the DBFV application
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -410,23 +391,20 @@ class DbfvPasswordResetForm(PasswordResetForm):
     """
     Form used to reset a password
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.helper = FormHelper()
         self.helper.add_input(Submit('submit', 'Abschicken', css_class='btn-success'))
-        self.helper.layout = Layout(
-            Row(
-                Column('email', css_class='col-12'),
-                css_class='form-row'
-            )
-        )
+        self.helper.layout = Layout(Row(Column('email', css_class='col-12'), css_class='form-row'))
 
 
 class DbfvSetPasswordForm(SetPasswordForm):
     """
     Form used to reset a password
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

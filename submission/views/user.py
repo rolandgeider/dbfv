@@ -24,9 +24,11 @@ from django.contrib.auth.models import (
     Group,
     User as Django_User,
 )
-from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render
-from django.template import RequestContext, loader
+from django.http import (
+    HttpResponse,
+    HttpResponseRedirect,
+)
+from django.template import loader
 from django.template.context_processors import csrf
 from django.urls import reverse
 

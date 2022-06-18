@@ -17,7 +17,6 @@
 
 # Standard Library
 import logging
-import os
 from email.mime.application import MIMEApplication
 from functools import wraps
 
@@ -38,7 +37,6 @@ from django.utils.translation import gettext_lazy as _
 
 # dbfv
 from submission.helpers import build_submission_pdf
-
 
 logger = logging.getLogger(__name__)
 
@@ -868,8 +866,9 @@ USER_TYPE_UNKNOWN = -1
 USER_TYPE_BUNDESVERBAND = 2
 USER_TYPE_USER = 3
 USER_TYPES = (
-    (USER_TYPE_BUNDESVERBAND, u'Bundesverband'), (USER_TYPE_USER, u'User'),
-    (USER_TYPE_UNKNOWN, u'Unbekannt')
+    (USER_TYPE_BUNDESVERBAND, u'Bundesverband'),
+    (USER_TYPE_USER, u'User'),
+    (USER_TYPE_UNKNOWN, u'Unbekannt'),
 )
 
 
