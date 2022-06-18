@@ -80,12 +80,12 @@ class RegistrationForm(UserCreationForm, UserEmailForm):
         self.helper.add_input(Submit('submit', 'Registrieren', css_class='btn-success'))
         self.helper.layout = Layout(
             Row(
-                Column('username', css_class='form-group col-12 mb-0'),
-                Column('email', css_class='form-group col-12 mb-0'),
-                Column('password1', css_class='form-group col-6 mb-0'),
-                Column('password2', css_class='form-group col-6 mb-0'),
-                Column('state', css_class='form-group col-12 mb-0'),
-                Column('terms_and_conditions', css_class='form-group col-12 mb-0'),
+                Column('username', css_class='col-12'),
+                Column('email', css_class='col-12'),
+                Column('password1', css_class='col-6'),
+                Column('password2', css_class='col-6'),
+                Column('state', css_class='col-12'),
+                Column('terms_and_conditions', css_class='col-12'),
                 css_class='form-row'
             )
         )
@@ -136,20 +136,20 @@ class SubmissionStarterForm(ModelForm):
         self.helper.add_input(Submit('submit', 'Registrieren', css_class='btn-success'))
         self.helper.layout = Layout(
             Row(
-                Column('first_name', css_class='form-group col-6 mb-0'),
-                Column('last_name', css_class='form-group col-6 mb-0'),
-                Column('date_of_birth', css_class='form-group col-6 mb-0'),
-                Column('active_since', css_class='form-group col-6 mb-0'),
-                Column('street', css_class='form-group col-4 mb-0'),
-                Column('house_nr', css_class='form-group col-2 mb-0'),
-                Column('zip_code', css_class='form-group col-2 mb-0'),
-                Column('city', css_class='form-group col-4 mb-0'),
-                Column('tel_number', css_class='form-group col-12 mb-0'),
-                Column('email', css_class='form-group col-12 mb-0'),
-                Column('height', css_class='form-group col-12 mb-0'),
-                Column('weight', css_class='form-group col-12 mb-0'),
-                Column('category', css_class='form-group col-12 mb-0'),
-                Column('terms_and_conditions', css_class='form-group col-12 mb-0'),
+                Column('first_name', css_class='col-6'),
+                Column('last_name', css_class='col-6'),
+                Column('date_of_birth', css_class='col-6'),
+                Column('active_since', css_class='col-6'),
+                Column('street', css_class='col-4'),
+                Column('house_nr', css_class='col-2'),
+                Column('zip_code', css_class='col-2'),
+                Column('city', css_class='col-4'),
+                Column('tel_number', css_class='col-12'),
+                Column('email', css_class='col-12'),
+                Column('height', css_class='col-12'),
+                Column('weight', css_class='col-12'),
+                Column('category', css_class='col-12'),
+                Column('terms_and_conditions', css_class='col-12'),
                 css_class='form-row'
             )
         )
@@ -163,12 +163,50 @@ class SubmissionInternationalForm(ModelForm):
         model = SubmissionInternational
         exclude = ('submission_status', )
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Speichern', css_class='btn-success'))
+        self.helper.layout = Layout(
+            Row(
+                Column('first_name', css_class='col-6'),
+                Column('last_name', css_class='col-6'),
+                Column('date_of_birth', css_class='col-12'),
+                Column('street', css_class='col-4 '),
+                Column('zip_code', css_class='col-2 '),
+                Column('city', css_class='col-6 '),
+                Column('tel_number', css_class='col-12 '),
+                Column('email', css_class='col-12 '),
+                Column('nationality', css_class='col-12 '),
+                Column('height', css_class='col-6 '),
+                Column('weight', css_class='col-6 '),
+                Column('category', css_class='col-12 '),
+                Column('championship', css_class='col-6 '),
+                Column('championship_date', css_class='col-6 '),
+                Column('best_placement', css_class='col-12 '),
+                Column('gym', css_class='col-12 '),
+                Column('terms_and_conditions', css_class='col-12 '),
+            )
+        )
+
 
 class SubmissionInternationalFormBV(ModelForm):
 
     class Meta:
         model = SubmissionInternational
-        exclude = ('submission_status', )
+        fields = ('submission_status', )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Speichern', css_class='btn-success'))
+        self.helper.layout = Layout(
+            Row(
+                Column('submission_status', css_class='col-12'),
+            )
+        )
 
 
 class SubmissionStarterFormBV(ModelForm):
@@ -184,7 +222,7 @@ class SubmissionStarterFormBV(ModelForm):
         self.helper.add_input(Submit('submit', 'Speichern', css_class='btn-success'))
         self.helper.layout = Layout(
             Row(
-                Column('submission_status', css_class='form-group col-12 mb-0'),
+                Column('submission_status', css_class='col-12'),
                 css_class='form-row'
             )
         )
@@ -217,6 +255,17 @@ class SubmissionJudgeFormBV(ModelForm):
         model = SubmissionJudge
         fields = ('submission_status', )
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Speichern', css_class='btn-success'))
+        self.helper.layout = Layout(
+            Row(
+                Column('submission_status', css_class='col-12'),
+            )
+        )
+
 
 class GymForm(ModelForm):
     """
@@ -242,14 +291,14 @@ class GymForm(ModelForm):
         self.helper.add_input(Submit('submit', 'Speichern', css_class='btn-success'))
         self.helper.layout = Layout(
             Row(
-                Column('name', css_class='form-group col-12 mb-0'),
-                Column('email', css_class='form-group col-6 mb-0'),
-                Column('state', css_class='form-group col-6 mb-0'),
-                Column('owner', css_class='form-group col-12 mb-0'),
-                Column('zip_code', css_class='form-group col-3 mb-0'),
-                Column('city', css_class='form-group col-5 mb-0'),
-                Column('street', css_class='form-group col-4 mb-0'),
-                Column('is_active', css_class='form-group col-6 mb-0'),
+                Column('name', css_class='col-12'),
+                Column('email', css_class='col-6'),
+                Column('state', css_class='col-6'),
+                Column('owner', css_class='col-12'),
+                Column('zip_code', css_class='col-3'),
+                Column('city', css_class='col-5'),
+                Column('street', css_class='col-4'),
+                Column('is_active', css_class='col-6'),
                 css_class='form-row'
             )
         )
@@ -276,10 +325,10 @@ class StateForm(ModelForm):
         self.helper.add_input(Submit('submit', 'Speichern', css_class='btn-success'))
         self.helper.layout = Layout(
             Row(
-                Column('name', css_class='form-group col-6 mb-0'),
-                Column('short_name', css_class='form-group col-6 mb-0'),
-                Column('email', css_class='form-group col-12 mb-0'),
-                Column('bank_account', css_class='form-group col-12 mb-0'),
+                Column('name', css_class='col-6'),
+                Column('short_name', css_class='col-6'),
+                Column('email', css_class='col-12'),
+                Column('bank_account', css_class='col-12'),
                 css_class='form-row'
             )
         )
@@ -306,10 +355,10 @@ class BankAccountForm(ModelForm):
         self.helper.add_input(Submit('submit', 'Speichern', css_class='btn-success'))
         self.helper.layout = Layout(
             Row(
-                Column('bank_name', css_class='form-group col-12 mb-0'),
-                Column('owner_name', css_class='form-group col-12 mb-0'),
-                Column('iban', css_class='form-group col-6 mb-0'),
-                Column('bic', css_class='form-group col-6 mb-0'),
+                Column('bank_name', css_class='col-12'),
+                Column('owner_name', css_class='col-12'),
+                Column('iban', css_class='col-6'),
+                Column('bic', css_class='col-6'),
                 css_class='form-row'
             )
         )
@@ -333,7 +382,7 @@ class ManagerEmailForm(ModelForm):
         self.helper.add_input(Submit('submit', 'Speichern', css_class='btn-success'))
         self.helper.layout = Layout(
             Row(
-                Column('email', css_class='form-group col-12 mb-0'),
+                Column('email', css_class='col-12'),
                 css_class='form-row'
             )
         )
@@ -350,8 +399,8 @@ class DbfvAuthenticationForm(AuthenticationForm):
         self.helper.add_input(Submit('submit', 'Anmelden', css_class='btn-success'))
         self.helper.layout = Layout(
             Row(
-                Column('username', css_class='form-group col-12 mb-0'),
-                Column('password', css_class='form-group col-12 mb-0'),
+                Column('username', css_class='col-12'),
+                Column('password', css_class='col-12'),
                 css_class='form-row'
             )
         )
@@ -368,7 +417,7 @@ class DbfvPasswordResetForm(PasswordResetForm):
         self.helper.add_input(Submit('submit', 'Abschicken', css_class='btn-success'))
         self.helper.layout = Layout(
             Row(
-                Column('email', css_class='form-group col-12 mb-0'),
+                Column('email', css_class='col-12'),
                 css_class='form-row'
             )
         )
@@ -385,8 +434,8 @@ class DbfvSetPasswordForm(SetPasswordForm):
         self.helper.add_input(Submit('submit', 'Abschicken', css_class='btn-success'))
         self.helper.layout = Layout(
             Row(
-                Column('new_password1', css_class='form-group col-12 mb-0'),
-                Column('new_password2', css_class='form-group col-12 mb-0'),
+                Column('new_password1', css_class='col-12'),
+                Column('new_password2', css_class='col-12'),
                 css_class='form-row'
             )
         )
