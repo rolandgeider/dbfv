@@ -25,7 +25,8 @@
     <meta name="description" content="">
     <meta name="author" content="Roland Geider">
 
-    <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">
+    <link href="{% static 'node_modules/bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'node_modules/bootstrap-icons/font/bootstrap-icons.css' %}" rel="stylesheet">
     <!--<link href="{% static 'css/bootstrap-custom.css' %}" rel="stylesheet">-->
     <link href="{% static 'css/token-input.css' %}" rel="stylesheet">
 </head>
@@ -210,7 +211,7 @@
 </footer>
 
 <script src="{% static 'js/jquery.js' %}"></script>
-<script src="{% static 'js/bootstrap.bundle.js' %}"></script>
+<script src="{% static 'node_modules/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
 {% block scripts %}{% endblock %}
 </body>
 </html>

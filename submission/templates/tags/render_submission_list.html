@@ -1,61 +1,67 @@
-
 {% if submission_list %}
-<table class="table table-striped" data-toggle="list" id="{{table_id}}">
-    <thead>
-    <tr>
-        <th>Nr.</th>
-        <th>Datum</th>
-        {% if user_type == USER_TYPE_BUNDESVERBAND %}
-            <th>Name</th>
-        {% endif %}
-        <th>Status</th>
-        <th>Aktionen</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for submission in submission_list %}
-    {% if submission_type == 'starter' %}
-    {% ifchanged submission.gym.state %}
-    <tr class="info">
-        <th colspan="5">
-            {{submission.gym.state}}
-        </th>
-    </tr>
-    {% endifchanged %}
-    {% endif  %}
-    <tr>
-        <td>
-            {{submission.id}}
-        </td>
-        <td>
-            {{ submission.creation_date}}
-        </td>
-        {% if user_type == USER_TYPE_BUNDESVERBAND %}
-        <td>
-            {{submission.get_name}} ({{submission.user}})
-        </td>
-        {% endif %}
-        <td>
-            {% if submission.submission_status == SUBMISSION_STATUS_BEWILLIGT %}
-                <span class="glyphicon glyphicon-ok" title="Bewilligt"></span>
-            {% elif submission.submission_status == SUBMISSION_STATUS_ABGELEHNT %}
-                <span class="glyphicon glyphicon-remove" title="Abgelehnt"></span>
-            {% else %}
-                <span class="glyphicon glyphicon-time" title="In Bearbeitung"></span>
+    <table class="table table-striped" data-toggle="list" id="{{ table_id }}">
+        <thead>
+        <tr>
+            <th>Nr.</th>
+            <th>Datum</th>
+            {% if user_type == USER_TYPE_BUNDESVERBAND %}
+                <th>Name</th>
             {% endif %}
-            {{submission.get_submission_status_bv_display}}
-        </td>
-        <td>
-            <a href="{% url url_submission_view submission.id %}" title="Anzeigen"><span class="glyphicon glyphicon-eye-open"></span></a>
-        {% if user_type == USER_TYPE_BUNDESVERBAND %}
-            <a href="{% url url_submission_edit submission.id %}" title="Status bearbeiten"><span class="glyphicon glyphicon-pencil"></span></a>
-            <a href="{% url url_submission_delete submission.id %}" title="Löschen"><span class="glyphicon glyphicon-trash"></span></a>
-        {% endif %}
-        </td>
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
+            <th>Status</th>
+            <th>Aktionen</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for submission in submission_list %}
+            {% if submission_type == 'starter' %}
+                {% ifchanged submission.gym.state %}
+                    <tr class="info">
+                        <th colspan="5">
+                            {{ submission.gym.state }}
+                        </th>
+                    </tr>
+                {% endifchanged %}
+            {% endif %}
+            <tr>
+                <td>
+                    {{ submission.id }}
+                </td>
+                <td>
+                    {{ submission.creation_date }}
+                </td>
+                {% if user_type == USER_TYPE_BUNDESVERBAND %}
+                    <td>
+                        {{ submission.get_name }} ({{ submission.user }})
+                    </td>
+                {% endif %}
+                <td>
+                    {% if submission.submission_status == SUBMISSION_STATUS_BEWILLIGT %}
+                        <i class="bi bi-check"></i>
+                    {% elif submission.submission_status == SUBMISSION_STATUS_ABGELEHNT %}
+                        <i class="bi bi-x"></i>
+                    {% else %}
+                        <i class="bi bi-clock"></i>
+                    {% endif %}
+                    {{ submission.get_submission_status_bv_display }}
+                </td>
+                <td>
+                    <a href="{% url url_submission_view submission.id %}" title="Anzeigen">
+                        <i class="bi bi-eye"></i>
+                    </a>
+                    {% if user_type == USER_TYPE_BUNDESVERBAND %}
+                        <a href="{% url url_submission_edit submission.id %}"
+                           title="Status bearbeiten">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a href="{% url url_submission_delete submission.id %}" title="Löschen">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 {% else %}
     <p>Es liegen momentan keine Anträge vor.</p>
 {% endif %}
