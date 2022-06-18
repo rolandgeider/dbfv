@@ -40,7 +40,7 @@ from submission.models import (
     SubmissionGym,
     SubmissionInternational,
     SubmissionJudge,
-    SubmissionStarter, BankAccount,
+    SubmissionStarter, BankAccount, ManagerEmail,
 )
 
 
@@ -99,6 +99,11 @@ class RegistrationForm(UserCreationForm, UserEmailForm):
 
 class SubmissionStarterForm(ModelForm):
 
+    class Meta:
+        model = SubmissionStarter
+        exclude = ('submission_status', 'pdf_sent')
+
+
     CHAMPIONSHIPS = (
         # ('1', u'Deutsche Junioren und Masters am 18.04.2015 in Berlin'),
         # ('2', u'Int. Deutsche Newcomer-Meisterschaft am 25.04.2015 in Fulda/Petersberg'),
@@ -119,16 +124,35 @@ class SubmissionStarterForm(ModelForm):
     )
 
     terms_and_conditions = BooleanField(
-        label=u'Regeln des DBFV e.V./IFBB',
-        help_text=u'Hiermit erkläre ich mich mit '
-        '<a href="/rules">'
-        'den Regeln</a> des DBFV e.V./IFBB einverstanden/',
+        label='Regeln des DBFV e.V./IFBB',
+        help_text='Hiermit erkläre ich mich mit den Regeln des DBFV e.V. IFBB einverstanden',
         required=True
     )
 
-    class Meta:
-        model = SubmissionStarter
-        exclude = ('submission_status', )
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Registrieren', css_class='btn-success'))
+        self.helper.layout = Layout(
+            Row(
+                Column('first_name', css_class='form-group col-6 mb-0'),
+                Column('last_name', css_class='form-group col-6 mb-0'),
+                Column('date_of_birth', css_class='form-group col-6 mb-0'),
+                Column('active_since', css_class='form-group col-6 mb-0'),
+                Column('street', css_class='form-group col-4 mb-0'),
+                Column('house_nr', css_class='form-group col-2 mb-0'),
+                Column('zip_code', css_class='form-group col-2 mb-0'),
+                Column('city', css_class='form-group col-4 mb-0'),
+                Column('tel_number', css_class='form-group col-12 mb-0'),
+                Column('email', css_class='form-group col-12 mb-0'),
+                Column('height', css_class='form-group col-12 mb-0'),
+                Column('weight', css_class='form-group col-12 mb-0'),
+                Column('category', css_class='form-group col-12 mb-0'),
+                Column('terms_and_conditions', css_class='form-group col-12 mb-0'),
+                css_class='form-row'
+            )
+        )
 
 
 class SubmissionInternationalForm(ModelForm):
@@ -152,6 +176,18 @@ class SubmissionStarterFormBV(ModelForm):
     class Meta:
         model = SubmissionStarter
         fields = ('submission_status', )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Speichern', css_class='btn-success'))
+        self.helper.layout = Layout(
+            Row(
+                Column('submission_status', css_class='form-group col-12 mb-0'),
+                css_class='form-row'
+            )
+        )
 
 
 class SubmissionGymForm(ModelForm):
@@ -274,6 +310,30 @@ class BankAccountForm(ModelForm):
                 Column('owner_name', css_class='form-group col-12 mb-0'),
                 Column('iban', css_class='form-group col-6 mb-0'),
                 Column('bic', css_class='form-group col-6 mb-0'),
+                css_class='form-row'
+            )
+        )
+
+
+class ManagerEmailForm(ModelForm):
+    """
+    Form for a bank account
+    """
+
+    class Meta:
+        model = ManagerEmail
+        fields = [
+            'email',
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Speichern', css_class='btn-success'))
+        self.helper.layout = Layout(
+            Row(
+                Column('email', css_class='form-group col-12 mb-0'),
                 css_class='form-row'
             )
         )

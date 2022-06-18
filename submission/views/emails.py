@@ -19,6 +19,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 
 # dbfv
+from submission.forms import ManagerEmailForm
 from submission.models import ManagerEmail
 from submission.views.generic_views import (
     DbfvFormMixin,
@@ -46,6 +47,7 @@ class EmailCreateView(DbfvFormMixin, generic.CreateView):
     model = ManagerEmail
     success_url = reverse_lazy('email-list')
     permission_required = 'submission.add_manageremail'
+    form_class = ManagerEmailForm
 
 
 class EmailUpdateView(DbfvFormMixin, generic.UpdateView):
@@ -56,6 +58,7 @@ class EmailUpdateView(DbfvFormMixin, generic.UpdateView):
     model = ManagerEmail
     success_url = reverse_lazy('email-list')
     permission_required = 'submission.change_manageremail'
+    form_class = ManagerEmailForm
 
 
 class EmailDeleteView(DbfvFormMixin, generic.DeleteView):
