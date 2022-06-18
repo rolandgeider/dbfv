@@ -15,7 +15,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
 # Django
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordResetForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordResetForm, \
+    SetPasswordForm
 from django.contrib.auth.models import User as Django_User
 from django.core.exceptions import ValidationError
 from django.forms import (
@@ -76,8 +77,7 @@ class RegistrationForm(UserCreationForm, UserEmailForm):
         super().__init__(*args, **kwargs)
 
         self.helper = FormHelper()
-        self.helper.add_input(Submit('submit', 'Anmelden', css_class='btn-success'))
-        self.helper.form_class = 'wger-form'
+        self.helper.add_input(Submit('submit', 'Registrieren', css_class='btn-success'))
         self.helper.layout = Layout(
             Row(
                 Column('username', css_class='form-group col-12 mb-0'),
@@ -204,7 +204,6 @@ class GymForm(ModelForm):
 
         self.helper = FormHelper()
         self.helper.add_input(Submit('submit', 'Speichern', css_class='btn-success'))
-        self.helper.form_class = 'wger-form'
         self.helper.layout = Layout(
             Row(
                 Column('name', css_class='form-group col-12 mb-0'),
@@ -239,7 +238,6 @@ class StateForm(ModelForm):
 
         self.helper = FormHelper()
         self.helper.add_input(Submit('submit', 'Speichern', css_class='btn-success'))
-        self.helper.form_class = 'wger-form'
         self.helper.layout = Layout(
             Row(
                 Column('name', css_class='form-group col-6 mb-0'),
@@ -270,7 +268,6 @@ class BankAccountForm(ModelForm):
 
         self.helper = FormHelper()
         self.helper.add_input(Submit('submit', 'Speichern', css_class='btn-success'))
-        self.helper.form_class = 'wger-form'
         self.helper.layout = Layout(
             Row(
                 Column('bank_name', css_class='form-group col-12 mb-0'),
@@ -291,7 +288,6 @@ class DbfvAuthenticationForm(AuthenticationForm):
 
         self.helper = FormHelper()
         self.helper.add_input(Submit('submit', 'Anmelden', css_class='btn-success'))
-        self.helper.form_class = 'wger-form'
         self.helper.layout = Layout(
             Row(
                 Column('username', css_class='form-group col-12 mb-0'),
@@ -310,10 +306,27 @@ class DbfvPasswordResetForm(PasswordResetForm):
 
         self.helper = FormHelper()
         self.helper.add_input(Submit('submit', 'Abschicken', css_class='btn-success'))
-        self.helper.form_class = 'wger-form'
         self.helper.layout = Layout(
             Row(
                 Column('email', css_class='form-group col-12 mb-0'),
+                css_class='form-row'
+            )
+        )
+
+
+class DbfvSetPasswordForm(SetPasswordForm):
+    """
+    Form used to reset a password
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Abschicken', css_class='btn-success'))
+        self.helper.layout = Layout(
+            Row(
+                Column('new_password1', css_class='form-group col-12 mb-0'),
+                Column('new_password2', css_class='form-group col-12 mb-0'),
                 css_class='form-row'
             )
         )
