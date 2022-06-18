@@ -219,7 +219,7 @@ urlpatterns = [
     path(
         'antrag-studio/liste/<int:year>/',
         submission_gym.SubmissionListYearView.as_view(),
-        name='submission-studio-list'
+        name='submission-studio-list-year'
     ),
     path(
         'antrag-studio/neu',
