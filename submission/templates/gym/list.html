@@ -11,7 +11,7 @@
     <tr>
         <th>Nr.</th>
         <th>Name</th>
-        <th>email</th>
+        <th>Email</th>
         <th>Aktionen</th>
     </tr>
     </thead>
@@ -35,9 +35,9 @@
             {% endif %}
         </td>
         <td>
-            <a href="{% url 'gym-view' gym.id %}" title="Anzeigen"><span class="glyphicon glyphicon-eye-open"></span></a>
-            <a href="{% url 'gym-edit' gym.id %}" title="Bearbeiten"><span class="glyphicon glyphicon-pencil"></span></a>
-            <a href="{% url 'gym-delete' gym.id %}" title="Löschen"><span class="glyphicon glyphicon-trash"></span></a>
+            <a href="{% url 'gym-view' gym.id %}" title="Anzeigen"><i class="bi bi-eye"></i></a>
+            <a href="{% url 'gym-edit' gym.id %}" title="Bearbeiten"><i class="bi bi-pencil"></i></a>
+            <a href="{% url 'gym-delete' gym.id %}" title="Löschen"><i class="bi bi-trash"></i></a>
         </td>
     </tr>
     {% endfor %}
