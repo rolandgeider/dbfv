@@ -143,7 +143,16 @@ INSTALLED_APPS = (
 
     # Email verification
     'django_email_verification',
+
+    # Forms
+    'crispy_forms',
+    'crispy_bootstrap5',
 )
+
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = 'bootstrap5'
+
 
 DEBUG_TOOLBAR_CONFIG = {'INTERCEPT_REDIRECTS': False}
 INTERNAL_IPS = ('127.0.0.1', )

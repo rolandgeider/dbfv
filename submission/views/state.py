@@ -19,6 +19,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 
 # dbfv
+from submission.forms import StateForm
 from submission.models import State
 from submission.views.generic_views import (
     DbfvFormMixin,
@@ -46,6 +47,7 @@ class StateCreateView(DbfvFormMixin, generic.CreateView):
     model = State
     success_url = reverse_lazy('state-list')
     permission_required = 'submission.add_state'
+    form_class = StateForm
 
 
 class StateUpdateView(DbfvFormMixin, generic.UpdateView):
@@ -54,7 +56,7 @@ class StateUpdateView(DbfvFormMixin, generic.UpdateView):
     """
 
     model = State
-    fields = ['name', 'short_name', 'email', 'bank_account']
+    form_class = StateForm
     success_url = reverse_lazy('state-list')
     permission_required = 'submission.change_state'
 

@@ -24,9 +24,9 @@ from django.contrib.auth.models import (
     Group,
     User as Django_User,
 )
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
-from django.template import RequestContext
+from django.template import RequestContext, loader
 from django.template.context_processors import csrf
 from django.urls import reverse
 
@@ -86,4 +86,5 @@ def registration(request):
 
     context['form'] = form
 
-    return render('form.html', context)
+    template = loader.get_template('form.html')
+    return HttpResponse(template.render(context, request))

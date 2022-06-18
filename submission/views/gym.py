@@ -19,6 +19,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 
 # dbfv
+from submission.forms import GymForm
 from submission.models import (
     Gym,
     State,
@@ -66,13 +67,13 @@ class GymDetailView(DbfvViewMixin, generic.DetailView):
 
 class GymCreateView(DbfvFormMixin, generic.CreateView):
     """
-    Shows a list with all konzepts
+    Creates a new gym
     """
 
     model = Gym
     permission_required = 'submission.add_gym'
     page_title = 'Studio hinzufügen'
-    fields = '__all__'
+    form_class = GymForm
 
 
 class GymUpdateView(DbfvFormMixin, generic.UpdateView):
@@ -83,7 +84,7 @@ class GymUpdateView(DbfvFormMixin, generic.UpdateView):
     model = Gym
     permission_required = 'submission.change_gym'
     page_title = 'Studio bearbeiten'
-    fields = '__all__'
+    form_class = GymForm
 
 
 class GymDeleteView(DbfvFormMixin, generic.DeleteView):

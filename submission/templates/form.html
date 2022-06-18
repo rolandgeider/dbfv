@@ -1,16 +1,10 @@
 {% extends "base.html" %}
-{% load dbfv_extras %}
+{% load crispy_forms_tags %}
 
 {% block title %}{{title}}{% endblock %}
 
 {% block content %}
-<form action="{{ form_action }}"
-      method="post"
-      class="form-horizontal"
-      enctype="multipart/form-data">
-    {% render_form_fields form %}
-</form>
-
+    {% crispy form %}
 {% endblock %}
 
 {% block sidebar %}

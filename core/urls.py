@@ -16,15 +16,15 @@ from django.contrib.auth.decorators import permission_required
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU Affero General Public License
-from django.urls import path
+from django.urls import path, re_path
 from django.views.generic import TemplateView
 
 # Third Party
 from django_email_verification import urls as email_urls
 
 # dbfv
-from core.views import email_verification
-
+from core.forms import EmailListForm
+from core.views import email_verification, email_lists
 
 # sub patterns for email lists
 patterns_email = [
@@ -35,16 +35,18 @@ patterns_email = [
         ),
         name='overview'
     ),
-    #    path(r'^erstellen/(?P<type>(starter|studio))$',
-    #        permission_required('core.change_emailcron')(email_lists.EmailListFormPreview(EmailListForm)),
+    #re_path(r'^erstellen/(?P<type>(starter|studio))$',
+    #        permission_required('core.change_emailcron')(
+    #            email_lists.EmailListFormPreview(EmailListForm)),
     #        name='add'),
 ]
 # sub patterns for email lists
 patterns_email_verification = [
     path('confirm', email_verification.confirm_email, name='confirm-email'),
 
-    #    path(r'^erstellen/(?P<type>(starter|studio))$',
-    #        permission_required('core.change_emailcron')(email_lists.EmailListFormPreview(EmailListForm)),
+    # re_path(r'^erstellen/(?P<type>(starter|studio))$',
+    #        permission_required('core.change_emailcron')(
+    #            email_lists.EmailListFormPreview(EmailListForm)),
     #        name='add'),
 ]
 

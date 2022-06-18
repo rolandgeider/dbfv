@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
 # Django
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordResetForm
 from django.contrib.auth.models import User as Django_User
 from django.core.exceptions import ValidationError
 from django.forms import (
@@ -28,7 +28,9 @@ from django.forms import (
 from django.utils.translation import gettext as _
 
 # Third Party
-from captcha.fields import ReCaptchaField
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit, Layout, Row, Column
+
 
 # dbfv
 from submission.models import (
@@ -37,16 +39,14 @@ from submission.models import (
     SubmissionGym,
     SubmissionInternational,
     SubmissionJudge,
-    SubmissionStarter,
+    SubmissionStarter, BankAccount,
 )
 
 
 class UserEmailForm(ModelForm):
     email = EmailField(
         label=_("Email"),
-        help_text=u"Wird nur gebraucht, wenn Sie das Passwort vergessen "
-        u"und zurücksetzen müssen",
-        required=False
+        required=True
     )
 
     def clean_email(self):
@@ -64,13 +64,32 @@ class UserEmailForm(ModelForm):
 class RegistrationForm(UserCreationForm, UserEmailForm):
     state = ModelChoiceField(label=_("Bundesverband"), queryset=State.objects.all())
 
+    email = EmailField(label="Email", required=True)
+
     terms_and_conditions = BooleanField(
-        label=u'Regeln des DBFV e.V./IFBB',
-        help_text=u'Hiermit erkläre ich mich mit '
-        '<a href="/rules">'
-        'den Regeln</a> des DBFV e.V./IFBB einverstanden/',
+        label='Regeln des DBFV e.V./IFBB',
+        help_text='Hiermit erkläre ich mich mit den Regeln des DBFV e.V. IFBB einverstanden',
         required=True
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Anmelden', css_class='btn-success'))
+        self.helper.form_class = 'wger-form'
+        self.helper.layout = Layout(
+            Row(
+                Column('username', css_class='form-group col-12 mb-0'),
+                Column('email', css_class='form-group col-12 mb-0'),
+                Column('password1', css_class='form-group col-6 mb-0'),
+                Column('password2', css_class='form-group col-6 mb-0'),
+                Column('state', css_class='form-group col-12 mb-0'),
+                Column('terms_and_conditions', css_class='form-group col-12 mb-0'),
+                css_class='form-row'
+            )
+        )
+
 
     #captcha = ReCaptchaField(attrs={'theme': 'clean'},
     #                         label=u'Sicherheitscheck',
@@ -161,3 +180,140 @@ class SubmissionJudgeFormBV(ModelForm):
     class Meta:
         model = SubmissionJudge
         fields = ('submission_status', )
+
+
+class GymForm(ModelForm):
+    """
+    Gym form
+    """
+
+    class Meta:
+        model = Gym
+        fields = [
+            'name',
+            'email',
+            'state',
+            'owner',
+            'zip_code',
+            'city',
+            'street',
+            'is_active',]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Speichern', css_class='btn-success'))
+        self.helper.form_class = 'wger-form'
+        self.helper.layout = Layout(
+            Row(
+                Column('name', css_class='form-group col-12 mb-0'),
+                Column('email', css_class='form-group col-6 mb-0'),
+                Column('state', css_class='form-group col-6 mb-0'),
+                Column('owner', css_class='form-group col-12 mb-0'),
+                Column('zip_code', css_class='form-group col-3 mb-0'),
+                Column('city', css_class='form-group col-5 mb-0'),
+                Column('street', css_class='form-group col-4 mb-0'),
+                Column('is_active', css_class='form-group col-6 mb-0'),
+                css_class='form-row'
+            )
+        )
+
+
+class StateForm(ModelForm):
+    """
+    Form for a state
+    """
+
+    class Meta:
+        model = State
+        fields = [
+            'name',
+            'short_name',
+            'email',
+            'bank_account'
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Speichern', css_class='btn-success'))
+        self.helper.form_class = 'wger-form'
+        self.helper.layout = Layout(
+            Row(
+                Column('name', css_class='form-group col-6 mb-0'),
+                Column('short_name', css_class='form-group col-6 mb-0'),
+                Column('email', css_class='form-group col-12 mb-0'),
+                Column('bank_account', css_class='form-group col-12 mb-0'),
+                css_class='form-row'
+            )
+        )
+
+
+class BankAccountForm(ModelForm):
+    """
+    Form for a bank account
+    """
+
+    class Meta:
+        model = BankAccount
+        fields = [
+            'owner_name',
+            'iban',
+            'bic',
+            'bank_name'
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Speichern', css_class='btn-success'))
+        self.helper.form_class = 'wger-form'
+        self.helper.layout = Layout(
+            Row(
+                Column('bank_name', css_class='form-group col-12 mb-0'),
+                Column('owner_name', css_class='form-group col-12 mb-0'),
+                Column('iban', css_class='form-group col-6 mb-0'),
+                Column('bic', css_class='form-group col-6 mb-0'),
+                css_class='form-row'
+            )
+        )
+
+
+class DbfvAuthenticationForm(AuthenticationForm):
+    """
+    Form used for logging in to the DBFV application
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Anmelden', css_class='btn-success'))
+        self.helper.form_class = 'wger-form'
+        self.helper.layout = Layout(
+            Row(
+                Column('username', css_class='form-group col-12 mb-0'),
+                Column('password', css_class='form-group col-12 mb-0'),
+                css_class='form-row'
+            )
+        )
+
+
+class DbfvPasswordResetForm(PasswordResetForm):
+    """
+    Form used to reset a password
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Abschicken', css_class='btn-success'))
+        self.helper.form_class = 'wger-form'
+        self.helper.layout = Layout(
+            Row(
+                Column('email', css_class='form-group col-12 mb-0'),
+                css_class='form-row'
+            )
+        )

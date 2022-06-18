@@ -1,18 +1,13 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load static %}
-{% load dbfv_extras %}
+{% load crispy_forms_tags %}
 
 {% block title %} {% trans "Anmelden" %}{% endblock %}
 
 {% block content %}
 {% if not user.is_authenticated %}
-<form action="{% url 'login' %}"
-      method="post"
-      class="form-horizontal">
-    <input type="hidden" name="next" value="{{next}}">
-    {% render_form_fields form 'Anmelden' %}
-</form>
+    {% crispy form %}
 {% endif %}
 {% endblock %}
 

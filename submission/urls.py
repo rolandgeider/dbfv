@@ -34,6 +34,7 @@ from django.urls import (
 from django.views.generic import TemplateView
 
 # dbfv
+from submission.forms import DbfvAuthenticationForm, DbfvPasswordResetForm
 from submission.views import (
     bank_account,
     emails,
@@ -301,7 +302,11 @@ urlpatterns = [
 # Password reset is implemented by Django, no need to cook our own soup here
 # (besides the templates)
 urlpatterns += [
-    path('anmelden/', LoginView.as_view(template_name='user/login.html'), name='login'),
+    path('anmelden/', LoginView.as_view(
+        form_class=DbfvAuthenticationForm,
+        template_name='user/login.html'),
+         name='login',
+         ),
     path(
         'user/password/change',
         PasswordChangeView.as_view(
@@ -311,7 +316,10 @@ urlpatterns += [
     ),
     path(
         'user/password/reset/',
-        PasswordResetView.as_view(template_name='user/password_reset_form.html'),
+        PasswordResetView.as_view(
+            template_name='form.html',
+            form_class=DbfvPasswordResetForm,
+        ),
         name='password_reset'
     ),
     path(
