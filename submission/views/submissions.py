@@ -185,19 +185,11 @@ class SubmissionCreateView(BaseSubmissionCreateView):
         }
         return super().form_valid(form)
 
-    def form_invalid(self, form):
-        """
-        If the form is invalid, redirect to the same page
-        """
-        print(form.errors)
-        return  super().form_invalid(form)
-
     def get_context_data(self, **kwargs):
         """
         Pass a list of all states
         """
         context = super().get_context_data(**kwargs)
-        print(context)
         context['states_list'] = State.objects.all()
         return context
 

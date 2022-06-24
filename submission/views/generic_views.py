@@ -94,7 +94,6 @@ class BaseSubmissionCreateView(DbfvFormMixin, generic.CreateView):
         """
         Manually set the user when saving the form
         """
-        print("Form is valid")
         form.instance.user = self.request.user
         return super().form_valid(form)
 
