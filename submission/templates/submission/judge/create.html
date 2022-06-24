@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load dbfv_extras %}
+{% load crispy_forms_tags %}
 
 {% block title %}{{title}}{% endblock %}
 
@@ -14,12 +14,7 @@ Jahres-Kampfrichterlizenz.</p>
 <p>Die Lizenzgebühr in Höhe von €20 ist im Voraus
 zu überweisen. Für die Genehmigung des Antrags ist der jeweilige Landeskampfrichterreferent
 zuständig.</p>
-<form action="{{ form_action }}"
-      method="post"
-      class="form-horizontal"
-      enctype="multipart/form-data">
-    {% render_form_fields form %}
-</form>
+{% crispy form %}
 
 {% endblock %}
 

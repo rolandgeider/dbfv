@@ -93,7 +93,6 @@ class RegistrationForm(UserCreationForm, UserEmailForm):
                 Column('password2', css_class='col-6'),
                 Column('state', css_class='col-12'),
                 Column('terms_and_conditions', css_class='col-12'),
-                css_class='form-row'
             )
         )
 
@@ -143,19 +142,20 @@ class SubmissionStarterForm(ModelForm):
             Row(
                 Column('first_name', css_class='col-6'),
                 Column('last_name', css_class='col-6'),
+                Column('nationality', css_class='col-12'),
                 Column('date_of_birth', css_class='col-6'),
                 Column('active_since', css_class='col-6'),
                 Column('street', css_class='col-4'),
                 Column('house_nr', css_class='col-2'),
                 Column('zip_code', css_class='col-2'),
                 Column('city', css_class='col-4'),
-                Column('tel_number', css_class='col-12'),
-                Column('email', css_class='col-12'),
-                Column('height', css_class='col-12'),
-                Column('weight', css_class='col-12'),
+                Column('tel_number', css_class='col-6'),
+                Column('email', css_class='col-6'),
+                Column('height', css_class='col-6'),
+                Column('weight', css_class='col-6'),
                 Column('category', css_class='col-12'),
+                Column('gym', css_class='col-12'),
                 Column('terms_and_conditions', css_class='col-12'),
-                css_class='form-row'
             )
         )
 
@@ -181,8 +181,8 @@ class SubmissionInternationalForm(ModelForm):
                 Column('street', css_class='col-4 '),
                 Column('zip_code', css_class='col-2 '),
                 Column('city', css_class='col-6 '),
-                Column('tel_number', css_class='col-12 '),
-                Column('email', css_class='col-12 '),
+                Column('tel_number', css_class='col-6 '),
+                Column('email', css_class='col-6 '),
                 Column('nationality', css_class='col-12 '),
                 Column('height', css_class='col-6 '),
                 Column('weight', css_class='col-6 '),
@@ -245,6 +245,24 @@ class SubmissionJudgeForm(ModelForm):
     class Meta:
         model = SubmissionJudge
         exclude = ('submission_status', )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Speichern', css_class='btn-success'))
+        self.helper.layout = Layout(
+            Row(
+                Column('first_name', css_class='col-6'),
+                Column('last_name', css_class='col-6'),
+                Column('street', css_class='col-4 '),
+                Column('zip_code', css_class='col-2 '),
+                Column('city', css_class='col-6 '),
+                Column('tel_number', css_class='col-12 '),
+                Column('email', css_class='col-12 '),
+                Column('state', css_class='col-12 '),
+            )
+        )
 
 
 class SubmissionJudgeFormBV(ModelForm):

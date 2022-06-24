@@ -94,9 +94,9 @@ class BaseSubmissionCreateView(DbfvFormMixin, generic.CreateView):
         """
         Manually set the user when saving the form
         """
-
+        print("Form is valid")
         form.instance.user = self.request.user
-        return super(BaseSubmissionCreateView, self).form_valid(form)
+        return super().form_valid(form)
 
     def get_success_url(self):
         """
@@ -106,14 +106,13 @@ class BaseSubmissionCreateView(DbfvFormMixin, generic.CreateView):
         self.request.session['bank-account'] = self.object.get_bank_account()
         self.request.session['submission-fee'] = self.model.FEE
         self.request.session['designated-use'] = self.object.get_bank_designated_use()
-
         return reverse_lazy('bank-account-view')
 
     def get_context_data(self, **kwargs):
         """
         Pass a list of all states
         """
-        context = super(BaseSubmissionCreateView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['fee'] = self.model.FEE
         return context
 

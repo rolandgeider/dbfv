@@ -1,130 +1,126 @@
 {% extends "base.html" %}
-{% load dbfv_extras %}
+{% load crispy_forms_tags %}
 
 {% block title %}Antrag für Starterlizenz{% endblock %}
 
 {% block scripts %}
-<script>
-$(document).ready(function() {
-    $('#form-championships').hide();
-
-    $('.gym-select').click(function(e) {
-        e.preventDefault();
-        var gym_id = $(this).data('gym-id');
-        var gym_state = $(this).data('gym-state');
-        var gym_name = $(this).html();
-
-        $('#ajax_id_gym').val(gym_id);
-        $('#id_gym').val(gym_id);
-
-        if (gym_state == 10) {
-            $('#form-championships').show();
-        } else {
+    <script>
+        $(document).ready(function () {
             $('#form-championships').hide();
+
+            $('.gym-select').click(function (e) {
+                e.preventDefault();
+                const gym_id = $(this).data('gym-id');
+                const gym_state = $(this).data('gym-state');
+
+                $('#ajax_id_gym').val(gym_id);
+                $('#id_gym').val(gym_id);
+
+                if (gym_state === 10) {
+                    $('#form-championships').show();
+                } else {
+                    $('#form-championships').hide();
+                }
+
+                // Scroll to element
+                $('html, body').animate({
+                    scrollTop: $("#header-form2").offset().top
+                }, 1000);
+            });
+        });
+    </script>
+    <style>
+        .accordion-heading {
+            background-color: #f2f2f2;
         }
 
-        // Scroll to element
-        $('html, body').animate({
-        scrollTop: $("#header-form2").offset().top
-        }, 1000);
-    });
-});
-</script>
-<style>
-.accordion-heading{
-    background-color: #f2f2f2;
-}
-
-.accordion-heading a{
-    color: black;
-}
-</style>
+        .accordion-heading a {
+            color: black;
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
-<div class="sidebar-box">
-<h3>Erhöhung der Starterlizenzgebühr auf 90 Euro ab 2020</h3>
+    <div class="sidebar-box">
+        <h3>Erhöhung der Starterlizenzgebühr auf 90 Euro ab 2020</h3>
 
-<p>Liebe Athletinnen und Athleten,</p>
+        <p>Liebe Athletinnen und Athleten,</p>
 
-<p>Die wichtigste Aufgabe unseres Vereins ist es seit eh und je, allen
-Athletinnen und Athleten die bestmöglichen Rahmenbedingungen zur
-Verfügung zu stellen, um sich im sportlichen Wettkampf messen zu können.</p>
+        <p>Die wichtigste Aufgabe unseres Vereins ist es seit eh und je, allen
+            Athletinnen und Athleten die bestmöglichen Rahmenbedingungen zur
+            Verfügung zu stellen, um sich im sportlichen Wettkampf messen zu können.</p>
 
-<p>Ebenso ist es unser Bestreben, jedes Jahr eine Vielzahl von
-Athletinnen und Athleten auf Internationale Wettkämpfe zu entsenden.
-Hier trägt unser Verein alle Kosten für das ATeam und ebenso nachträglich
-auch für alle Medaillengewinner, die als B-Team anreisten.</p>
+        <p>Ebenso ist es unser Bestreben, jedes Jahr eine Vielzahl von
+            Athletinnen und Athleten auf Internationale Wettkämpfe zu entsenden.
+            Hier trägt unser Verein alle Kosten für das ATeam und ebenso nachträglich
+            auch für alle Medaillengewinner, die als B-Team anreisten.</p>
 
-<p>Die Kosten für unsere Wettkämpfe sind allerdings in den letzten Jahren enorm gestiegen
-(speziell ein signifikanter Anstieg im Bereich Hallen- und Saalmieten bereitete uns in den
-letzten Jahren mehr und mehr Sorgen)</p>
+        <p>Die Kosten für unsere Wettkämpfe sind allerdings in den letzten Jahren enorm gestiegen
+            (speziell ein signifikanter Anstieg im Bereich Hallen- und Saalmieten bereitete uns in
+            den
+            letzten Jahren mehr und mehr Sorgen)</p>
 
-<p>In unserer jährlichen Mitgliederversammlung werden alle diese Zahlen den uns
-angeschlossenen Landesverbänden öffentlich vorgestellt. Ein Großteil unserer Beträge
-wird nachgewiesener Weise unseren Athletinnen und Athleten zur Verfügung gestellt.
-Da wir an unserem Standard festhalten wollen, um euch weiterhin bestmögliche
-Voraussetzungen in der Verwirklichung eurer Leidenschaft zu ermöglichen, müssen wir
-allerdings auch auf gewisse Weise wirtschaftlich denken und handeln und haben uns
-dazu entschieden, die Gebühr für die Jahresstarterlizenz ab 2020 auf 90 Euro zu
-erhöhen, um an unseren Zielen festhalten zu können.</p>
+        <p>In unserer jährlichen Mitgliederversammlung werden alle diese Zahlen den uns
+            angeschlossenen Landesverbänden öffentlich vorgestellt. Ein Großteil unserer Beträge
+            wird nachgewiesener Weise unseren Athletinnen und Athleten zur Verfügung gestellt.
+            Da wir an unserem Standard festhalten wollen, um euch weiterhin bestmögliche
+            Voraussetzungen in der Verwirklichung eurer Leidenschaft zu ermöglichen, müssen wir
+            allerdings auch auf gewisse Weise wirtschaftlich denken und handeln und haben uns
+            dazu entschieden, die Gebühr für die Jahresstarterlizenz ab 2020 auf 90 Euro zu
+            erhöhen, um an unseren Zielen festhalten zu können.</p>
 
-<p>Mit dem Beitrag der Starterlizenz tragt Ihr einen erheblichen Beitrag dazu, den Erfolg
-unseres Vereins, zu dem jeder einzelne Aktive dazu zählt, zu sichern. Dafür möchte ich
-mich im Namen aller Vereinsmitglieder, Athletinnen und Athleten, ganz herzlich
-bedanken.</p>
+        <p>Mit dem Beitrag der Starterlizenz tragt Ihr einen erheblichen Beitrag dazu, den Erfolg
+            unseres Vereins, zu dem jeder einzelne Aktive dazu zählt, zu sichern. Dafür möchte ich
+            mich im Namen aller Vereinsmitglieder, Athletinnen und Athleten, ganz herzlich
+            bedanken.</p>
 
-<p>Wir hoffen auf euer Verständnis und freuen uns auf ein erfolgreiches Jahr 2020.
+        <p>Wir hoffen auf euer Verständnis und freuen uns auf ein erfolgreiches Jahr 2020.
 
-<p>Mit besten Grüßen<br>
-Guido</p>
-</div>
-
-<p>Beantragen Sie hier die Ausstellung einer DBFV/IFBB-Starterlizenz.
-Diese berechtigt zur Teilnahme an allen DBFV e.V / IFBB Meisterschaften.</p>
-
-
-<p>Hiermit beantrage ich für mich die Ausstellung einer IFBB-Starterlizenz.</p>
-<p>Die nachfolgenden Angaben habe ich nach bestem Wissen und Gewissen gemacht und
-bestätige sie mit dem Absenden des Formulars. Unvollständige oder fehlerhafte
-Anträge führen zu fehlerhaften Daten. Eine Bearbeitung ist dann
-aus technischen Gründen nicht möglich.</p>
-
-<form action="{{ form_action }}"
-      method="post"
-      class="form-horizontal"
-      enctype="multipart/form-data">
-    {% csrf_token %}
-
-    <h4>1. Studio aus Ihrem Landesverband auswählen</h4>
-    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-    {% for state in states_list %}
-        <div class="panel panel-default">
-            <div class="panel-heading" role="tab" id="heading{{ state.pk }}">
-                <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{ state.pk }}" aria-expanded="true" aria-controls="collapse{{ state.pk }}">
-                        {{ state }}
-                    </a>
-                </h4>
-            </div>
-            <div id="collapse{{ state.pk }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading{{ state.pk }}">
-                <div class="panel-body">
-                {% for gym in state.gym_set.all %}
-                {% if gym.is_active %}
-                    <a id="gym-{{ gym.id }}"
-                       class="gym-select"
-                       data-gym-id="{{ gym.id }}"
-                       data-gym-state="{{ gym.state.id }}"
-                       href="#">{{ gym.name }} ({{ gym.city }})</a><br>
-                {% endif %}
-                {% endfor %}
-                </div>
-            </div>
-      </div>
-    {% endfor %}
+        <p>Mit besten Grüßen<br>
+            Guido</p>
     </div>
 
-    <h4 id="header-form2">2. Stammdaten ausfühllen</h4>
+    <p>Beantragen Sie hier die Ausstellung einer DBFV/IFBB-Starterlizenz.
+        Diese berechtigt zur Teilnahme an allen DBFV e.V / IFBB Meisterschaften.</p>
+
+
+    <p>Hiermit beantrage ich für mich die Ausstellung einer IFBB-Starterlizenz.</p>
+    <p>Die nachfolgenden Angaben habe ich nach bestem Wissen und Gewissen gemacht und
+        bestätige sie mit dem Absenden des Formulars. Unvollständige oder fehlerhafte
+        Anträge führen zu fehlerhaften Daten. Eine Bearbeitung ist dann
+        aus technischen Gründen nicht möglich.</p>
+
+
+    <h4>1. Studio aus Ihrem Landesverband auswählen</h4>
+    <div class="accordion" id="accordion">
+        {% for state in states_list %}
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading{{ state.pk }}">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapse{{ state.pk }}" aria-expanded="true"
+                            aria-controls="collapse{{ state.pk }}">
+                        {{ state }}
+                    </button>
+                </h2>
+                <div id="collapse{{ state.pk }}" class="accordion-collapse collapse "
+                     aria-labelledby="heading{{ state.pk }}" data-bs-parent="#accordion">
+                    <div class="accordion-body">
+                        {% for gym in state.gym_set.all %}
+                            {% if gym.is_active %}
+                                <a id="gym-{{ gym.id }}"
+                                   class="gym-select"
+                                   data-gym-id="{{ gym.id }}"
+                                   data-gym-state="{{ gym.state.id }}"
+                                   href="#">{{ gym.name }} ({{ gym.city }})</a><br>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <h4 class="mt-3" id="header-form2">2. Stammdaten ausfüllen</h4>
 
     {% if form.gym.errors %}
         <div class="control-group error">
@@ -135,9 +131,9 @@ aus technischen Gründen nicht möglich.</p>
             </div>
         </div>
     {% endif %}
-    <input type="hidden" name="gym" id="ajax_id_gym" value="{{form.gym.value}}">
+    <input type="hidden" name="gym" id="ajax_id_gym" value="{{ form.gym.value }}">
 
-    {% render_form_fields form show_save=False %}
+    {% crispy form %}
 
     <div class="col-md-offset-3 col-md-9">
         <h3>Wettkampfregeln</h3>
@@ -195,22 +191,18 @@ aus technischen Gründen nicht möglich.</p>
             Athleten, die aus der sportlichen Betätigung unmittelbar oder mittelbar
             Wettbewerbsvorteile erzielen, strafbar. Es drohen hier ebenfalls
             Freiheits- und Geldstrafen. <a href="https://www.gesetze-im-internet.de/antidopg/"
-            target="_blank">https://www.gesetze-im-internet.de/antidopg/</a>
+                                           target="_blank">https://www.gesetze-im-internet.de/antidopg/</a>
         </p>
-
     </div>
 
-    {% render_form_submit 'Abschicken' 'btn-lg  btn-success' %}
-
-</form>
 
 {% endblock %}
 
 {% block sidebar %}
-<div class="sidebar-box">
-    <h4>Lizenzgebühr</h4>
-    <p>Die Lizenzgebühr in Höhe von €75,64 + ges. MwSt = €{{fee}} ist im Voraus zu
-    entrichten. Bitte immer Name und Antragsnummer angeben. Die Bearbeitung
-    erfolgt erst nach Eingang der Gebühr!</p>
-</div>
+    <div class="sidebar-box">
+        <h4>Lizenzgebühr</h4>
+        <p>Die Lizenzgebühr in Höhe von €75,64 + ges. MwSt = €{{ fee }} ist im Voraus zu
+            entrichten. Bitte immer Name und Antragsnummer angeben. Die Bearbeitung
+            erfolgt erst nach Eingang der Gebühr!</p>
+    </div>
 {% endblock %}
