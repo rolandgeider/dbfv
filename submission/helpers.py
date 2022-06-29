@@ -39,7 +39,7 @@ def build_submission_pdf(request: HttpRequest, pk: int, response):
         response, pagesize=A4, rightMargin=50, leftMargin=50, topMargin=50, bottomMargin=50
     )
     styles = getSampleStyleSheet()
-    elements = [Paragraph("Some Title 123", styles["Heading2"]), Spacer(10 * cm, 0.5 * cm)]
+    elements = [Paragraph("Titel kommt hier", styles["Heading2"]), Spacer(10 * cm, 0.5 * cm)]
     # story.append(Spacer(1, 2))  # some space between lines
     qr_code = qr.QrCodeWidget(url, barLevel='H')
     bounds = qr_code.getBounds()
