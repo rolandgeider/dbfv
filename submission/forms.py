@@ -395,8 +395,8 @@ class DbfvAuthenticationForm(AuthenticationForm):
         self.helper.add_input(Submit('submit', 'Anmelden', css_class='btn-success'))
         self.helper.layout = Layout(
             Row(
-                Column('username', css_class='col-12'),
-                Column('password', css_class='col-12'),
+                Column('username', css_class='col-6'),
+                Column('password', css_class='col-6'),
             )
         )
 
