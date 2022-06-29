@@ -137,7 +137,7 @@ class SubmissionStarterForm(ModelForm):
         super().__init__(*args, **kwargs)
 
         self.helper = FormHelper()
-        self.helper.add_input(Submit('submit', 'Registrieren', css_class='btn-success'))
+        self.helper.add_input(Submit('submit', 'Abschicken', css_class='btn-success'))
         self.helper.layout = Layout(
             Row(
                 Column('first_name', css_class='col-6'),
