@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Massenbewilligung{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block content %}
+    {% crispy form %}
+
+    {% if step == 2 %}
+        {% if starter_notok %}
+            <h5>Problematische IDs</h5>
+            <ul>
+                {% for antrag in starter_notok %}
+                    <li>{{ antrag }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% if starter_ok %}
+            <h5 class="mt-3">Anträge</h5>
+            <table  class="table table-striped">
+            <tr>
+                <th>Nr</th>
+                <th>Datum</th>
+                <th>Name</th>
+                <th>email</th>
+            </tr>
+            {% for submission in starter_ok %}
+                <tr>
+                    <td>{{ submission.id }}</td>
+                    <td>{{ submission.creation_date }}</td>
+                    <td>{{ submission.get_name }}</td>
+                    <td>{{ submission.email }}</td>
+                </tr>
+
+            {% endfor %}
+            </table>
+        {% endif %}
+
+
+    {% endif %}
+{% endblock %}
+
+{% block sidebar %}
+
+{% endblock %}

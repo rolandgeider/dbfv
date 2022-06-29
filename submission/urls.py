@@ -157,6 +157,11 @@ urlpatterns = [
         submissions.SubmissionCsvExportView.as_view(),
         name='submission-export-mailmerge-new'
     ),
+    path(
+        'antrag/massenbewilligung',
+        submissions.massenbewilligung,
+        name='submission-massenbewilligung'
+    ),
     path('antrag/suchen', submissions.search, name='submission-search'),
 
     # International

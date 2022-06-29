@@ -28,7 +28,7 @@ from django.forms import (
     EmailField,
     ModelChoiceField,
     ModelForm,
-    MultipleChoiceField,
+    MultipleChoiceField, Form, CharField, EmailInput, Textarea,
 )
 from django.utils.translation import gettext as _
 
@@ -312,7 +312,6 @@ class GymForm(ModelForm):
                 Column('city', css_class='col-5'),
                 Column('street', css_class='col-4'),
                 Column('is_active', css_class='col-6'),
-                css_class='form-row'
             )
         )
 
@@ -337,7 +336,6 @@ class StateForm(ModelForm):
                 Column('short_name', css_class='col-6'),
                 Column('email', css_class='col-12'),
                 Column('bank_account', css_class='col-12'),
-                css_class='form-row'
             )
         )
 
@@ -362,7 +360,6 @@ class BankAccountForm(ModelForm):
                 Column('owner_name', css_class='col-12'),
                 Column('iban', css_class='col-6'),
                 Column('bic', css_class='col-6'),
-                css_class='form-row'
             )
         )
 
@@ -400,7 +397,6 @@ class DbfvAuthenticationForm(AuthenticationForm):
             Row(
                 Column('username', css_class='col-12'),
                 Column('password', css_class='col-12'),
-                css_class='form-row'
             )
         )
 
@@ -432,6 +428,27 @@ class DbfvSetPasswordForm(SetPasswordForm):
             Row(
                 Column('new_password1', css_class='col-12'),
                 Column('new_password2', css_class='col-12'),
-                css_class='form-row'
+            )
+        )
+
+
+class MassenbewilligungForm(Form):
+    bewilligungen = CharField(
+        label="IDs der zu bewilligenden Anträge",
+        help_text="Eine ID pro Zeile",
+        max_length=254,
+        widget=Textarea(attrs={'rows': '10'}),
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Abschicken', css_class='btn-success'))
+        self.helper.add_input(Submit('check', 'Prüfen', css_class='btn-success'))
+
+        self.helper.layout = Layout(
+            Row(
+                Column('bewilligungen', css_class='col-12'),
             )
         )

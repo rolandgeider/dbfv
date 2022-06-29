@@ -25,14 +25,14 @@ from django.http.response import (
     HttpResponseForbidden,
     HttpResponseRedirect,
 )
-from django.shortcuts import get_object_or_404
-from django.urls import reverse_lazy
+from django.shortcuts import get_object_or_404, render
+from django.urls import reverse_lazy, reverse
 from django.views import generic
 
 # dbfv
 from submission.forms import (
     SubmissionStarterForm,
-    SubmissionStarterFormBV,
+    SubmissionStarterFormBV, MassenbewilligungForm,
 )
 from submission.helpers import build_submission_pdf
 from submission.models import (
@@ -268,6 +268,50 @@ def search(request):
         data = []
 
     return HttpResponse(data, content_type='application/json')
+
+
+def massenbewilligung(request):
+    """
+    Search for a submission, return the result as a JSON list
+    """
+    if not request.user.has_perm('submission.change_submissionstarter'):
+        return HttpResponseForbidden()
+
+    # Perform the search
+    form = MassenbewilligungForm(request.POST or None)
+
+    context = {'form': form, 'step': 1}
+
+    # if POST, then process data
+    if request.method == 'POST':
+        if form.is_valid():
+            # Get the data
+            data = form.cleaned_data
+            ids = data['bewilligungen'].split("\n")
+            starter_ok = []
+            starter_notok = []
+
+            for id in ids:
+                pk = id.strip()
+                if pk:
+                    try:
+                        submission = SubmissionStarter.objects.get(id=pk)
+                        starter_ok.append(submission)
+                    except (SubmissionStarter.DoesNotExist, ValueError):
+                        starter_notok.append(id)
+
+            if context['step'] == 1:
+                context['starter_ok'] = starter_ok
+                context['starter_notok'] = starter_notok
+                context['step'] = 2
+
+            if context['step'] == 2 and request.POST.get('submit'):
+                for antrag in starter_ok:
+                    antrag.submission_status = SubmissionStarter.SUBMISSION_STATUS_BEWILLIGT
+                    antrag.save()
+                return HttpResponseRedirect(reverse('submission-list'))
+
+    return render(request, 'submission/starter/massenbewilligung.html', context)
 
 
 def pdf(request, pk):
