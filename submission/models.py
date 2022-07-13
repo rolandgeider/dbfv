@@ -358,7 +358,7 @@ class SubmissionStarter(AbstractSubmission):
         choices=SUBMISSION_CATEGORY,
     )
     terms_and_conditions = models.BooleanField(
-        'Hiermit erkläre ich mich mit den Regeln des DBFV e.V./IFBB', blank=False
+        'Hiermit erkläre ich mich mit den Regeln des DBFV e.V.', blank=False
     )
 
     pdf_sent = models.BooleanField(default=False)
@@ -888,7 +888,7 @@ class UserProfile(models.Model):
     state = models.ForeignKey(State, blank=True, null=True, on_delete=models.CASCADE)
 
     terms_and_conditions = models.BooleanField(
-        'Hiermit erkläre ich mich mit den Regeln des DBFV e.V./IFBB', blank=False, default=False
+        'Hiermit erkläre ich mich mit den Regeln des DBFV e.V.', blank=False, default=False
     )
 
     def __str__(self):
