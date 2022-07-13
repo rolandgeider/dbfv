@@ -75,8 +75,8 @@ class RegistrationForm(UserCreationForm, UserEmailForm):
     email = EmailField(label="Email", required=True)
 
     terms_and_conditions = BooleanField(
-        label='Regeln des DBFV e.V./IFBB',
-        help_text='Hiermit erkläre ich mich mit den Regeln des DBFV e.V. IFBB einverstanden',
+        label='Regeln des DBFV e.V.',
+        help_text='Hiermit erkläre ich mich mit den Regeln des DBFV e.V. einverstanden',
         required=True
     )
 
@@ -128,8 +128,8 @@ class SubmissionStarterForm(ModelForm):
     )
 
     terms_and_conditions = BooleanField(
-        label='Regeln des DBFV e.V./IFBB',
-        help_text='Hiermit erkläre ich mich mit den Regeln des DBFV e.V. IFBB einverstanden',
+        label='Regeln des DBFV e.V.',
+        help_text='Hiermit erkläre ich mich mit den Regeln des DBFV e.V. einverstanden',
         required=True
     )
 
