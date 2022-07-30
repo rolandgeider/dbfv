@@ -28,7 +28,6 @@ from django.http import (
 )
 
 # dbfv
-from submission.helpers import build_submission_pdf
 from submission.models import SubmissionStarter
 
 

@@ -433,7 +433,7 @@ class SubmissionStarter(AbstractSubmission):
 
         # Build the PDF and attach it to the email
         response = HttpResponse(content_type='application/pdf')
-        build_submission_pdf(HttpRequest(), self.pk, response)
+        build_submission_pdf(HttpRequest(), self, response)
         msg_part = MIMEApplication(response.content)
         msg_part['Content-Disposition'] = f'attachment; filename="Starterlizenz-{self.id}.pdf"'
         msg.attach(msg_part)

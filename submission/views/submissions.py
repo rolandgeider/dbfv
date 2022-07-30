@@ -318,11 +318,15 @@ def pdf(request, pk):
     """
     Search for a submission, return the result as a JSON list
     """
+
+    # Get the submission
+    submission = get_object_or_404(SubmissionStarter, pk=pk)
+    if not request.user.has_perm('submission.delete_submissionstarter') \
+            and submission.user != request.user:
+        return HttpResponseForbidden()
+
     response = HttpResponse(content_type='application/pdf')
-
-    build_submission_pdf(request, pk, response)
-
-    #response['Content-Disposition'] = 'attachment; filename=Test-123.pdf'.format(id)
+    build_submission_pdf(request, submission, response)
     response['Content-Length'] = len(response.content)
 
     return response
