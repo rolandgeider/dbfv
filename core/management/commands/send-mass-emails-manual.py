@@ -23,6 +23,8 @@ from email.mime.image import MIMEImage
 from django.core.mail import EmailMultiAlternatives
 from django.core.management.base import BaseCommand
 
+from submission.models import Gym
+
 
 class Command(BaseCommand):
     """
@@ -44,20 +46,20 @@ class Command(BaseCommand):
         #         email_list.append(submission.email)
 
         ### Gyms
-        #for gym in Gym.objects.filter(is_active=True):
-        #    if gym.email:
-        #        email_list.append(gym.email)
+        for gym in Gym.objects.filter(is_active=True):
+            if gym.email:
+                email_list.append(gym.email)
         #print(email_list)
 
         # Debug mode
-        email_list = []
+        #email_list = []
         email_list.append('falkeohnee@aol.com')
         email_list.append('roland@geider.net')
-        email_list.append('schrecksenmeister.eisspin@gmail.com')
+        #email_list.append('schrecksenmeister.eisspin@gmail.com')
         #print(email_list)
 
         email_images = [
-            'image1.jpg',
+            'image1.png',
         ]
         #email_images = []
         #email_files_others = ['Infos_Homepage.pdf', ]
@@ -137,36 +139,35 @@ euer nutriful Team
             <img src="cid:image1.jpg" style="width:100%;">
             """
         email_html = """
-<p>Wir haben eine Kooperation mit dem DBFV e.V. geschlossen!</p>
-<p>Jedes assoziierte Mitglied erhält ein spezielles Angebot mit Regenerierten Fitnessgeräten von uns!</p>
-<p>Außerdem haben wir für Sie ein Sonderangebot für neue Fitnessgeräte -40%.</p>
-
-<p>Verwenden Sie den Code #DBFV, wenn Sie mit uns Kontakt aufnehmen.</p>
-
-<p>über uns:</p>
-<ul>
-    <li>Wir sind einer der größten Spieler  auf dem Markt für überholte Geräte.</li>
-    <li>Bei uns finden Sie alle Marken, nach denen Sie gesucht haben: Life Fitness, TechnoGym, Gym80, Matrix, Precor, Cybex, Hammerkraft, Freemotion, Star Track...</li>
-    <li>Wir beraten Sie über die Art der Finanzierung, Transport, Montage, Service, Hilfe bei den Formalitäten.</li>
-    <li>Wir statten Ihren Club auch mit Schließfächern, Rezeption, Beleuchtung aus... von A bis Z.</li>
-    <li>Wir haben neue, überholte und gebrauchte Geräte.</li>
-</ul>
- 
-<p>Sehen Sie, wie wir arbeiten: <a href="https://youtu.be/f2LJ7QOg4Q4">https://youtu.be/f2LJ7QOg4Q4</a></p>
-
-
- 
-<p>Kontaktieren Sie uns:</p>
-
-
 <p>
-📲 +48 33 486 90 07<br>
-📧 sklep@fitnessclub24.pl<br>
-👉 https://www.fitnessclub-24.de<br>
-Marketing: <a href="https://www.fitnessclub24.pl/info">https://www.fitnessclub24.pl/info</a>
+📣 Spezialangebot für DBFV-Mitglieder auf 🔥NPG Cardio-Geräte🔥<br>
+🔻 AirBike - Fahrradergometer<br>
+🔻 Row - Ruderergometer<br>
+🔻 Ski - Skitrainer<br>
+🔻 ErgCycle - Trainingsrad<br>
 </p>
 
-<img src="cid:image1.jpg" style="width:100%;">
+<p><a href="https://www.npgfitness.de/npg-cardio/">https://www.npgfitness.de/npg-cardio</a></p>
+ 
+
+<p>
+☝️ Bitte verwenden Sie den Code: #DBFV_Sale, wenn Sie eine Anfrage an <a href="mailto:sklep@fitnessclub24.pl">sklep@fitnessclub24.pl</a> senden.
+</p
+ 
+<p>
+Fitness Club 24 👉 umfassende Fitness-Club-Ausrüstung 🤝<br>
+📲 <a href="tel:+48 33 486 90 07">+48 33 486 90 07</a><br>
+📧 <a href="mailto:sklep@fitnessclub24.pl">sklep@fitnessclub24.pl</a><br>
+👉 <a href="https://www.fitnessclub-24.de">https://www.fitnessclub-24.de</a><br>
+🛒 <a href="https://bit.ly/FitnessMarkt_FC24">https://bit.ly/FitnessMarkt_FC24</a><br>
+</p>
+
+<p>
+Über uns <a href="https://youtu.be/f2LJ7QOg4Q4">https://youtu.be/f2LJ7QOg4Q4</a>
+</p>
+
+
+<img src="cid:image1.png">
 """
         ##<img src="cid:image1.jpg">
 
