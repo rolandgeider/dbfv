@@ -418,10 +418,16 @@ class SubmissionStarter(AbstractSubmission):
         """
         Sends the confirmation PDF to the user
         """
-        email_subject = 'Titel der Email'
-        email_text = """Sehr geehrte Damen und Herren,
+        email_subject = f'Starterlizenz {self.creation_date.year}'
+        email_text = f"""Sehr geeehrte Dame, sehr geehrter Herr {self.last_name},
+        
+mit dieser E-Mail erhalten Sie ihre beantragte Starterlizenz des DBFV e. V. für
+das Kalenderjahr {self.creation_date.year}.
 
-        ...
+Wir wünschen Ihnen eine gute Vorbereitung und viel Spaß und Erfolg bei der
+Teilnahme an unseren Meisterschaften.
+
+Ihr DBFV e. V.
         """
         logger.warning(f'Sending PDF for submission {self.id} - ({self.user.email})')
         msg = EmailMultiAlternatives(

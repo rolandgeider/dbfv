@@ -60,14 +60,13 @@ def build_submission_pdf(request: HttpRequest, submission, response: HttpRespons
     qr_image = Drawing(150, 150, transform=[150. / width, 0, 0, 150. / height, 0, 0])
     qr_image.add(qr_code)
 
-
     elements.append(Spacer(1 * cm, 1 * cm))
     elements.append(Paragraph(f"{submission.first_name} {submission.last_name}"))
     elements.append(Paragraph(f"{submission.street}  {submission.house_nr}"))
     elements.append(Paragraph(f"{submission.zip_code } {submission.city}"))
     elements.append(Spacer(1 * cm, 4 * cm))
 
-    elements.append(Paragraph(f"Starterlizent {submission.creation_date.year}", styles["Heading2"]))
+    elements.append(Paragraph(f"Starterlizenz {submission.creation_date.year}", styles["Heading2"]))
     elements.append(Paragraph(f"Sehr geehrte/r Frau/Herr {submission.first_name} {submission.last_name},"))
     elements.append(Spacer(1 * cm, 0.4 * cm))
 
@@ -79,20 +78,10 @@ def build_submission_pdf(request: HttpRequest, submission, response: HttpRespons
     elements.append(Paragraph("""
         <para align="justify">Die Landesmeisterschaften dienen in allen Klassen und Kategorien wie bisher als
         Qualifikation zur Deutschen- und im Herbst zur Internationalen Deutschen Meisterschaft. 
-        Bei der" Deutschen Meisterschaft können nur Aktive mit deutsche Staatsangehörigkeit
-        starten. Bei Internationalen Meisterschaften in Deutschland und den Landesmeisterschaften
-        sind alle Antragssteller einer Startlizenz bei entsprechender Qualifikation 
-        startberechtigt.</para>"""))
-    elements.append(Spacer(1 * cm, 0.4 * cm))
-
-    elements.append(Paragraph("""
-        <para align="justify">Der DBFV e.V. vertritt seit 1979 als traditionsreichster deutscher Bodybuilding-Verband
-        den Sport Bodybuilding offiziell in Deutschland. Daher sind Sie als Athletin/Athlet
-        regional und national an die Wettkampfregeln des Deutschen Bodybuilding- und
-        Fitnessverbandes DBFV e.V. (siehe 
-        <a href="https://www.dbfv.de/wettkampfregeln">dbfv.de/wettkampfregeln</a>) und
-        international an die Regeln des Europäischen Verbandes EBFF und des offiziellen
-        Weltverbands IFBB gebunden.</para>"""))
+        Sie sind als Athletin/Athlet regional und national an die Wettkampfregeln des Deutschen
+        Bodybuilding- und Fitnessverbandes DBFV e.V. (siehe dbfv.de/wettkampfregeln) und
+        international an die Regeln des Europäischen Verbandes EBFF und des
+        Weltverbandes IFBB gebunden.</para>"""))
     elements.append(Spacer(1 * cm, 0.4 * cm))
 
     elements.append(Paragraph("""Wir wünschen eine erfolgreiche Wettkampfsaison"""))
