@@ -592,7 +592,7 @@ class SubmissionInternational(AbstractSubmission):
     )
     height = models.IntegerField(_(u'Größe (cm)'))
     weight = models.DecimalField(_(u'Wettkampfgewicht in kg (ca.)'), max_digits=5, decimal_places=2)
-    category = models.CharField(_(u'Kategorie'), max_length=2, choices=SUBMISSION_CATEGORY)
+    category = models.CharField(_(u'Kategorie'), max_length=100)
     championship = models.CharField(
         _(u'Meisterschaft'), help_text=u'Meisterschaft in der Du starten möchtest', max_length=150
     )
@@ -678,9 +678,9 @@ class SubmissionInternational(AbstractSubmission):
         """
         Returns the necessary JSON to be used in the search
         """
-        data = super(SubmissionStarter, self).get_search_json()
+        data = super().get_search_json()
         data['state'] = self.gym.state.name
-        data['category'] = self.get_category_display()
+        data['category'] = self.category
         data['gym'] = self.gym.name
         return data
 
@@ -689,10 +689,10 @@ class SubmissionInternational(AbstractSubmission):
         Returns a row for the mailmerge CSV export
         """
         return [
-            self.pk, self.first_name, self.last_name, self.date_of_birth, self.active_since,
+            self.pk, self.first_name, self.last_name, self.date_of_birth,
             self.street, self.zip_code, self.city, self.tel_number, self.email,
             self.nationality.name, self.height, self.weight,
-            self.get_category_display(), self.gym.name, self.gym.state, self.creation_date,
+            self.category, self.gym.name, self.gym.state, self.creation_date,
             self.creation_date.year, self.championship, self.championship_date
         ]
 
