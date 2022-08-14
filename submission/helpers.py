@@ -53,7 +53,7 @@ def build_submission_pdf(request: HttpRequest, submission, response: HttpRespons
     # QR Code
     elements = []
 
-    qr_code = qr.QrCodeWidget(url, barLevel='H', x=185, y=280)
+    qr_code = qr.QrCodeWidget(url, barLevel='H', x=185, y=240)
     bounds = qr_code.getBounds()
     width = bounds[2] - bounds[0]
     height = bounds[3] - bounds[1]
