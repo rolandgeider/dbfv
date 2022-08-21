@@ -254,7 +254,8 @@ def get_overview_context(model_class, queryset, user, **kwargs):
     context['month_list'] = month_list
     context['current_year'] = datetime.date.today().year
     context['current_month'] = datetime.date.today().month
-    context['show_closed'] = False if user_type(user) == USER_TYPE_BUNDESVERBAND else True
+    context['show_closed'] = True
+    # context['show_closed'] = True if user_type(user) == USER_TYPE_BUNDESVERBAND else True
     context['mailmerge_count'] = model_class.objects.filter(mail_merge=False) \
         .filter(submission_status=model_class.SUBMISSION_STATUS_BEWILLIGT) \
         .count()
