@@ -526,6 +526,16 @@ Ihr DBFV e. V.
             self.creation_date.year,
         ]
 
+    def save(self, *args, **kwargs):
+        """
+        For existing submissions, if we change the status to approved, email the user
+        """
+        if self.pk and self.submission_status == self.SUBMISSION_STATUS_BEWILLIGT:
+            self.send_pdf_email()
+            self.pdf_sent = True
+
+        super().save(*args, **kwargs)
+
 
 class SubmissionInternational(AbstractSubmission):
     """
