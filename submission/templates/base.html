@@ -182,6 +182,13 @@
 
 <div class="container">
     <h2>{% block title %}{% endblock %}</h2>
+
+    {% for message in messages %}
+        <div class="alert alert-success" role="alert">
+          {{message}}
+        </div>
+    {% endfor %}
+
     <div class="row">
         <div class="col-md-9">
             {% block content %}{% endblock %}

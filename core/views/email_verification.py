@@ -30,7 +30,8 @@ def confirm_email(request):
     if not request.user.userprofile.email_verified:
         send_email(request.user)
         messages.success(
-            request, 'A verification email was sent to %(email)s' % {'email': request.user.email}
+            request,
+            f'Eine Bestätigungsemail wurde an {request.user.email} verschickt'
         )
 
     return HttpResponseRedirect(reverse('index'))
