@@ -124,7 +124,7 @@ class SubmissionListMonthView(
         # Count how many submissions were exported for each month
         month_list = []
         for date_obj in SubmissionStarter.objects.all().dates('creation_date', 'month'):
-            tmp_count = SubmissionStarter.objects.filter(mail_merge=True) \
+            tmp_count = SubmissionStarter.objects.filter(pdf_sent=True) \
                 .filter(creation_date__month=date_obj.month) \
                 .filter(creation_date__year=date_obj.year)
             month_list.append({'date': date_obj, 'export_count': tmp_count.count()})

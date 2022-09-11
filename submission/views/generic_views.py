@@ -245,7 +245,7 @@ def get_overview_context(model_class, queryset, user, **kwargs):
     # Count how many submissions were exported for each month
     month_list = []
     for date_obj in queryset.dates('creation_date', 'month'):
-        tmp_count = model_class.objects.filter(mail_merge=True)\
+        tmp_count = model_class.objects.filter(pdf_sent=True)\
                                        .filter(creation_date__month=date_obj.month)\
                                        .filter(creation_date__year=date_obj.year)
 
