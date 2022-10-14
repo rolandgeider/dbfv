@@ -468,6 +468,10 @@ Ihr DBFV e. V.
         if self.gym.state.pk == 7:
             email_list.append('info@hbbkv.com')
 
+        # Bayern
+        if self.gym.state.pk == 2:
+            email_list.append('lambert.boehm@blv-bfk.de')
+
         email_list.append(self.email)
         return email_list
 
@@ -863,10 +867,6 @@ class SubmissionJudge(AbstractSubmission):
         # Hamburg
         if self.state.pk == 6:
             email_list.append('clausmaibaum@web.de')
-
-        # Bayern
-        if self.state.pk == 2:
-            email_list.append('lambert.boehm@blv-bfk.de')
 
         return email_list
 
