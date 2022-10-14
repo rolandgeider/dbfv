@@ -66,7 +66,7 @@ def build_submission_pdf(request: HttpRequest, submission, response: HttpRespons
     elements.append(Paragraph(f"{submission.zip_code } {submission.city}"))
     elements.append(Spacer(1 * cm, 4 * cm))
 
-    elements.append(Paragraph(f"Starterlizenz {submission.creation_date.year}", styles["Heading2"]))
+    elements.append(Paragraph(f"Starterlizenz {submission.creation_date.year} - {submission.pk}", styles["Heading2"]))
     elements.append(Paragraph(f"Sehr geehrte/r Frau/Herr {submission.first_name} {submission.last_name},"))
     elements.append(Spacer(1 * cm, 0.4 * cm))
 
