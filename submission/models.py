@@ -197,6 +197,10 @@ class AbstractSubmission(models.Model):
         max_length=2, choices=SUBMISSION_STATUS, default=SUBMISSION_STATUS_EINGEGANGEN
     )
     mail_merge = models.BooleanField(default=False, editable=False)
+    """Deprecated"""
+
+    pdf_sent = models.BooleanField(default=False)
+    """Flag indicating whether the athlete has received the confirmation PDF"""
 
     def get_bank_designated_use(self):
         """
@@ -248,13 +252,12 @@ class AbstractSubmission(models.Model):
 
     def send_emails(self, extra_data=[]):
         """
-        Send an email to the managers
+        Email the managers
         """
-        context = {}
-        context['submission'] = self
-        context['fee'] = self.FEE
-        context['bankaccount'] = BankAccount.objects.get(pk=self.get_bank_account())
-        context['extra_data'] = extra_data
+        context = {'submission': self,
+                   'fee': self.FEE,
+                   'bankaccount': BankAccount.objects.get(pk=self.get_bank_account()),
+                   'extra_data': extra_data}
         for email in self.get_email_list():
 
             if email == self.email:
@@ -361,11 +364,6 @@ class SubmissionStarter(AbstractSubmission):
     terms_and_conditions = models.BooleanField(
         'Hiermit erkläre ich mich mit den Regeln des DBFV e.V.', blank=False
     )
-
-    pdf_sent = models.BooleanField(default=False)
-    """
-    Flag indicating whether the athlete has received the confirmation PDF
-    """
 
     # Other fields
     submission_last_year = models.BooleanField(
@@ -865,6 +863,10 @@ class SubmissionJudge(AbstractSubmission):
         # Hamburg
         if self.state.pk == 6:
             email_list.append('clausmaibaum@web.de')
+
+        # Bayern
+        if self.state.pk == 2:
+            email_list.append('lambert.boehm@blv-bfk.de')
 
         return email_list
 
