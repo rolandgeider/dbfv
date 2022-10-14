@@ -9,11 +9,11 @@
 {% block content %}
 <p>
     {% if object.submission_status == '1' %}
-        <span class="label">Eingegangen</span>
+        <span class="badge text-bg-light">Eingegangen</span>
     {% elif object.submission_status == '2' %}
-        <span class="label label-success">Bewilligt</span>
+        <span class="badge text-bg-success">Bewilligt</span>
     {% elif object.submission_status == '3' %}
-        <span class="label label-important">Abgelehnt</span>
+        <span class="badge text-bg-danger">Abgelehnt</span>
     {% endif %}
 </p>
 
