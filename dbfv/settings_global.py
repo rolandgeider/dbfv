@@ -167,8 +167,8 @@ EMAIL_FROM_ADDRESS = 'noreply@dbfv.com'
 EMAIL_MAIL_SUBJECT = 'Bestätige deine E-Mail-Adresse'
 EMAIL_MAIL_HTML = 'email/verification/html_body.tpl'
 EMAIL_MAIL_PLAIN = 'email/verification/txt_body.tpl'
-EMAIL_TOKEN_LIFE = 60 * 60
-EMAIL_PAGE_TEMPLATE = 'email/verification/confirm_template.html'
+EMAIL_MAIL_TOKEN_LIFE = 60 * 60
+EMAIL_MAIL_PAGE_TEMPLATE = 'email/verification/confirm_template.html'
 EMAIL_PAGE_DOMAIN = 'http://mydomain.com/'
 
 # A sample logging configuration. The only tangible logging
