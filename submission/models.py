@@ -713,6 +713,11 @@ class SubmissionGym(AbstractSubmission):
     """
     Model for a gym submission
     """
+    class Meta:
+        """
+        Order first by state name, then by gym name
+        """
+        ordering = ["creation_date", "state"]
 
     FEE = 30
 
@@ -721,19 +726,15 @@ class SubmissionGym(AbstractSubmission):
     name = models.CharField(
         verbose_name=_('Name'), max_length=30, help_text=_('Name des Studios oder Verein')
     )
+    owner = models.CharField(
+        verbose_name='Inhaber', max_length=30,
+    )
     founded = models.DateField(_(u'Gegründet am'))
     street = models.CharField(_(u'Straße'), max_length=30)
     zip_code = models.IntegerField(_(u'PLZ'))
     city = models.CharField(_(u'Ort'), max_length=30)
     tel_number = models.CharField(_(u'Tel. Nr.'), max_length=20)
-    fax_number = models.CharField(_(u'Fax. Nr.'), max_length=20)
     email = models.EmailField(_(u'Email'), max_length=120)
-    members = models.IntegerField(
-        verbose_name=_(u'Anzahl Mitglieder'),
-        help_text=_('Dient nur statistischen Zwecken'),
-        null=True,
-        blank=True
-    )
 
     # Other fields
     gym = models.OneToOneField(
@@ -794,6 +795,11 @@ class SubmissionJudge(AbstractSubmission):
     """
     Model for a judge submission
     """
+    class Meta:
+        """
+        Order first by state name, then by gym name
+        """
+        ordering = ["creation_date", "state"]
 
     MAILMERGE_HEADER = [
         'ID', 'Vorname', 'Nachname', 'Straße', 'PLZ', 'Stadt', 'Telefon', 'Email', 'Bundesverband',

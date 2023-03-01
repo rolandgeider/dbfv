@@ -240,15 +240,14 @@ class SubmissionGymForm(ModelForm):
         self.helper.layout = Layout(
             Row(
                 Column('state', css_class='col-12'),
-                Column('name', css_class='col-6'),
-                Column('founded', css_class='col-6'),
-                Column('street', css_class='col-4 '),
+                Column('name', css_class='col-4'),
+                Column('owner', css_class='col-4'),
+                Column('founded', css_class='col-4'),
+                Column('street', css_class='col-4'),
                 Column('zip_code', css_class='col-2 '),
                 Column('city', css_class='col-6 '),
-                Column('email', css_class='col-12 '),
+                Column('email', css_class='col-6 '),
                 Column('tel_number', css_class='col-6'),
-                Column('fax_number', css_class='col-6'),
-                Column('members', css_class='col-12 '),
             )
         )
 

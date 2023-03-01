@@ -15,6 +15,14 @@
     {% elif object.submission_status == '3' %}
         <span class="badge text-bg-danger">Abgelehnt</span>
     {% endif %}
+
+    {% if perms.submission.change_submissionjudge %}
+        {% if object.pdf_sent %}
+            <span class="badge text-bg-success">PDF verschickt</span>
+        {% else %}
+            <span class="badge text-bg-light">Noch kein PDF verschickt</span>
+        {% endif %}
+    {% endif %}
 </p>
 
 <table class="table">
