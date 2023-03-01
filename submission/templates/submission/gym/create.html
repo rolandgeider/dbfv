@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load dbfv_extras %}
+{% load crispy_forms_tags %}
 
 {% block title %}{{title}}{% endblock %}
 
@@ -11,12 +11,9 @@ zuständigen Landesverband.</p>
 die Auflagen gemäß §1 der Verfahrens- Geschäftordnung des DBFV e.V. erfüllt
 werden. Über die Aufnahme entscheidet der Vorstand des zuständigen Landesverbandes.
 Eine evtl. Ablehnung bedarf keiner Begründung.</small></p>
-<form action="{{ form_action }}"
-      method="post"
-      class="form-horizontal"
-      enctype="multipart/form-data">
-    {% render_form_fields form %}
-</form>
+
+{% crispy form %}
+
 
 {% endblock %}
 

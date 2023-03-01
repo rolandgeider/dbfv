@@ -232,6 +232,26 @@ class SubmissionGymForm(ModelForm):
         model = SubmissionGym
         exclude = ('submission_status', )
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Speichern', css_class='btn-success'))
+        self.helper.layout = Layout(
+            Row(
+                Column('state', css_class='col-12'),
+                Column('name', css_class='col-6'),
+                Column('founded', css_class='col-6'),
+                Column('street', css_class='col-4 '),
+                Column('zip_code', css_class='col-2 '),
+                Column('city', css_class='col-6 '),
+                Column('email', css_class='col-12 '),
+                Column('tel_number', css_class='col-6'),
+                Column('fax_number', css_class='col-6'),
+                Column('members', css_class='col-12 '),
+            )
+        )
+
 
 class SubmissionGymFormBV(ModelForm):
 
