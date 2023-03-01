@@ -259,6 +259,17 @@ class SubmissionGymFormBV(ModelForm):
         model = SubmissionGym
         fields = ('submission_status', )
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Speichern', css_class='btn-success'))
+        self.helper.layout = Layout(
+            Row(
+                Column('submission_status', css_class='col-12')
+            )
+        )
+
 
 class SubmissionJudgeForm(ModelForm):
 
