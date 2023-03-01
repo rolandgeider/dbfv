@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import csv
+import datetime
 
 # This file is part of the DBFV site.
 #
@@ -15,7 +17,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
 # Django
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, HttpResponse
 from django.urls import reverse_lazy
 from django.views import generic
 
@@ -178,3 +180,5 @@ class SubmissionUpdateStatusView(DbfvFormMixin, generic.UpdateView):
             gym.save()
 
         return super(SubmissionUpdateStatusView, self).form_valid(form)
+
+

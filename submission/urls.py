@@ -59,18 +59,40 @@ urlpatterns = [
     path('abmelden/ok', TemplateView.as_view(template_name="user/logout.html"), name="logout-page"),
 
     # Gyms
-    path('studio/<int:pk>/details/', gym.GymDetailView.as_view(), name='gym-view'),
+    path(
+        'studio/<int:pk>/details/',
+        gym.GymDetailView.as_view(),
+        name='gym-view'
+    ),
     path(
         'studio/liste/alle/',
         state.StateListView.as_view(template_name="gym/state_list.html"),
         name='gym-list'
     ),
     path(
-        'studio/liste/bundesland/<int:state_pk>/', gym.GymListView.as_view(), name='gym-list-state'
+        'studio/liste/bundesland/<int:state_pk>/',
+        gym.GymListView.as_view(),
+        name='gym-list-state'
     ),
-    path('studio/hinzufuegen/', gym.GymCreateView.as_view(), name='gym-add'),
-    path('studio/<int:pk>/bearbeiten/', gym.GymUpdateView.as_view(), name="gym-edit"),
-    path('studio/<int:pk>/loeschen/', gym.GymDeleteView.as_view(), name="gym-delete"),
+    path(
+        'studio/hinzufuegen/',
+        gym.GymCreateView.as_view(),
+        name='gym-add'),
+    path(
+        'studio/<int:pk>/bearbeiten/',
+        gym.GymUpdateView.as_view(),
+        name="gym-edit"
+    ),
+    path(
+        'studio/<int:pk>/loeschen/',
+        gym.GymDeleteView.as_view(),
+        name="gym-delete"
+    ),
+    path(
+        'studio/export-csv',
+        gym.export_csv,
+        name="gym-export-csv"
+    ),
 
     # States
     path('bundesland/liste/alle/', state.StateListView.as_view(), name='state-list'),
@@ -114,9 +136,21 @@ urlpatterns = [
     #
 
     # Starter
-    path('antrag/<int:pk>/pdf', submissions.pdf, name='submission-pdf'),
-    path('antrag/<int:pk>/resend-pdf', submissions.send_pdf, name='submission-resend-pdf'),
-    path('antrag/liste/alle/', submissions.SubmissionListView.as_view(), name='submission-list'),
+    path(
+        'antrag/<int:pk>/pdf',
+        submissions.pdf,
+        name='submission-pdf'
+    ),
+    path(
+        'antrag/<int:pk>/resend-pdf',
+        submissions.send_pdf,
+        name='submission-resend-pdf'
+    ),
+    path(
+        'antrag/liste/alle/',
+        submissions.SubmissionListView.as_view(),
+        name='submission-list'
+    ),
     path(
         'antrag/liste/<int:year>/<int:month>/',
         submissions.SubmissionListMonthView.as_view(),
@@ -162,7 +196,16 @@ urlpatterns = [
         submissions.massenbewilligung,
         name='submission-massenbewilligung'
     ),
-    path('antrag/suchen', submissions.search, name='submission-search'),
+    path(
+        'antrag/suchen',
+        submissions.search,
+        name='submission-search'
+    ),
+    path(
+        'antrag/export-csv',
+        submissions.export_csv,
+        name='submission-export-csv'
+    ),
 
     # International
     path(

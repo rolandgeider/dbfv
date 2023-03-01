@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
+import csv
+import datetime
 
+from django.http import HttpResponseForbidden, HttpResponse
 # This file is part of the DBFV site.
 #
 # the DBFV site is free software: you can redistribute it and/or modify
@@ -106,3 +109,24 @@ class GymDeleteView(DbfvFormMixin, generic.DeleteView):
         context['title'] = u'Studio {0} löschen?'.format(self.object.name)
         context['delete_message'] = u'Das wird auch alle Anträge zu diesem Studio entfernen.'
         return context
+
+
+def export_csv(request):
+    """
+    Search for a submission, return the result as a JSON list
+    """
+    if not request.user.has_perm('submission.change_submissionstarter'):
+        return HttpResponseForbidden()
+
+    response = HttpResponse(content_type='text/csv')
+    writer = csv.writer(response, delimiter='\t', quoting=csv.QUOTE_MINIMAL)
+    writer.writerow(['Bundesland', 'Name', 'Email'])
+
+    today = datetime.date.today()
+    for gym in Gym.objects.filter(is_active=True):
+        writer.writerow([gym.state.short_name, gym.name, gym.email])
+
+    filename = f'attachment; filename=Email-export-aktive-Studios-{today}.csv'
+    response['Content-Disposition'] = filename
+    response['Content-Length'] = len(response.content)
+    return response

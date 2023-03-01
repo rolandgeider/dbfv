@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import csv
 # This file is part of the DBFV site.
 #
 # the DBFV site is free software: you can redistribute it and/or modify
@@ -268,6 +268,30 @@ def search(request):
         data = []
 
     return HttpResponse(data, content_type='application/json')
+
+
+def export_csv(request):
+    """
+    Search for a submission, return the result as a JSON list
+    """
+    if not request.user.has_perm('submission.change_submissionstarter'):
+        return HttpResponseForbidden()
+
+    response = HttpResponse(content_type='text/csv')
+    writer = csv.writer(response, delimiter='\t', quoting=csv.QUOTE_MINIMAL)
+    writer.writerow(['Name', 'Email'])
+
+    today = datetime.date.today()
+    for submission in SubmissionStarter.objects.filter(
+            creation_date__year=today.year,
+            submission_status=SubmissionStarter.SUBMISSION_STATUS_BEWILLIGT
+    ):
+        writer.writerow([submission.get_name, submission.email])
+
+    filename = f'attachment; filename=Email-export-Starterlizenzen-{today.year}-{today}.csv'
+    response['Content-Disposition'] = filename
+    response['Content-Length'] = len(response.content)
+    return response
 
 
 def massenbewilligung(request):
