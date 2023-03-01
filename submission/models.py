@@ -36,7 +36,7 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 # dbfv
-from submission.helpers import build_submission_pdf
+from submission.helpers import build_starter_pdf, build_judge_pdf
 
 logger = logging.getLogger(__name__)
 
@@ -427,7 +427,7 @@ Teilnahme an unseren Meisterschaften.
 
 Ihr DBFV e. V.
         """
-        logger.warning(f'Sending PDF for submission {self.id} - ({self.user.email})')
+        logger.info(f'Sending PDF for submission {self.id} - ({self.user.email})')
         msg = EmailMultiAlternatives(
             email_subject,
             email_text,
@@ -438,7 +438,7 @@ Ihr DBFV e. V.
 
         # Build the PDF and attach it to the email
         response = HttpResponse(content_type='application/pdf')
-        build_submission_pdf(HttpRequest(), self, response)
+        build_starter_pdf(HttpRequest(), self, response)
         msg_part = MIMEApplication(response.content)
         msg_part['Content-Disposition'] = f'attachment; filename="Starterlizenz-{self.id}.pdf"'
         msg.attach(msg_part)
@@ -879,6 +879,50 @@ class SubmissionJudge(AbstractSubmission):
             self.tel_number, self.email, self.state.name, self.creation_date,
             self.creation_date.year
         ]
+
+    def send_pdf_email(self):
+        """
+        Sends the confirmation PDF to the user
+        """
+        email_subject = f'Kampfrichterlizenz {self.creation_date.year}'
+        email_text = f"""Sehr geeehrte Dame, sehr geehrter Herr {self.last_name},
+
+mit dieser E-Mail erhalten Sie ihre beantragte Kampfrichterlizenz des DBFV e. V. für
+das Kalenderjahr {self.creation_date.year}.
+
+Wir wünschen Ihnen eine gute Vorbereitung und viel Spaß und Erfolg bei der
+Teilnahme an unseren Meisterschaften.
+
+Ihr DBFV e. V.
+        """
+        logger.info(f'Sending PDF for judge submission {self.id} - ({self.user.email})')
+        msg = EmailMultiAlternatives(
+            email_subject,
+            email_text,
+            settings.DEFAULT_FROM_EMAIL,
+            [self.user.email],
+        )
+        msg.mixed_subtype = 'related'
+
+        # Build the PDF and attach it to the email
+        response = HttpResponse(content_type='application/pdf')
+        build_judge_pdf(HttpRequest(), self, response)
+        msg_part = MIMEApplication(response.content)
+        msg_part['Content-Disposition'] = f'attachment; filename="Starterlizenz-{self.id}.pdf"'
+        msg.attach(msg_part)
+
+        # Send the email
+        msg.send()
+
+    def save(self, *args, **kwargs):
+        """
+        For existing submissions, if we change the status to approved, email the user
+        """
+        if self.pk and self.submission_status == self.SUBMISSION_STATUS_BEWILLIGT:
+            self.send_pdf_email()
+            self.pdf_sent = True
+
+        super().save(*args, **kwargs)
 
 
 USER_TYPE_UNKNOWN = -1

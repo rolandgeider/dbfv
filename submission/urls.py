@@ -294,6 +294,16 @@ urlpatterns = [
         submission_judge.SubmissionCsvExportView.as_view(),
         name='submission-judge-export-mailmerge-new'
     ),
+    path(
+        'antrag-kampfrichter/<int:pk>/pdf',
+         submissions.judge_pdf,
+         name='submission-judge-pdf'
+     ),
+    path(
+        'antrag-kampfrichter/<int:pk>/resend-pdf',
+         submissions.send_judge_pdf,
+         name='submission-judge-resend-pdf'
+     ),
 
     # Impressum
     path('impressum', TemplateView.as_view(template_name="misc/impressum.html"), name="impressum"),

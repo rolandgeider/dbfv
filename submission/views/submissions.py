@@ -34,13 +34,13 @@ from submission.forms import (
     SubmissionStarterForm,
     SubmissionStarterFormBV, MassenbewilligungForm,
 )
-from submission.helpers import build_submission_pdf
+from submission.helpers import build_starter_pdf, build_judge_pdf
 from submission.models import (
     USER_TYPE_BUNDESVERBAND,
     USER_TYPE_USER,
     State,
     SubmissionStarter,
-    user_type,
+    user_type, SubmissionJudge,
 )
 from submission.views.generic_views import (
     BaseCsvExportView,
@@ -326,7 +326,25 @@ def pdf(request, pk):
         return HttpResponseForbidden()
 
     response = HttpResponse(content_type='application/pdf')
-    build_submission_pdf(request, submission, response)
+    build_starter_pdf(request, submission, response)
+    response['Content-Length'] = len(response.content)
+
+    return response
+
+
+def judge_pdf(request, pk):
+    """
+    Search for a submission, return the result as a JSON list
+    """
+
+    # Get the submission
+    submission = get_object_or_404(SubmissionJudge, pk=pk)
+    if not request.user.has_perm('submission.delete_submissionjudge') \
+            and submission.user != request.user:
+        return HttpResponseForbidden()
+
+    response = HttpResponse(content_type='application/pdf')
+    build_judge_pdf(request, submission, response)
     response['Content-Length'] = len(response.content)
 
     return response
@@ -340,6 +358,19 @@ def send_pdf(request, pk):
         return HttpResponseForbidden()
 
     submission = get_object_or_404(SubmissionStarter, pk=pk)
+    submission.send_pdf_email()
+
+    return HttpResponseRedirect(submission.get_absolute_url())
+
+
+def send_judge_pdf(request, pk):
+    """
+    Re-sends the PDF to the given submission
+    """
+    if not request.user.has_perm('submission.change_submissionjudge'):
+        return HttpResponseForbidden()
+
+    submission = get_object_or_404(SubmissionJudge, pk=pk)
     submission.send_pdf_email()
 
     return HttpResponseRedirect(submission.get_absolute_url())
