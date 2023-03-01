@@ -59,6 +59,6 @@
 {% if object.submission_status == object.SUBMISSION_STATUS_BEWILLIGT %}
 <h4>PDF/QR-Code</h4>
 <p><a href="{% url 'submission-judge-resend-pdf' object.id %}">Email nochmal verschicken</a></p>
-<p><a href="{% url 'submission-judge-pdf' object.id %}" download="Starterlizenz-{{ object.id }}">PDF-Datei runterladen</a></p>
+<p><a href="{% url 'submission-judge-pdf' object.id %}" download="Kampfrichterlizenz-{{ object.id }}">PDF-Datei runterladen</a></p>
 {% endif %}
 {% endblock %}
