@@ -59,7 +59,7 @@ class SubmissionListView(BaseSubmissionListView):
         """
         context = super(SubmissionListView, self).get_context_data(**kwargs)
 
-        queryset = SubmissionJudge.objects.all().order_by('state', 'creation_date')
+        queryset = SubmissionJudge.objects.all().order_by('creation_date', 'state')
         if user_type(self.request.user) == USER_TYPE_USER:
             queryset = queryset.filter(user=self.request.user)
 
