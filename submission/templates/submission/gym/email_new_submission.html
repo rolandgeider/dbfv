@@ -4,24 +4,8 @@ Eine neue Studiolizenz wurde beantragt
 Details:
 * Antragsnummer: {{submission.pk}}
 * Name:          {{submission.name}}
-* Mitglieder:    {{submission.members}}
 * Gegründet am:  {{submission.founded}}
 * Landesverband: {{submission.state}}
 * Email:         {{submission.email}}
 * Adresse:       {{submission.street}}, {{submission.city}}, {{submission.zip_code}}
 * Tel. Nr.:      {{submission.tel_number}}
-* Fax. Nr.:      {{submission.fax_number}}
-
-
-{% if is_user %}
-Bitte überweisen Sie den Teilnahmebeitrag innerhalb von 5 Tagen
-an das folgende Konto:
-
-* Betrag:           {{fee}}EUR
-* Verwendungszweck: Studiolizenz {{submission.pk}}
-                    {{submission.get_name}}
-* Begünstigter:     {{bankaccount.owner_name}}
-* IBAN:             {{bankaccount.iban}}
-* BIC:              {{bankaccount.bic}} ({{bankaccount.bank_name}})
-                    Nur bei Auslandsüberweisung nötig!
-{% endif %}

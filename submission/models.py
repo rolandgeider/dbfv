@@ -250,10 +250,12 @@ class AbstractSubmission(models.Model):
         """
         pass
 
-    def send_emails(self, extra_data=[]):
+    def send_emails(self, extra_data=None):
         """
         Email the managers
         """
+        if extra_data is None:
+            extra_data = []
         context = {'submission': self,
                    'fee': self.FEE,
                    'bankaccount': BankAccount.objects.get(pk=self.get_bank_account()),

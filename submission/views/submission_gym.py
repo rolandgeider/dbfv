@@ -140,6 +140,8 @@ class SubmissionCreateView(BaseSubmissionCreateView):
         self.object.gym = gym
         self.object.save()
 
+        self.object.send_emails()
+
         return gym.get_absolute_url()
 
 
