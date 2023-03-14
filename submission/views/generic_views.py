@@ -58,7 +58,7 @@ class DbfvViewMixin(TemplateResponseMixin):
                     not request.user.has_perm(self.permission_required):
                 return HttpResponseForbidden()
 
-        return super(DbfvViewMixin, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
 
 class DbfvFormMixin(DbfvViewMixin, ModelFormMixin):
@@ -122,7 +122,7 @@ class BaseSubmissionCreateView(DbfvFormMixin, generic.CreateView):
         return {'email': self.request.user.email}
 
 
-class BaseSubmissionDeleteView(DbfvFormMixin, generic.DeleteView):
+class BaseSubmissionDeleteView(DbfvViewMixin, generic.DeleteView):
     """
     Deletes a submission
     """
