@@ -790,6 +790,9 @@ class SubmissionGym(AbstractSubmission):
         email_list.append(self.email)
         return email_list
 
+    def get_absolute_url(self):
+        return reverse('submission-gym-view', kwargs={'pk': self.pk})
+
 
 class SubmissionJudge(AbstractSubmission):
     """

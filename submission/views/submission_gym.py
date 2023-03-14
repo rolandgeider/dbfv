@@ -140,7 +140,7 @@ class SubmissionCreateView(BaseSubmissionCreateView):
         self.object.gym = gym
         self.object.save()
 
-        return super(SubmissionCreateView, self).get_success_url()
+        return gym.get_absolute_url()
 
 
 class SubmissionDeleteView(BaseSubmissionDeleteView):
