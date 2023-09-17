@@ -12,9 +12,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         counter = Counter()
+        not_found = []
 
         with open("emails.txt", "r") as file:
-            for email in file.readlines():
+            for emailRaw in file.readlines():
+                email = emailRaw.strip()
                 try:
                     user = User.objects.get(email=email)
                     user.userprofile.email_verified = True
@@ -22,5 +24,7 @@ class Command(BaseCommand):
                     counter['verified'] += 1
                 except User.DoesNotExist:
                     counter['not_found'] += 1
+                    not_found.append(email)
 
         print(counter)
+        print(not_found)
