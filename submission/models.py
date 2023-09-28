@@ -665,8 +665,12 @@ class SubmissionInternational(AbstractSubmission):
         Collects and returns a list with the recipients of notification emails
         """
         email_list = [
-            'info@dbfv.de', 'dbfv.falk@gmail.com', "Margret.Netack@t-online.de", self.email
+            'info@dbfv.de',
+            "Margret.Netack@t-online.de",
+            self.email
         ]
+        # Removed 'dbfv.falk@gmail.com' for test
+
         if self.gym.state.email:
             email_list.append(self.gym.state.email)
         return email_list
