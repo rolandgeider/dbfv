@@ -162,7 +162,7 @@ def verified_callback(user):
     user.userprofile.save()
 
 
-EMAIL_VERIFIED_CALLBACK = verified_callback
+EMAIL_MAIL_CALLBACK = verified_callback
 EMAIL_FROM_ADDRESS = 'noreply@dbfv.com'
 EMAIL_MAIL_SUBJECT = 'Bestätige deine E-Mail-Adresse'
 EMAIL_MAIL_HTML = 'email/verification/html_body.tpl'
