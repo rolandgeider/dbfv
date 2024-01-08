@@ -587,7 +587,7 @@ class SubmissionInternational(AbstractSubmission):
         ('20', u'Masters-Frauen Figur'),
     )
 
-    FEE = 0
+    FEE = 20
 
     # Personal information
     date_of_birth = models.DateField(_('Geburtsdatum'))
