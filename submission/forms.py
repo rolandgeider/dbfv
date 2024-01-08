@@ -164,6 +164,12 @@ class SubmissionInternationalForm(ModelForm):
 
     gym = ModelChoiceField(queryset=Gym.objects.filter(is_active=True), label='Studio')
 
+    terms_and_conditions = BooleanField(
+        label='Regeln des DBFV e.V.',
+        help_text='Hiermit erkläre ich mich mit den Regeln des DBFV e.V. einverstanden',
+        required=True
+    )
+
     class Meta:
         model = SubmissionInternational
         exclude = ('submission_status', )
