@@ -1,0 +1,23 @@
+[
+    {
+        "pk": 1, 
+        "model": "submission.BankAccount",
+        "fields": {
+            "owner_name": "Mr Money",
+            "iban": "DE39500105178326689498",
+            "bic": "",
+            "bank_name": "Money Bank"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "submission.BankAccount",
+        "fields": {
+            "owner_name": "Donald Duck",
+            "iban": "DE67500105175268966336",
+            "bic": "",
+            "bank_name": "Cayman Islands Bank"
+        }
+    }
+
+]

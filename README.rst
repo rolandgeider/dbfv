@@ -26,6 +26,8 @@ nicht funktioniert oder du ein anderes Setup hast: http://djangoproject.com/
  $ git clone https://github.com/rolandgeider/dbfv.git
  $ cd dbfv
  $ pip install -r requirements.txt
+ $ cd submission/static
+ $ yarn install
 
 2) Quellcode runterladen und settings-Datei sowie Datenbank erstellen:
 
@@ -33,7 +35,6 @@ nicht funktioniert oder du ein anderes Setup hast: http://djangoproject.com/
 
  $ cp dbfv/settings_sample.py dbfv/settings.py
  $ vim dbfv/settings.py
- $ python manage.py syncdb
  $ python manage.py migrate
 
 
@@ -41,9 +42,8 @@ nicht funktioniert oder du ein anderes Setup hast: http://djangoproject.com/
 
 ::
 
- $ python manage.py loaddata groups
- $ python manage.py loaddata federal_states
- $ python manage.py loaddata countries
+ $ python manage.py createsuperuser
+ $ python manage.py loaddata groups bank_accounts federal_states countries gyms
  $ python manage.py runserver
 
 

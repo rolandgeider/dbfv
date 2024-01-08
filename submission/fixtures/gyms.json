@@ -1,0 +1,30 @@
+[
+  {
+    "model": "submission.gym",
+    "pk": 1,
+    "fields": {
+      "name": "Muscle Gym GmbH",
+      "email": "",
+      "state": 1,
+      "owner": "Dr Test",
+      "zip_code": 12345,
+      "city": "Bad Testen",
+      "street": "Kraftstr",
+      "is_active": true
+    }
+  },
+  {
+    "model": "submission.gym",
+    "pk": 2,
+    "fields": {
+      "name": "Fitness Center",
+      "email": "",
+      "state": 1,
+      "owner": "",
+      "zip_code": 54321,
+      "city": "Münster",
+      "street": "Kurze Gasse 145",
+      "is_active": true
+    }
+  }
+]

@@ -41,6 +41,7 @@ def render_submission_list(submissions, user, filter_mode, submission_type='star
     Render a table with submissions
 
     :param submissions: list with submissions
+    :param submission_type: submission type
     :param user: current user
     :param filter_mode what submissions to list (open, closed, etc.)
     :param submission_type The type of the submission. Allowed values: starter, gym, judge
