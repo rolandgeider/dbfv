@@ -71,7 +71,7 @@ class DbfvFormMixin(DbfvViewMixin, ModelFormMixin):
         Set the context data
         """
 
-        context = super(DbfvFormMixin, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['form_action'] = self.request.get_full_path()
         context['title'] = self.page_title
 

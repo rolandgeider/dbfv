@@ -99,13 +99,12 @@ class GymDeleteView(DbfvFormMixin, generic.DeleteView):
     success_url = reverse_lazy('gym-list')
     permission_required = 'submission.delete_gym'
     template_name = 'delete.html'
-    fields = '__all__'
 
     def get_context_data(self, **kwargs):
         """
         Pass the title to the context
         """
-        context = super(GymDeleteView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['title'] = u'Studio {0} löschen?'.format(self.object.name)
         context['delete_message'] = u'Das wird auch alle Anträge zu diesem Studio entfernen.'
         return context

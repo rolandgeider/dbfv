@@ -16,7 +16,7 @@ class Command(BaseCommand):
 
         with open("emails.txt", "r") as file:
             for emailRaw in file.readlines():
-                email = emailRaw.strip()
+                email = emailRaw.strip().lower()
                 try:
                     user = User.objects.get(email=email)
                     user.userprofile.email_verified = True
