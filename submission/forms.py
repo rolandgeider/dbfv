@@ -133,6 +133,12 @@ class SubmissionStarterForm(ModelForm):
         required=True
     )
 
+    data_protection = BooleanField(
+        label='Datenschutzbestimmungen',
+        help_text='Hiermit erkläre ich mich mit den Datenschutzbestimmungen des DBFV e.V. einverstanden',
+        required=True
+    )
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -156,6 +162,7 @@ class SubmissionStarterForm(ModelForm):
                 Column('category', css_class='col-12'),
                 Column('gym', css_class='col-12'),
                 Column('terms_and_conditions', css_class='col-12'),
+                Column('data_protection', css_class='col-12'),
             )
         )
 
@@ -277,6 +284,11 @@ class SubmissionGymFormBV(ModelForm):
 
 
 class SubmissionJudgeForm(ModelForm):
+    data_protection = BooleanField(
+        label='Datenschutzbestimmungen',
+        help_text='Hiermit erkläre ich mich mit den Datenschutzbestimmungen des DBFV e.V. einverstanden',
+        required=True
+    )
 
     class Meta:
         model = SubmissionJudge
@@ -284,6 +296,8 @@ class SubmissionJudgeForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+
 
         self.helper = FormHelper()
         self.helper.add_input(Submit('submit', 'Speichern', css_class='btn-success'))
@@ -297,6 +311,7 @@ class SubmissionJudgeForm(ModelForm):
                 Column('tel_number', css_class='col-12 '),
                 Column('email', css_class='col-12 '),
                 Column('state', css_class='col-12 '),
+                Column('data_protection', css_class='col-12'),
             )
         )
 
