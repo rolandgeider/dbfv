@@ -17,3 +17,15 @@ Details:
                          {{submission.gym.email}}
 * Meisterschaft:         {{submission.championship}} ({{submission.championship_date}})
 * Beste Platzierung:     {{submission.best_placement}}
+
+{% if is_user %}
+Bitte überweisen Sie den Teilnahmebeitrag innerhalb von 5 Tagen
+an das folgende Konto:
+
+* Betrag:           {{fee}}EUR
+* Verwendungszweck: Internationale Lizenz {{submission.pk}}
+                    {{submission.get_name}}
+* Begünstigter:     {{bankaccount.owner_name}}
+* IBAN:             {{bankaccount.iban}} - {{bankaccount.bank_name}}
+* BIC:              {{bankaccount.bic}} (nur bei Auslandsüberweisung nötig!)
+{% endif %}
