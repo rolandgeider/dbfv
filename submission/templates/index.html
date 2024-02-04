@@ -17,7 +17,8 @@
 
     <h3>Starterlizenz</h3>
     {% if perms.submission.add_submissionstarter %}
-        {% if not user.userprofile.email_verified %}
+        {#% if not user.userprofile.email_verified %#}
+        {% if false %}
             <a class="btn btn-info" href="{% url 'core:verification:confirm-email' %}">Sie müssen
                 Ihre Email bestätigen &raquo;</a>
         {% else %}
