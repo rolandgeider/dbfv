@@ -9,12 +9,10 @@
         <p>Sie befinden sich auf der DBFV e.V. Internetseite zur Beantragung
             jeglicher Lizenzen. Bitte wählen Sie die Lizenzart aus und folgen Sie
             dem Menü.
-
         </p>
     </div>
 
     <!-- Example row of columns -->
-
     <h3>Starterlizenz</h3>
     {% if perms.submission.add_submissionstarter %}
         {#% if not user.userprofile.email_verified %#}
@@ -31,47 +29,30 @@
 
     <h3 class="mt-3">Kampfrichterlizenz</h3>
     {% if perms.submission.add_submissiongym %}
-        {% if not user.userprofile.email_verified %}
-            <a class="btn btn-info" href="{% url 'core:verification:confirm-email' %}">Sie müssen
-                Ihre Email bestätigen &raquo;</a>
-        {% else %}
             <p><a class="btn btn-success" href="{% url 'submission-judge-add' %}">Antrag auf
                 Kampfrichterlizenz stellen &raquo;</a></p>
-        {% endif %}
     {% else %}
         <p><a href="{% url 'login' %}" class="btn btn-danger">Sie müssen sich anmelden</a></p>
     {% endif %}
 
     <h3 class="mt-3">Internationale Starts</h3>
     {% if perms.submission.add_submissioninternational %}
-        {% if not user.userprofile.email_verified %}
-            <a class="btn btn-info" href="{% url 'core:verification:confirm-email' %}">
-                Sie müssen Ihre Email bestätigen &raquo;
-            </a>
-        {% else %}
             <p>
                 <a class="btn btn-success" href="{% url 'submission-international-add' %}">
                     Antrag für einen internationalen Start stellen &raquo;
                 </a>
             </p>
-        {% endif %}
     {% else %}
         <p><a href="{% url 'login' %}" class="btn btn-danger">Sie müssen sich anmelden</a></p>
     {% endif %}
 
     <h3 class="mt-3">Studiolizenz</h3>
     {% if perms.submission.add_submissiongym %}
-        {% if not user.userprofile.email_verified %}
-            <a class="btn btn-info" href="{% url 'core:verification:confirm-email' %}">
-                Sie müssen Ihre Email bestätigen &raquo;
-            </a>
-        {% else %}
             <p>
                 <a class="btn btn-success" href="{% url 'submission-studio-add' %}">
                     Antrag für eine Studiolizenz stellen &raquo;
                 </a>
             </p>
-        {% endif %}
     {% else %}
         <p><a href="{% url 'login' %}" class="btn btn-danger">Sie müssen sich anmelden</a></p>
     {% endif %}

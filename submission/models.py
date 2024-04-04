@@ -558,35 +558,6 @@ class SubmissionInternational(AbstractSubmission):
         'Bundesverband', 'Datum', 'Jahr', 'Meisterschaft', 'Datum der Meisterschaft'
     ]
 
-    SUBMISSION_CATEGORY = (
-        ('1', u'Jugend-Bikini-Fitness'),
-        ('2', u'Jugend-Mens Physique'),
-        ('3', u'Jugend-Bodybuilding'),
-        ('4', u'Junioren-Bikini-Fitness'),
-        ('5', u'Junioren-Mens Physique'),
-        ('6', u'Junioren-Bodybuilding'),
-        ('23', u'Junioren-Classic Bodybuilding'),
-        ('21', u'Junioren-Frauen Fitness Figur'),
-        ('22', u'Junioren-Frauen Physique'),
-        ('7', u'Frauen-Bikini-Fitness'),
-        ('25', u'Frauen-Wellness'),
-        ('8', u'Frauen-Fitness-Figur'),
-        ('9', u'Frauen-Physique'),
-        ('10', u'Paare'),
-        ('11', u'Handicappt/Wheelchair'),
-        ('12', u'Classic Bodybuilding'),
-        ('24', u'Classic Physique'),
-        ('13', u'Männer Physique'),
-        ('24', u'Männer Muscular Physique'),
-        ('14', u'Männer Bodybuilding'),
-        ('15', u'Masters-Männer BB'),
-        ('16', u'Masters-Männer Classic BB'),
-        ('17', u'Masters-Männer Physique'),
-        ('18', u'Masters-Frauen Physique'),
-        ('19', u'Masters-Frauen Bikini Fitness'),
-        ('20', u'Masters-Frauen Figur'),
-    )
-
     FEE = 20
 
     # Personal information
@@ -640,12 +611,11 @@ class SubmissionInternational(AbstractSubmission):
     def get_bank_account(self):
         """
         Returns the correct bank account for this submission
-        """
-        bank_account = 1
-        if self.gym.state_id == 10:
-            bank_account = 2
 
-        return bank_account
+        Since 2024-04-04: always return the federal account
+        """
+
+        return 1
 
     @staticmethod
     def get_license_type():
