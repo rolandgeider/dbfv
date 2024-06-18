@@ -3,6 +3,6 @@ django-recaptcha
 django-formtools
 reportlab==4.2.0
 django-email-verification==0.3.3
-django-crispy-forms==2.1
+django-crispy-forms==2.2
 crispy-bootstrap5==2024.2
 PyJWT==2.8.0
