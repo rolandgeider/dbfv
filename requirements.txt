@@ -4,5 +4,5 @@ django-formtools
 reportlab==4.2.5
 django-email-verification==0.3.3
 django-crispy-forms==2.3
-crispy-bootstrap5==2024.2
+crispy-bootstrap5==2024.10
 PyJWT==2.9.0
