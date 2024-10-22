@@ -1,4 +1,4 @@
-Django==5.0.9
+Django==5.1.2
 django-recaptcha
 django-formtools
 reportlab==4.2.5
