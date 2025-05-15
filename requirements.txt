@@ -1,7 +1,7 @@
 Django==5.0.11
 django-recaptcha
 django-formtools
-reportlab==4.4.0
+reportlab==4.4.1
 django-email-verification==0.3.3
 django-crispy-forms==2.4
 crispy-bootstrap5==2025.4
