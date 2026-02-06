@@ -393,10 +393,21 @@ class SubmissionStarter(AbstractSubmission):
     def get_bank_account(self):
         """
         Returns the correct bank account for this submission
+
+        TODO: this should probably be refactored so that if the state has an own bank account,
+              we use that, otherwise use the federal account.
         """
+
+        # Bank account for the DBFV federal association
         bank_account = 1
+
+        # Special case for NRW
         if self.gym.state_id == 10:
             bank_account = 2
+
+        # Special case for Berlin
+        if self.gym.state_id == 3:
+            bank_account = 3
 
         return bank_account
 
