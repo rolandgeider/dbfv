@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import csv
-import datetime
 
 # This file is part of the DBFV site.
 #
@@ -15,7 +13,8 @@ import datetime
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU Affero General Public License
-# along with the DBFV site.  If not, see <http://www.gnu.org/licenses/>.
+# along with the DBFV site. If not, see <http://www.gnu.org/licenses/>.
+
 # Django
 from django.http import HttpResponseForbidden, HttpResponse
 from django.urls import reverse_lazy
@@ -72,9 +71,9 @@ class SubmissionListYearView(SubmissionListView, generic.dates.YearMixin):
     def get_queryset(self):
         """
         Change the queryset depending on the user's rights. The rules are the
-        follwing:
+        following:
             * A BV user sees all submissions
-            * A regular user sees it's own submissions
+            * A regular user sees its own submissions
         """
 
         # Get queryset from parent class
@@ -104,7 +103,7 @@ class SubmissionDetailView(DbfvViewMixin, generic.detail.DetailView):
         self.request.session['bank-account'] = submission.get_bank_account()
         self.request.session['submission-fee'] = submission.FEE
         self.request.session['designated-use'] = submission.get_bank_designated_use()
-        return super(SubmissionDetailView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
 
 class SubmissionCreateView(BaseSubmissionCreateView):
@@ -181,6 +180,6 @@ class SubmissionUpdateStatusView(DbfvFormMixin, generic.UpdateView):
             gym.is_active = True
             gym.save()
 
-        return super(SubmissionUpdateStatusView, self).form_valid(form)
+        return super().form_valid(form)
 
 

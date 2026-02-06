@@ -132,7 +132,7 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
 
     # reCaptcha support, see https://github.com/praekelt/django-recaptcha
-    'captcha',
+    #'captcha',
 
     # The dbfv submission app
     'submission',

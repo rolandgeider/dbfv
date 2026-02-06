@@ -636,7 +636,7 @@ class SubmissionInternational(AbstractSubmission):
         """
         email_list = [
             'info@dbfv.de',
-            "Margret.Netack@t-online.de",
+            'Margret.Netack@t-online.de',
             self.email
         ]
         # Removed 'dbfv.falk@gmail.com' for test
@@ -714,7 +714,7 @@ class SubmissionGym(AbstractSubmission):
 
     # Other fields
     gym = models.OneToOneField(
-        Gym, verbose_name='Studio', editable=False, blank=True, null=True, on_delete=models.CASCADE
+        Gym, verbose_name='Studio', editable=False, blank=True, null=True, on_delete=models.CASCADE,
     )
 
     def __str__(self):
