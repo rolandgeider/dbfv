@@ -91,17 +91,13 @@ class Command(BaseCommand):
         open_status = getattr(model_cls, 'SUBMISSION_STATUS_EINGEGANGEN')
         closed_status = getattr(model_cls, 'SUBMISSION_STATUS_ABGELEHNT')
         status_field = 'submission_status'
-        date_field = 'creation_date'
-
-        now = timezone.now()
-        cutoff_date = now - datetime.timedelta(days=months * 30)
+        cutoff_date = timezone.now() - datetime.timedelta(days=months * 30)
 
         # build filter kwargs dynamically
         filter_kwargs = {
             status_field: open_status,
-            f"{date_field}__lt": cutoff_date,
+            'creation_date__lt': cutoff_date,
         }
-
         open_submissions = model_cls.objects.filter(**filter_kwargs)
         count = open_submissions.count()
 
