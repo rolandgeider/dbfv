@@ -1,0 +1,21 @@
+[project]
+name = "dbfv"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.13"
+dependencies = [
+    "crispy-bootstrap5~=2025.6",
+    "django~=5.1.15",
+    "django-crispy-forms~=2.5",
+    "django-email-verification~=0.3.3",
+    "django-formtools~=2.5.1",
+    "django-recaptcha~=4.1.0",
+    "gunicorn~=25.3.0",
+    "pyjwt~=2.12.1",
+    "reportlab~=4.4.10",
+]
+
+[dependency-groups]
+prod = [
+    "mysqlclient~=2.2.8"
+]

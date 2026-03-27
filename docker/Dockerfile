@@ -50,7 +50,7 @@ RUN python3 -m venv /home/dbfv/venv
 
 RUN . /home/dbfv/venv/bin/activate \
   && pip install --upgrade pip \
-  && pip install --no-cache -r requirements.txt
+  && pip install --no-cache .
 
 COPY --chown=dbfv:www-data . /home/dbfv/src
 RUN . /home/dbfv/venv/bin/activate  \
