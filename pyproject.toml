@@ -10,7 +10,7 @@ dependencies = [
     "django-email-verification~=0.3.3",
     "django-formtools~=2.5.1",
     "django-recaptcha~=4.1.0",
-    "gunicorn~=25.3.0",
+    "gunicorn~=26.0.0",
     "pyjwt~=2.12.1",
     "reportlab~=4.5.0",
 ]
