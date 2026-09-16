@@ -19,6 +19,16 @@ Details:
 {% if extra_data.championships %}* Meisterschaften:{% for championship in extra_data.championships %}
     - {{ championship }}{% endfor %}
 {% endif %}
+{% if submission.payment_status != 'none' %}
+
+Zahlung:
+* Status:           {{ submission.get_payment_status_display }}
+* Betrag:           {% if submission.payment_amount_cents %}{{ submission.payment_amount_cents }} Cent{% else %}-{% endif %}
+* Methode:          {{ submission.payment_method|default:"-" }}
+* Referenz:         {{ submission.payment_reference|default:"-" }}
+* Registriert am:   {{ submission.payment_received_at|default:"-" }}
+* Hinweis:          {{ submission.payment_note|default:"-" }}
+{% endif %}
 
 {% if is_user %}
 Bitte überweisen Sie den Teilnahmebeitrag innerhalb von 5 Tagen

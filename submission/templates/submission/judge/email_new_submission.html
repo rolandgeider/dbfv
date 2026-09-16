@@ -9,6 +9,16 @@ Details:
 * Adresse:       {{submission.street}}, {{submission.city}}, {{submission.zip_code}}
 * Tel. Nr.:      {{submission.tel_number}}
 * Landesverband: {{submission.state}}
+{% if submission.payment_status != 'none' %}
+
+Zahlung:
+* Status:        {{ submission.get_payment_status_display }}
+* Betrag:        {% if submission.payment_amount_cents %}{{ submission.payment_amount_cents }} Cent{% else %}-{% endif %}
+* Methode:       {{ submission.payment_method|default:"-" }}
+* Referenz:      {{ submission.payment_reference|default:"-" }}
+* Registriert am: {{ submission.payment_received_at|default:"-" }}
+* Hinweis:       {{ submission.payment_note|default:"-" }}
+{% endif %}
 
 
 {% if is_user %}

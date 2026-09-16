@@ -6,6 +6,9 @@ carry search data). Only the key prefix, client IP, method, path and status.
 # Standard Library
 import logging
 
+# dbfv
+from api.models import APIAccessLog
+
 logger = logging.getLogger('dbfv.audit')
 
 
@@ -18,12 +21,23 @@ def key_prefix(request):
 
 
 def log_api_access(request, status_code, client):
+    prefix = key_prefix(request)
     level = logging.WARNING if status_code in (401, 403, 429) else logging.INFO
     logger.log(
         level,
         'api access key=%s ip=%s method=%s path=%s status=%s',
-        key_prefix(request), client or '-', request.method, request.path, status_code,
+        prefix, client or '-', request.method, request.path, status_code,
     )
+    try:
+        APIAccessLog.objects.create(
+            key_prefix=prefix,
+            client_ip=client or None,
+            method=request.method[:8],
+            path=request.path[:255],
+            status_code=status_code,
+        )
+    except Exception:
+        logger.exception('api access db audit failed')
 
 
 def log_key_revoked(prefix, actor):

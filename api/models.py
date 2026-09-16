@@ -33,6 +33,60 @@ class ScopedAPIKey(AbstractAPIKey):
         '(Bankkonten, Benutzerprofile, Rohanträge, interne Modelle). Ohne '
         'Haken nur Stammdaten und Lizenz-Endpoints.',
     )
+    federal_access = models.BooleanField(
+        default=False,
+        verbose_name='Bundes-/Systemzugriff',
+        help_text='Erlaubt Zugriff über alle Landesverbände hinweg. Nur für '
+        'Bundesverband, interne Dienste oder ausdrücklich geprüfte System-Keys.',
+    )
+    allow_submit_starter = models.BooleanField(
+        default=False,
+        verbose_name='Starter-Anträge per API',
+        help_text='Erlaubt das Anlegen von Starterlizenz-Anträgen über die Fach-API.',
+    )
+    allow_submit_international = models.BooleanField(
+        default=False,
+        verbose_name='Internationale Anträge per API',
+        help_text='Erlaubt das Anlegen internationaler Lizenz-Anträge über die Fach-API.',
+    )
+    allow_submit_gym = models.BooleanField(
+        default=False,
+        verbose_name='Studio-Anträge per API',
+        help_text='Erlaubt das Anlegen von Studio-/Vereinslizenz-Anträgen über die Fach-API.',
+    )
+    allow_submit_judge = models.BooleanField(
+        default=False,
+        verbose_name='Kampfrichter-Anträge per API',
+        help_text='Erlaubt das Anlegen von Kampfrichterlizenz-Anträgen über die Fach-API.',
+    )
+    allow_register_payments = models.BooleanField(
+        default=False,
+        verbose_name='Zahlungen per API registrieren',
+        help_text='Erlaubt Zahlungsdaten beim Anlegen eines API-Antrags zu speichern.',
+    )
+    allow_lookup_licenses = models.BooleanField(
+        default=False,
+        verbose_name='Lizenz-Lookup per API',
+        help_text='Erlaubt gezielte, datensparsame Lizenz-Gültigkeitsabfragen.',
+    )
+    allow_export_licenses = models.BooleanField(
+        default=False,
+        verbose_name='Lizenz-Export per API',
+        help_text='Erlaubt den Massen-Export gültiger Lizenzen.',
+    )
+    allow_read_submissions = models.BooleanField(
+        default=False,
+        verbose_name='Anträge per API lesen',
+        help_text='Erlaubt Roh-Antragsdaten über die generischen Submission-Endpunkte zu lesen.',
+    )
+    allowed_states = models.ManyToManyField(
+        'submission.State',
+        blank=True,
+        related_name='api_keys',
+        verbose_name='Erlaubte Landesverbände',
+        help_text='Beschränkt diesen Key auf die ausgewählten Landesverbände. '
+        'Für normale Landesverbands-Keys muss mindestens ein Verband gesetzt sein.',
+    )
 
     def ip_allowed(self, client_ip):
         """True if client_ip matches the allowlist (empty allowlist = allow all)."""
@@ -56,6 +110,38 @@ class ScopedAPIKey(AbstractAPIKey):
                 continue
         return False
 
+    def has_state_scope(self):
+        """True if this key is restricted to one or more state associations."""
+        if not self.pk:
+            return False
+        return self.allowed_states.exists()
+
+    def allowed_state_ids(self):
+        """Return state IDs this key may access."""
+        if not self.pk:
+            return []
+        return list(self.allowed_states.values_list('pk', flat=True))
+
+    def has_federal_access(self):
+        """True if this key may access data across all state associations."""
+        return bool(self.federal_access)
+
     class Meta(AbstractAPIKey.Meta):
         verbose_name = 'API-Key'
         verbose_name_plural = 'API-Keys'
+
+
+class APIAccessLog(models.Model):
+    """Datensparsamer API-Zugriffsverlauf fuer Admin-Kontrolle."""
+
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    key_prefix = models.CharField(max_length=8, blank=True, default='-', db_index=True)
+    client_ip = models.GenericIPAddressField(blank=True, null=True, db_index=True)
+    method = models.CharField(max_length=8, db_index=True)
+    path = models.CharField(max_length=255, db_index=True)
+    status_code = models.PositiveSmallIntegerField(db_index=True)
+
+    class Meta:
+        ordering = ('-created_at',)
+        verbose_name = 'API-Zugriff'
+        verbose_name_plural = 'API-Zugriffe'

@@ -1,7 +1,13 @@
 # Third Party
 from rest_framework import serializers, viewsets
+from rest_framework.exceptions import PermissionDenied
 
 # dbfv
+from api.access import (
+    allowed_state_ids_for_request,
+    filter_queryset_for_request,
+    state_ids_for_object_data,
+)
 from core.models import EmailCron
 from submission.models import (
     BankAccount,
@@ -58,16 +64,48 @@ def _serializer_for(model):
 def _viewset_for(model):
     fields = model._meta.fields  # concrete local fields (FKs by name, no m2m/reverse)
     base = viewsets.ReadOnlyModelViewSet if model in READ_ONLY_MODELS else viewsets.ModelViewSet
+    serializer_cls = _serializer_for(model)
+
+    class StateScopedViewSet(base):
+        queryset = model._default_manager.all().order_by('pk')
+        serializer_class = serializer_cls
+        # ?field=value exact filter, ?search=, ?ordering=
+        filterset_fields = [f.name for f in fields if f.get_internal_type() in _FILTERABLE]
+        search_fields = [f.name for f in fields if f.get_internal_type() in _SEARCHABLE]
+        ordering_fields = '__all__'
+
+        def get_queryset(self):
+            return filter_queryset_for_request(super().get_queryset(), self.request)
+
+        def _enforce_write_scope(self, serializer):
+            state_ids = allowed_state_ids_for_request(self.request)
+            if state_ids is None:
+                return
+            if model is State and self.action in {'create', 'update', 'partial_update'}:
+                raise PermissionDenied('Dieser API-Key darf keine Landesverbände bearbeiten.')
+            target_state_ids = state_ids_for_object_data(model, serializer.validated_data)
+            if not state_ids and target_state_ids:
+                raise PermissionDenied(
+                    'Dieser API-Key ist keinem Landesverband zugeordnet.'
+                )
+            if any(state_id not in state_ids for state_id in target_state_ids):
+                raise PermissionDenied(
+                    'Dieser API-Key darf keine Daten anderer Landesverbände bearbeiten.'
+                )
+
+        def perform_create(self, serializer):
+            self._enforce_write_scope(serializer)
+            serializer.save()
+
+        def perform_update(self, serializer):
+            self._enforce_write_scope(serializer)
+            serializer.save()
+
+    StateScopedViewSet.__name__ = f'{model.__name__}ViewSet'
     return type(
         f'{model.__name__}ViewSet',
-        (base,),
+        (StateScopedViewSet,),
         {
-            'queryset': model._default_manager.all().order_by('pk'),
-            'serializer_class': _serializer_for(model),
-            # ?field=value exact filter, ?search=, ?ordering=
-            'filterset_fields': [f.name for f in fields if f.get_internal_type() in _FILTERABLE],
-            'search_fields': [f.name for f in fields if f.get_internal_type() in _SEARCHABLE],
-            'ordering_fields': '__all__',
         },
     )
 

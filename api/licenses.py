@@ -14,6 +14,7 @@ from rest_framework.views import APIView
 from django.utils import timezone
 
 # dbfv
+from api.access import filter_queryset_for_request
 from submission.models import (
     SubmissionGym,
     SubmissionInternational,
@@ -32,8 +33,14 @@ LICENSE_TYPES = {
 }
 
 
-def valid_queryset(model, year):
-    return model.objects.filter(submission_status=SUBMISSION_STATUS_BEWILLIGT, creation_date__year=year)
+def valid_queryset(model, year, request=None):
+    queryset = model.objects.filter(
+        submission_status=SUBMISSION_STATUS_BEWILLIGT,
+        creation_date__year=year,
+    )
+    if request is not None:
+        queryset = filter_queryset_for_request(queryset, request)
+    return queryset
 
 
 def _year(request):
@@ -111,6 +118,11 @@ class ValidLicensesView(APIView):
         responses=BulkLicensePageSerializer,
     )
     def get(self, request):
+        if not getattr(request, '_scoped_api_key', None).allow_export_licenses:
+            return Response(
+                {'detail': 'Dieser API-Key darf keine Lizenzen exportieren.'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
         try:
             year = _year(request)
         except ValueError:
@@ -142,7 +154,7 @@ class ValidLicensesView(APIView):
         total = 0
         results = []
         for slug, (model, label, _has_dob) in types.items():
-            queryset = valid_queryset(model, year).order_by('pk')
+            queryset = valid_queryset(model, year, request).order_by('pk')
             count = queryset.count()
             window_start = max(offset, total)
             window_end = min(offset + page_size, total + count)
@@ -233,6 +245,11 @@ class LicenseLookupView(APIView):
         responses=LicenseLookupResponseSerializer,
     )
     def post(self, request):
+        if not getattr(request, '_scoped_api_key', None).allow_lookup_licenses:
+            return Response(
+                {'detail': 'Dieser API-Key darf keine Lizenzen abfragen.'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
         request_serializer = LicenseLookupRequestSerializer(data=request.data)
         request_serializer.is_valid(raise_exception=True)
         validated = request_serializer.validated_data
@@ -249,7 +266,7 @@ class LicenseLookupView(APIView):
             applicable = {f: v for f, v in provided.items() if f in LOOKUP_FIELDS[slug]}
             if len(applicable) < 2:
                 continue
-            if valid_queryset(model, year).filter(**applicable).exists():
+            if valid_queryset(model, year, request).filter(**applicable).exists():
                 matches.append(
                     {'license_type': slug, 'label': label, 'year': year, 'valid': True}
                 )

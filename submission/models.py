@@ -190,6 +190,18 @@ class AbstractSubmission(models.Model):
         (SUBMISSION_STATUS_BEWILLIGT, 'Bewilligt'),
         (SUBMISSION_STATUS_ABGELEHNT, 'Abgelehnt'),
     )
+    PAYMENT_STATUS_NONE = 'none'
+    PAYMENT_STATUS_PENDING = 'pending'
+    PAYMENT_STATUS_PAID = 'paid'
+    PAYMENT_STATUS_FAILED = 'failed'
+    PAYMENT_STATUS_REFUNDED = 'refunded'
+    PAYMENT_STATUS = (
+        (PAYMENT_STATUS_NONE, 'Keine Zahlung registriert'),
+        (PAYMENT_STATUS_PENDING, 'Zahlung vorgemerkt'),
+        (PAYMENT_STATUS_PAID, 'Bezahlt'),
+        (PAYMENT_STATUS_FAILED, 'Zahlung fehlgeschlagen'),
+        (PAYMENT_STATUS_REFUNDED, 'Erstattet'),
+    )
 
     user = models.ForeignKey(User, verbose_name=_('User'), editable=False, on_delete=models.CASCADE)
     creation_date = models.DateField(_('Creation date'), auto_now_add=True)
@@ -201,6 +213,18 @@ class AbstractSubmission(models.Model):
 
     pdf_sent = models.BooleanField(default=False)
     """Flag indicating whether the athlete has received the confirmation PDF"""
+
+    created_via_api = models.BooleanField(default=False, editable=False)
+    api_key_prefix = models.CharField(max_length=8, blank=True, editable=False)
+    external_reference = models.CharField(max_length=120, blank=True, editable=False)
+    payment_status = models.CharField(
+        max_length=16, choices=PAYMENT_STATUS, default=PAYMENT_STATUS_NONE, editable=False
+    )
+    payment_method = models.CharField(max_length=40, blank=True, editable=False)
+    payment_reference = models.CharField(max_length=120, blank=True, editable=False)
+    payment_amount_cents = models.PositiveIntegerField(blank=True, null=True, editable=False)
+    payment_received_at = models.DateTimeField(blank=True, null=True, editable=False)
+    payment_note = models.TextField(blank=True, editable=False)
 
     def get_bank_designated_use(self):
         """
@@ -271,8 +295,9 @@ class AbstractSubmission(models.Model):
             mail.send_mail(
                 self.get_email_subject(),
                 message,
-                settings.DEFAULT_FROM_EMAIL, [email],
-                fail_silently=True
+                settings.DEFAULT_FROM_EMAIL,
+                [email],
+                fail_silently=False,
             )
 
         # Perform custom logic

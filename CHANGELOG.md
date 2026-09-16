@@ -18,6 +18,16 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
     Benutzerprofile, interne Modelle, Roh-Antrags-CRUD und den Massen-Export).
   - `allowed_ips` – optionale IP-/CIDR-Allowlist als Zweit-Absicherung für
     Server-zu-Server-Zugriffe.
+  - `federal_access` – expliziter Bundes-/Systemzugriff über alle Verbände.
+  - `allowed_states` – Landesverbandsgrenze; gesetzte Keys sehen und schreiben
+    nur Daten der gewählten Verbände. Neue Keys ohne `federal_access` und ohne
+    `allowed_states` sehen keine verbandsgebundenen Daten.
+  - `allow_submit_starter`, `allow_submit_international`, `allow_submit_gym`,
+    `allow_submit_judge` und `allow_register_payments` – dedizierte Rechte für
+    fachliche API-Antragsanlage und Zahlungsregistrierung.
+  - `allow_lookup_licenses`, `allow_export_licenses` und
+    `allow_read_submissions` – dedizierte Leserechte für Lizenzlookup,
+    Lizenzexport und Roh-Antragsdaten.
   Keys sind im Django-Admin verwaltbar (Django-Admin unter `/admin/`
   aktiviert – war zuvor nicht eingebunden).
 - CRUD-Endpunkte für alle Modelle (Gym, State, Country, BankAccount,
@@ -32,6 +42,28 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
     nur mit `?include=date_of_birth`.
 - Öffentliches Formular „API-Key beantragen" (kleiner Footer-Link) mit
   Honeypot-Spamschutz; Anfragen gehen per E-Mail an die Manager-Adressen.
+- Fachliche Antrags-API:
+  - `/api/v1/capabilities/` – zeigt dem Frontend die Rechte und erlaubten
+    Landesverbände des Keys.
+  - `/api/v1/submissions/options/` – liefert verbandsspezifische
+    Formularoptionen (States, aktive Gyms, Länder, Kategorien, Zahlungsstatus).
+  - `/api/v1/submissions/starter/`,
+    `/api/v1/submissions/international/`, `/api/v1/submissions/gym/` und
+    `/api/v1/submissions/judge/` – legen Anträge über den Fachworkflow an,
+    speichern API-/Zahlungsmetadaten und lösen den bestehenden Mailversand an
+    Verwalter, Landesverband, ggf. Studio und Antragsteller aus. Studio-Anträge
+    erzeugen wie der Webflow ein neues inaktives `Gym`.
+- Zahlungsfelder auf allen Antragstypen (`created_via_api`, `api_key_prefix`,
+  `external_reference`, `payment_status`, `payment_method`, `payment_reference`,
+  `payment_amount_cents`, `payment_received_at`, `payment_note`) als System of
+  Record für künftige NRW-Frontend-Zahlflüsse.
+- API-Antragsanlage ist ueber `external_reference` idempotent; wiederholte
+  Requests mit derselben Referenz liefern den bestehenden Antrag statt einen
+  Doppelantrag anzulegen. Bei `payment.status = paid` sind Zahlungsreferenz und
+  Betrag groesser 0 Pflicht.
+- Haupt-Mails bei Antragsanlage werden nicht mehr stillschweigend verschluckt
+  (`fail_silently=False`), damit API- und Web-Anträge nicht ohne sichtbaren
+  Mailversand gespeichert werden.
 - `API.md` mit Hintergrund und Nutzungsanleitung zur API.
 
 ### Sicherheit
@@ -60,6 +92,22 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 - Audit-Logging aller API-Zugriffe (Logger `dbfv.audit`): Key-Präfix, IP,
   Methode, Pfad, Status; `403`/`429` und Key-Widerrufe als Warnung. Ohne
   Key-Secret, Request-Body oder Query-Zeichenkette (keine Suchdaten).
+- Admin-einsehbarer API-Zugriffsverlauf (`APIAccessLog`) mit Zeit, Key-Prefix,
+  IP, Methode, Pfad ohne Query und Status. Keine Secrets, Bodies, Zahlungsdaten
+  oder Suchparameter im Admin-Log.
+- API-Key-Isolation nach Landesverband:
+  - `api/models.py` ergänzt `ScopedAPIKey.allowed_states` und
+    `federal_access` inklusive Admin-Pflege.
+  - `api/migrations/0003_scopedapikey_federal_access.py` markiert bestehende
+    Keys als Bundes-/System-Keys, damit Bestandsintegrationen beim Deploy nicht
+    ausfallen; neue Keys starten ohne verborgenen Vollzugriff.
+  - `api/access.py` bündelt die zentrale State-Scope-Filterung.
+  - `api/views.py` filtert generische CRUD-/Read-Endpunkte und blockiert
+    Schreibzugriffe auf fremde Verbandsdaten.
+  - `api/licenses.py` begrenzt `/licenses/valid/` und `/licenses/lookup/` auf
+    die erlaubten Verbände.
+  - `api/tests.py` deckt Roh-Anträge, Stammdaten, Lizenzexport, Lookup und
+    Fremdverband-Schreibversuche ab.
 
 ### Behoben
 - Review-Fixes zu PR #157 (automatischer Copilot-Review):
