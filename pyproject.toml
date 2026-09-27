@@ -17,5 +17,5 @@ dependencies = [
 
 [dependency-groups]
 prod = [
-    "mysqlclient~=2.2.8"
+    "mysqlclient>=2.2.8,<2.4.0"
 ]
