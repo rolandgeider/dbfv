@@ -11,7 +11,7 @@ dependencies = [
     "django-formtools~=2.6.1",
     "django-recaptcha~=4.1.0",
     "gunicorn>=26.0,<26.3",
-    "pyjwt>=2.12.1,<2.15.0",
+    "pyjwt>=2.12.1,<2.16.0",
     "reportlab~=5.0.0",
 ]
 
