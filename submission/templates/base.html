@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 {% load i18n static %}
-<html lang="en">
+<html lang="de">
 <head>
     <!--
      This file is part of the DBFV site.
@@ -20,39 +20,29 @@
     -->
 
     <meta charset="utf-8">
-    <title>DBFV Antragsystem</title>
+    <title>{% block browser_title %}DBFV Antragssystem{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
+    <meta name="description"
+          content="Antragssystem des DBFV e.V. zur Beantragung und Verwaltung von Starter-, Studio- und Kampfrichterlizenzen.">
     <meta name="author" content="Roland Geider">
 
+    <link rel="icon" type="image/png" href="{% static 'img/DBFV-logo.png' %}">
     <link href="{% static 'node_modules/bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'node_modules/bootstrap-icons/font/bootstrap-icons.css' %}"
           rel="stylesheet">
     <!--<link href="{% static 'css/bootstrap-custom.css' %}" rel="stylesheet">-->
     <link href="{% static 'css/token-input.css' %}" rel="stylesheet">
+
+    <link href="{% static 'css/dbfv.css' %}" rel="stylesheet">
 </head>
 
 <body>
-<div class="container">
-    <div class="row">
-        <div class="col-md-2" id="logo">
-            <a href="http://www.dbfv.de"
-               target="_blank">
-                <img src="{% static 'img/DBFV-logo.png' %}"
-                     width="142"
-                     height="143"
-                     alt="Logo des DBFV"></a>
-        </div>
-
-        <div class="col-md-10">
-            <h1>Antragssystem des DBFV e.V.</h1>
-        </div>
-    </div>
-</div>
-
-<nav class="navbar navbar-expand-lg bg-light">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="/">DBFV</a>
+<nav class="navbar navbar-expand-lg bg-white shadow-sm mb-4 navbar-dbfv">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+            <img src="{% static 'img/DBFV-logo.png' %}" width="44" height="44" alt="Logo des DBFV">
+            <span class="fw-bold">DBFV <span class="fw-normal text-body-secondary">Antragssystem</span></span>
+        </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                 aria-expanded="false" aria-label="Toggle navigation">
@@ -76,7 +66,7 @@
                             <!--
                             <li>
                                 <a class="dropdown-item" href="{% url 'submission-judge-list' %}">
-                                    Kampfrichterizenzen
+                                    Kampfrichterlizenzen
                                 </a>
                             </li>
                             -->
@@ -136,6 +126,20 @@
                                 </a>
                             </li>
                             -->
+                            {% if user.is_staff %}
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <h6 class="dropdown-header">API</h6>
+                            </li>
+                            <li>
+                                <a class="dropdown-item"
+                                   href="{% url 'admin:api_scopedapikey_changelist' %}">
+                                    API-Keys
+                                </a>
+                            </li>
+                            {% endif %}
                         </ul>
                     </li>
                 {% endif %}
@@ -190,11 +194,11 @@
 </nav>
 
 
-<div class="container">
-    <h2>{% block title %}{% endblock %}</h2>
+<main class="page container">
+    <h2 class="page-title">{% block title %}{% endblock %}</h2>
 
     {% for message in messages %}
-        <div class="alert alert-success" role="alert">
+        <div class="alert alert-{{ message.tags|default:'info' }}" role="alert">
           {{message}}
         </div>
     {% endfor %}
@@ -207,22 +211,19 @@
             {% block sidebar %}{% endblock %}
         </div>
     </div>
-</div>
+</main>
 
 <!--
     <footer class="footer navbar navbar-fixed-bottom">
 -->
-<footer class="navbar navbar-default">
-    <div class="container-fluid">
-        <div class="collapse navbar-collapse">
-            <ul class="nav navbar-nav">
-                <li>
-                    <a href="{% url 'index' %}">Antragssystem DBFV</a>
-                </li>
-            </ul>
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="{% url 'impressum' %}">Impressum</a></li>
-            </ul>
+<footer class="border-top mt-5 py-4 bg-white">
+    <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <a class="text-decoration-none text-body-secondary" href="{% url 'index' %}">
+            Antragssystem DBFV e.V.
+        </a>
+        <div class="d-flex gap-3">
+            <a class="text-decoration-none text-body-secondary" href="{% url 'api-key-request' %}">API-Key beantragen</a>
+            <a class="text-decoration-none text-body-secondary" href="{% url 'impressum' %}">Impressum</a>
         </div>
     </div>
 </footer>

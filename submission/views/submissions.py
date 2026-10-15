@@ -28,6 +28,7 @@ from django.http.response import (
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy, reverse
 from django.views import generic
+from django.views.decorators.http import require_POST
 
 # dbfv
 from submission.forms import (
@@ -49,6 +50,7 @@ from submission.views.generic_views import (
     BaseSubmissionListView,
     BaseSubmissionUpdateView,
     DbfvFormMixin,
+    csv_safe,
     DbfvViewMixin,
     get_overview_context,
 )
@@ -208,6 +210,12 @@ class SubmissionUpdateView(BaseSubmissionUpdateView):
     """
     model = SubmissionStarter
     form_class = SubmissionStarterForm
+    template_name = 'submission/starter/create.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['states_list'] = State.objects.all()
+        return context
 
 
 class SubmissionUpdateStatusView(DbfvFormMixin, generic.UpdateView):
@@ -286,7 +294,7 @@ def export_csv(request):
             creation_date__year=today.year,
             submission_status=SubmissionStarter.SUBMISSION_STATUS_BEWILLIGT
     ):
-        writer.writerow([submission.get_name, submission.email])
+        writer.writerow([csv_safe(submission.get_name), csv_safe(submission.email)])
 
     filename = f'attachment; filename=Email-export-Starterlizenzen-{today.year}-{today}.csv'
     response['Content-Disposition'] = filename
@@ -374,6 +382,7 @@ def judge_pdf(request, pk):
     return response
 
 
+@require_POST
 def send_pdf(request, pk):
     """
     Re-sends the PDF to the given submission
@@ -382,11 +391,13 @@ def send_pdf(request, pk):
         return HttpResponseForbidden()
 
     submission = get_object_or_404(SubmissionStarter, pk=pk)
-    submission.send_pdf_email()
+    if submission.send_pdf_email():
+        SubmissionStarter.objects.filter(pk=submission.pk).update(pdf_sent=True)
 
     return HttpResponseRedirect(submission.get_absolute_url())
 
 
+@require_POST
 def send_judge_pdf(request, pk):
     """
     Re-sends the PDF to the given submission
@@ -395,6 +406,7 @@ def send_judge_pdf(request, pk):
         return HttpResponseForbidden()
 
     submission = get_object_or_404(SubmissionJudge, pk=pk)
-    submission.send_pdf_email()
+    if submission.send_pdf_email():
+        SubmissionJudge.objects.filter(pk=submission.pk).update(pdf_sent=True)
 
     return HttpResponseRedirect(submission.get_absolute_url())

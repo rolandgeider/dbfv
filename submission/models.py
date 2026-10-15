@@ -167,6 +167,18 @@ def attachment_submission_dir(instance, filename):
 # Submissions
 #
 #
+def api_reference_constraint(model_name):
+    """Unique (api_key_prefix, external_reference) per submission model.
+
+    NULL references (web submissions) never collide, on every supported
+    backend, which is why ``external_reference`` is nullable instead of ''.
+    """
+    return models.UniqueConstraint(
+        fields=['api_key_prefix', 'external_reference'],
+        name=f'{model_name}_api_reference_unique',
+    )
+
+
 class AbstractSubmission(models.Model):
     """
     Abstract class with fields and logic common to all submissions types
@@ -190,6 +202,18 @@ class AbstractSubmission(models.Model):
         (SUBMISSION_STATUS_BEWILLIGT, 'Bewilligt'),
         (SUBMISSION_STATUS_ABGELEHNT, 'Abgelehnt'),
     )
+    PAYMENT_STATUS_NONE = 'none'
+    PAYMENT_STATUS_PENDING = 'pending'
+    PAYMENT_STATUS_PAID = 'paid'
+    PAYMENT_STATUS_FAILED = 'failed'
+    PAYMENT_STATUS_REFUNDED = 'refunded'
+    PAYMENT_STATUS = (
+        (PAYMENT_STATUS_NONE, 'Keine Zahlung registriert'),
+        (PAYMENT_STATUS_PENDING, 'Zahlung vorgemerkt'),
+        (PAYMENT_STATUS_PAID, 'Bezahlt'),
+        (PAYMENT_STATUS_FAILED, 'Zahlung fehlgeschlagen'),
+        (PAYMENT_STATUS_REFUNDED, 'Erstattet'),
+    )
 
     user = models.ForeignKey(User, verbose_name=_('User'), editable=False, on_delete=models.CASCADE)
     creation_date = models.DateField(_('Creation date'), auto_now_add=True)
@@ -202,11 +226,65 @@ class AbstractSubmission(models.Model):
     pdf_sent = models.BooleanField(default=False)
     """Flag indicating whether the athlete has received the confirmation PDF"""
 
+    created_via_api = models.BooleanField(default=False, editable=False)
+    api_key_prefix = models.CharField(max_length=8, blank=True, editable=False)
+    external_reference = models.CharField(
+        max_length=120, blank=True, null=True, default=None, editable=False
+    )
+    """Client-side reference of API-created submissions; NULL for web submissions.
+    Unique per API key (see ``api_reference_constraint``) so that a retried
+    request can never create a second submission."""
+    payment_status = models.CharField(
+        max_length=16, choices=PAYMENT_STATUS, default=PAYMENT_STATUS_NONE, editable=False
+    )
+    payment_method = models.CharField(max_length=40, blank=True, editable=False)
+    payment_reference = models.CharField(max_length=120, blank=True, editable=False)
+    payment_amount_cents = models.PositiveIntegerField(blank=True, null=True, editable=False)
+    payment_received_at = models.DateTimeField(blank=True, null=True, editable=False)
+    payment_note = models.TextField(blank=True, editable=False)
+
+    @property
+    def payment_amount_display(self):
+        """Registered payment amount as '90,00 €' for mails; '' if none."""
+        if self.payment_amount_cents is None:
+            return ''
+        euro, cents = divmod(self.payment_amount_cents, 100)
+        return f'{euro},{cents:02d} €'
+
     def get_bank_designated_use(self):
         """
         Returns the designated use to be used when doing the bank transfer
         """
         return u'{0} {1}<br>\n{2}'.format(self.get_license_type(), self.pk, self.get_name)
+
+    def get_bank_designated_use_text(self):
+        """Plain-text variant of the designated use (API responses, mails)."""
+        return u'{0} {1} {2}'.format(self.get_license_type(), self.pk, self.get_name)
+
+    def pdf_recipient(self):
+        """
+        Address the license PDF goes to: the applicant's address from the
+        submission, falling back to the owning account. API-created submissions
+        belong to a technical user without e-mail, so the submission's own
+        address is the only one that reaches the athlete.
+        """
+        return (getattr(self, 'email', '') or self.user.email or '').strip()
+
+    def _send_approval_pdf(self, update_fields):
+        """Send on approval or retry an undelivered PDF; preserve partial saves."""
+        if not self.pk or self.submission_status != self.SUBMISSION_STATUS_BEWILLIGT:
+            return update_fields
+        if update_fields is not None and not {'submission_status', 'email'} & set(update_fields):
+            return update_fields
+        previous = type(self).objects.filter(pk=self.pk).values('submission_status', 'pdf_sent').first()
+        if previous and (
+            previous['submission_status'] != self.SUBMISSION_STATUS_BEWILLIGT
+            or not previous['pdf_sent']
+        ) and self.send_pdf_email():
+            self.pdf_sent = True
+            if update_fields is not None:
+                return set(update_fields) | {'pdf_sent'}
+        return update_fields
 
     def get_email_list(self):
         """
@@ -271,8 +349,9 @@ class AbstractSubmission(models.Model):
             mail.send_mail(
                 self.get_email_subject(),
                 message,
-                settings.DEFAULT_FROM_EMAIL, [email],
-                fail_silently=True
+                settings.DEFAULT_FROM_EMAIL,
+                [email],
+                fail_silently=False,
             )
 
         # Perform custom logic
@@ -295,6 +374,7 @@ class SubmissionStarter(AbstractSubmission):
         Order first by state name, then by gym name
         """
         ordering = ["creation_date", "gym"]
+        constraints = [api_reference_constraint("submissionstarter")]
 
     MAILMERGE_HEADER = [
         'ID', 'Vorname', 'Nachname', 'Geburtsdatum', 'Aktiv Seit', 'Straße', 'Hausnummer', 'PLZ',
@@ -440,12 +520,16 @@ Teilnahme an unseren Meisterschaften.
 
 Ihr DBFV e. V.
         """
-        logger.info(f'Sending PDF for submission {self.id} - ({self.user.email})')
+        recipient = self.pdf_recipient()
+        if not recipient:
+            logger.warning(f'No recipient for PDF of submission {self.id}, skipping')
+            return False
+        logger.info(f'Sending PDF for submission {self.id} - ({recipient})')
         msg = EmailMultiAlternatives(
             email_subject,
             email_text,
             settings.DEFAULT_FROM_EMAIL,
-            [self.user.email],
+            [recipient],
         )
         msg.mixed_subtype = 'related'
 
@@ -457,7 +541,7 @@ Ihr DBFV e. V.
         msg.attach(msg_part)
 
         # Send the email
-        msg.send()
+        return msg.send() == 1
 
     def get_email_list(self):
         """
@@ -545,9 +629,7 @@ Ihr DBFV e. V.
         """
         For existing submissions, if we change the status to approved, email the user
         """
-        if self.pk and self.submission_status == self.SUBMISSION_STATUS_BEWILLIGT:
-            self.send_pdf_email()
-            self.pdf_sent = True
+        kwargs['update_fields'] = self._send_approval_pdf(kwargs.get('update_fields'))
 
         super().save(*args, **kwargs)
 
@@ -562,6 +644,7 @@ class SubmissionInternational(AbstractSubmission):
         Order first by state name, then by gym name
         """
         ordering = ["creation_date", "gym"]
+        constraints = [api_reference_constraint("submissioninternational")]
 
     MAILMERGE_HEADER = [
         'ID', 'Vorname', 'Nachname', 'Geburtsdatum', 'Aktiv Seit', 'Straße', 'PLZ', 'Stadt',
@@ -706,6 +789,7 @@ class SubmissionGym(AbstractSubmission):
         Order first by state name, then by gym name
         """
         ordering = ["creation_date", "state"]
+        constraints = [api_reference_constraint("submissiongym")]
 
     FEE = 30
 
@@ -791,6 +875,7 @@ class SubmissionJudge(AbstractSubmission):
         Order first by state name, then by gym name
         """
         ordering = ["creation_date", "state"]
+        constraints = [api_reference_constraint("submissionjudge")]
 
     MAILMERGE_HEADER = [
         'ID', 'Vorname', 'Nachname', 'Straße', 'PLZ', 'Stadt', 'Telefon', 'Email', 'Bundesverband',
@@ -858,7 +943,10 @@ class SubmissionJudge(AbstractSubmission):
         if self.state.email:
             email_list.append(self.state.email)
 
-        email_list.append(self.email)
+        # E-mail is optional for judges; a None recipient would make the whole
+        # mail dispatch (and with it the application) fail.
+        if self.email:
+            email_list.append(self.email)
         email_list.append('kampfrichter@dbfv.de')
 
         # Hamburg
@@ -892,12 +980,16 @@ Teilnahme an unseren Meisterschaften.
 
 Ihr DBFV e. V.
         """
-        logger.info(f'Sending PDF for judge submission {self.id} - ({self.user.email})')
+        recipient = self.pdf_recipient()
+        if not recipient:
+            logger.warning(f'No recipient for PDF of judge submission {self.id}, skipping')
+            return False
+        logger.info(f'Sending PDF for judge submission {self.id} - ({recipient})')
         msg = EmailMultiAlternatives(
             email_subject,
             email_text,
             settings.DEFAULT_FROM_EMAIL,
-            [self.user.email],
+            [recipient],
         )
         msg.mixed_subtype = 'related'
 
@@ -905,19 +997,17 @@ Ihr DBFV e. V.
         response = HttpResponse(content_type='application/pdf')
         build_judge_pdf(HttpRequest(), self, response)
         msg_part = MIMEApplication(response.content)
-        msg_part['Content-Disposition'] = f'attachment; filename="Starterlizenz-{self.id}.pdf"'
+        msg_part['Content-Disposition'] = f'attachment; filename="Kampfrichterlizenz-{self.id}.pdf"'
         msg.attach(msg_part)
 
         # Send the email
-        msg.send()
+        return msg.send() == 1
 
     def save(self, *args, **kwargs):
         """
         For existing submissions, if we change the status to approved, email the user
         """
-        if self.pk and self.submission_status == self.SUBMISSION_STATUS_BEWILLIGT:
-            self.send_pdf_email()
-            self.pdf_sent = True
+        kwargs['update_fields'] = self._send_approval_pdf(kwargs.get('update_fields'))
 
         super().save(*args, **kwargs)
 
