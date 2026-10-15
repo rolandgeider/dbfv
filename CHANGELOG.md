@@ -8,7 +8,7 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 Bündelt die REST-API (vormals PR #157), das UI-Redesign (vormals PR #158) und
 die darauf aufbauende Landesverbands-API für Antrags- und Zahlungsflow.
-Entwickelt im Auftrag des DBFV NRW.
+Beitrag des DBFV NRW (Landesverband Nordrhein-Westfalen).
 
 ### Hinzugefügt – REST-API
 
