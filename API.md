@@ -1,7 +1,7 @@
 # DBFV REST-API
 
-Fuer eine nicht-technische Erklaerung, insbesondere fuer Inhaber,
-Geschaeftsstelle und Landesverbaende, siehe `API-README.md`.
+Für eine nicht-technische Erklärung, insbesondere für Vorstand,
+Geschäftsstelle und Landesverbände, siehe `API-README.md`.
 
 ## Warum diese API
 
@@ -10,14 +10,11 @@ Kampfrichterlizenzen. Bislang lag der Datenzugriff ausschließlich in der
 Weboberfläche und im Django-Admin.
 
 Der **DBFV NRW** (Landesverband) benötigt **programmatischen Zugriff** auf diese
-Daten, um eigene Anwendungen und Automatisierungen anzubinden (z. B. Auslesen
-von Anträgen, Studios und Stammdaten für Verbandsprozesse). Diese API schafft
-dafür eine definierte, abgesicherte Schnittstelle.
-
-Ziel dieses Beitrags ist es, **initial bei der Entwicklung zu helfen** und eine
-solide, erweiterbare Basis zu legen: Authentifizierung, klare Endpunkt-Struktur
-und ein pro Schlüssel steuerbarer Schreibzugriff. Feinere Rechte und schreibende
-Antrags-Workflows können darauf aufbauend ergänzt werden.
+Daten, um Lizenzgültigkeiten von NRW-Athleten zu prüfen (z. B. bei der
+Wettkampfanmeldung über die NRW-Website) und Anträge inklusive Zahlungsvermerk
+direkt im Lizenzsystem anzulegen. Diese API schafft dafür eine definierte,
+abgesicherte und datensparsame Schnittstelle. Das Lizenzsystem bleibt das
+führende System; die API arbeitet nicht an ihm vorbei.
 
 ## Authentifizierung
 
@@ -28,57 +25,82 @@ Authorization: Api-Key <PREFIX.SCHLUESSEL>
 ```
 
 - Ohne gültigen Key: `403 Forbidden`.
-- Lesen (`GET`) von Stammdaten/Lizenz-Endpoints ist mit jedem gültigen Key möglich.
-- Schreiben (`POST`/`PUT`/`PATCH`/`DELETE`) erfordert zusätzlich `write_allowed`.
-- **Sensible Ressourcen** (Bankkonten, Benutzerprofile, interne Modelle, die
-  Roh-Antrags-CRUD-Endpoints und der **Massen-Export** `/licenses/valid/`)
-  erfordern zusätzlich das Flag `sensitive_access`. Ohne dieses Flag sieht ein
-  Key nur Stammdaten (Gyms, Bundesländer, Länder) und den datensparsamen
-  Lizenz-Lookup `/licenses/lookup/`.
-- **Landesverbandsgrenze:** `allowed_states` beschränkt einen Key auf die
-  ausgewählten Landesverbände. Ein NRW-Key sieht und schreibt damit nur NRW-nahe
-  Daten (States, Gyms, UserProfiles, Roh-Anträge, Bankkonto-Bezug sowie
-  Lizenz-Export/-Lookup). Landesverbands-Keys brauchen mindestens einen
-  Eintrag in `allowed_states`.
-- **Bundes-/Systemzugriff:** Verbandsübergreifender Zugriff ist nur mit
-  `federal_access=True` möglich. Bestehende Keys werden bei der Migration als
-  Bundes-/System-Keys markiert; neue Keys ohne `federal_access` und ohne
-  `allowed_states` sehen keine verbandsgebundenen Daten.
-- **Antrags- und Zahlungsrechte:** Fachliche Schreibwege laufen nicht über
-  generisches CRUD, sondern über eigene Flags:
-  `allow_submit_starter`, `allow_submit_international`, `allow_submit_gym`,
-  `allow_submit_judge` und `allow_register_payments`.
-- **Lizenz-/Antrags-Leserechte:** Auch Lesen ist fein steuerbar:
-  `allow_lookup_licenses` für den gezielten Lookup, `allow_export_licenses` für
-  den Massenexport und `allow_read_submissions` für Roh-Antragsdaten.
-- **Rate-Limit:** standardmäßig 1000 Anfragen/Stunde, gezählt **pro API-Key**
-  (nicht pro IP).
-- Bereits **vor der Key-Prüfung** gilt zusätzlich ein IP-Limit von 120
-  Anfragen/Minute (`API_PREAUTH_RATE_LIMIT`). Dadurch werden auch ungültige
-  oder ständig wechselnde Key-Präfixe begrenzt.
-- **Admin-Analyse:** Jeder API-Zugriff wird datensparsam als `APIAccessLog`
-  gespeichert: Zeit, Key-Prefix, IP, Methode, Pfad ohne Query und Status. Nicht
-  gespeichert werden API-Key-Secret, Body, Zahlungsdaten oder Suchparameter.
+- Der Key wird als Hash gespeichert; das Secret ist nur bei der Erstellung
+  sichtbar.
+- Jedes Recht ist ein eigenes Flag am Key (siehe Rechte-Matrix). Ein neuer Key
+  ohne Flags darf nur Stammdaten (Studios, Bundesländer, Länder) lesen.
 
-### IP-Allowlist (Zweit-Absicherung für Server-zu-Server)
+### Landesverbandsgrenze
+
+- `allowed_states` beschränkt einen Key auf die ausgewählten Landesverbände.
+  Ein NRW-Key sieht und schreibt nur NRW-Daten (Bundesland, Studios,
+  Benutzerprofile, Anträge, Lizenz-Export/-Lookup, Formularoptionen).
+  Landesverbands-Keys brauchen mindestens einen Eintrag in `allowed_states`.
+- **Bundesweite Ressourcen** sind für Landesverbands-Keys grundsätzlich
+  unsichtbar (leere Liste, Detail `404`) und unveränderbar (`403`):
+  Bankkonten (`State.bank_account` ist ein von mehreren Verbänden geteiltes
+  Konto), Manager-E-Mails (erhalten jede Antragsbenachrichtigung bundesweit)
+  und der Mail-Cron.
+- Landesverbands-Keys dürfen Bundesländer weder anlegen, ändern noch löschen
+  (Löschen würde per `CASCADE` alle Studios, Profile und Anträge des Verbands
+  mitreißen).
+- **Bundes-/Systemzugriff:** Verbandsübergreifender Zugriff ist nur mit
+  `federal_access=True` möglich. Neue Keys ohne `federal_access` und ohne
+  `allowed_states` sehen keine verbandsgebundenen Daten.
+
+### Rechte-Matrix
+
+| Flag | Wirkung |
+|---|---|
+| `allowed_states` | Landesverbände, auf die der Key begrenzt ist |
+| `federal_access` | Bundes-/Systemzugriff über alle Verbände, inkl. Bankkonten, Manager-E-Mails, Mail-Cron |
+| `allow_lookup_licenses` | `POST /licenses/lookup/` (gezielte, datensparsame Gültigkeitsprüfung) |
+| `allow_export_licenses` | `GET /licenses/valid/` (Massen-Export; zusätzlich `sensitive_access` nötig) |
+| `allow_read_submissions` | Roh-Anträge über `/submission*/` lesen (zusätzlich `sensitive_access` nötig) |
+| `allow_submit_starter` / `_international` / `_gym` / `_judge` | Anträge über `/submissions/<typ>/` anlegen |
+| `allow_register_payments` | `payment`-Block beim Anlegen eines Antrags speichern |
+| `sensitive_access` | Zugriff auf personen-/finanzbezogene Ressourcen: Benutzerprofile, Roh-Anträge, Massen-Export; bei Bundes-Keys auch Bankkonten, Manager-E-Mails, Mail-Cron |
+| `write_allowed` | Generisches Schreiben (`POST`/`PUT`/`PATCH`) auf erlaubten Ressourcen; `DELETE` braucht zusätzlich `sensitive_access` |
+| `allowed_ips` | Optionale IP-/CIDR-Allowlist (leer = keine Einschränkung) |
+
+Die generischen `submission*`-Ressourcen sind bewusst **read-only**. Anträge
+werden ausschließlich über die Fach-Endpunkte unter `/submissions/…/` angelegt,
+damit Verbandsgrenze, Zahlung, Idempotenz und Mailversand nicht umgangen werden.
+
+### Rate-Limits und Zugriffsprotokoll
+
+- **Pro API-Key:** 1000 Anfragen/Stunde (DRF-Throttle `apikey`).
+- **Vor der Key-Prüfung** gilt zusätzlich ein IP-Limit von 120 Anfragen/Minute
+  (`API_PREAUTH_RATE_LIMIT`), damit auch ungültige oder wechselnde Keys
+  begrenzt werden. Es gilt für alle Pfade unter `/api/v1/`, auch für
+  Schema und Swagger-UI.
+- Beide Limits zählen im Django-Cache. In Deployments mit mehreren Prozessen
+  (gunicorn-Worker) muss ein **gemeinsamer Cache** (`CACHES`, z. B.
+  Datenbank-Cache oder Redis) konfiguriert sein, sonst zählt jeder Prozess für
+  sich.
+- Jeder API-Zugriff wird im Logger `dbfv.audit` und als `APIAccessLog`
+  (Django-Admin **API-Zugriffe**) festgehalten: Zeit, Key-Prefix (max. 8
+  Zeichen), Client-IP, Methode, Pfad ohne Query, Status. `401`/`403`/`429` und
+  Key-Widerrufe werden als Warnung geloggt. **Nicht** gespeichert werden
+  Key-Secret, Request-Body, Zahlungsdaten und Query-Parameter (mögliche
+  Suchdaten).
+
+### IP-Allowlist und Client-IP-Ermittlung
 
 Optional lässt sich ein Key auf feste Quell-IPs beschränken (Feld `allowed_ips`,
-kommagetrennte IPs oder CIDR-Bereiche). Ist die Liste leer, gilt keine
-Einschränkung. Passt die Anfrage-IP nicht, antwortet die API mit `403`.
+kommagetrennte IPs oder CIDR-Bereiche). Passt die Anfrage-IP nicht, antwortet
+die API mit `403`. Für Server-zu-Server-Zugriffe ist das die richtige
+Zusatzsicherung; ein `Origin`-Header greift nur bei Browsern.
 
-> Hinweis: Für Server-zu-Server ist eine **IP-Allowlist** die richtige
-> Zusatzsicherung — der HTTP-`Origin`-Header greift nur bei Browsern (CORS) und
-> wird von S2S-Clients i. d. R. nicht gesetzt.
->
-> **Client-IP-Ermittlung (wichtig):** `X-Forwarded-For` ist client-fälschbar
-> und wird **standardmäßig ignoriert** — es zählt `REMOTE_ADDR` (korrekt für
-> direkten Apache/gunicorn-Betrieb). Nur wenn die Anwendung hinter einem oder
-> mehreren vertrauenswürdigen Reverse-Proxies läuft, wird
-> `API_TRUSTED_PROXY_COUNT` in den Settings auf die Anzahl dieser Proxies
-> gesetzt; dann wird der entsprechende Eintrag von rechts aus der
-> `X-Forwarded-For`-Kette genommen. Ist die Kette kürzer als erwartet, wird
-> fail-closed abgelehnt. Der Proxy muss eingehende `X-Forwarded-For`-Header
-> überschreiben (nicht anhängen).
+`X-Forwarded-For` ist client-fälschbar und wird **standardmäßig ignoriert**
+(`API_TRUSTED_PROXY_COUNT = 0`, es zählt `REMOTE_ADDR`). Läuft die Anwendung
+hinter einem oder mehreren vertrauenswürdigen Reverse-Proxies, wird
+`API_TRUSTED_PROXY_COUNT` auf deren Anzahl gesetzt; dann wird der entsprechende
+Eintrag von rechts aus der `X-Forwarded-For`-Kette genommen. Ist die Kette
+kürzer als erwartet, wird fail-closed abgelehnt. Der Proxy muss eingehende
+`X-Forwarded-For`-Header überschreiben, nicht anhängen. Ohne diese Einstellung
+sieht die Anwendung hinter einem Proxy nur dessen IP: die Allowlist greift dann
+nie, und das Pre-Auth-Limit gilt für alle Clients gemeinsam.
 
 ### Key anlegen
 
@@ -88,99 +110,105 @@ Im Django-Admin unter **API-Keys**, oder per Shell:
 from api.models import ScopedAPIKey
 
 obj, key = ScopedAPIKey.objects.create_key(
-    name="nrw-integration",
-    write_allowed=False,
-    sensitive_access=False,        # True für Bank-/Personen-/Rohantragsdaten
-    federal_access=False,          # nur Bundes-/System-Keys auf True setzen
-    allow_submit_starter=True,     # Beispiel: NRW darf Starteranträge anlegen
-    allow_register_payments=True,  # Beispiel: Zahlung aus NRW-Frontend übernehmen
-    allow_lookup_licenses=True,    # Beispiel: gezielte Lizenzprüfung erlauben
-    allowed_ips="203.0.113.0/24",  # optional, leer lassen für keine IP-Schranke
+    name="nrw-website",
+    allow_submit_starter=True,     # Starteranträge anlegen
+    allow_register_payments=True,  # Zahlung aus dem NRW-Frontend übernehmen
+    allow_lookup_licenses=True,    # gezielte Lizenzprüfung
+    allowed_ips="203.0.113.0/24",  # optional
 )
 obj.allowed_states.add(nrw_state)  # Pflicht für Landesverbands-Keys
 print(key)  # wird nur EINMAL angezeigt; danach ist nur der Hash gespeichert
 ```
 
-Den zurückgegebenen `key` sicher verwahren — er lässt sich nicht erneut
-auslesen.
-
-Das öffentliche Formular zur Beantragung eines Keys ist separat auf fünf
-POST-Anfragen pro Stunde und Client-IP begrenzt (`API_KEY_REQUEST_RATE_LIMIT`).
-Beide IP-basierten Limits verwenden dieselbe vertrauenswürdige
-Client-IP-Ermittlung wie die Allowlist.
+Das öffentliche Formular „API-Key beantragen" (Footer-Link, `/api-key/anfrage`)
+schickt eine Anfrage an die Manager-Adressen und ist auf fünf POST-Anfragen pro
+Stunde und Client-IP begrenzt (`API_KEY_REQUEST_RATE_LIMIT`).
 
 ## Endpunkte
 
 Basis: `/api/v1/`
 
-| Ressource | Pfad |
-|---|---|
-| Studios | `/api/v1/gym/` |
-| Bundesländer | `/api/v1/state/` |
-| Länder | `/api/v1/country/` |
-| Bankkonten | `/api/v1/bankaccount/` |
-| Manager-Emails | `/api/v1/manageremail/` |
-| Email-Cron | `/api/v1/emailcron/` |
-| Benutzerprofile | `/api/v1/userprofile/` |
-| Anträge Starter | `/api/v1/submissionstarter/` |
-| Anträge International | `/api/v1/submissioninternational/` |
-| Anträge Studio | `/api/v1/submissiongym/` |
-| Anträge Kampfrichter | `/api/v1/submissionjudge/` |
-| API-Rechte des Keys | `/api/v1/capabilities/` |
-| Formularoptionen für Frontends | `/api/v1/submissions/options/` |
-| Starterantrag anlegen | `/api/v1/submissions/starter/` |
-| Internationalen Antrag anlegen | `/api/v1/submissions/international/` |
-| Studioantrag anlegen | `/api/v1/submissions/gym/` |
-| Kampfrichterantrag anlegen | `/api/v1/submissions/judge/` |
+| Pfad | Zweck | Nötige Rechte |
+|---|---|---|
+| `GET /capabilities/` | Rechte und erlaubte Verbände des Keys | gültiger Key |
+| `GET /submissions/options/` | Formularoptionen (Verbände, aktive Studios, Länder, Kategorien, Zahlungsstatus) | gültiger Key |
+| `POST /submissions/starter/` | Starterantrag anlegen | `allow_submit_starter` |
+| `POST /submissions/international/` | Internationalen Antrag anlegen | `allow_submit_international` |
+| `POST /submissions/gym/` | Studioantrag anlegen | `allow_submit_gym` |
+| `POST /submissions/judge/` | Kampfrichterantrag anlegen | `allow_submit_judge` |
+| `POST /licenses/lookup/` | Gültigkeit einer Person prüfen, ohne Personendaten zurückzugeben | `allow_lookup_licenses` |
+| `GET /licenses/valid/` | Massen-Export gültiger Lizenzen | `sensitive_access` + `allow_export_licenses` |
+| `/gym/`, `/state/`, `/country/` | Stammdaten, CRUD | lesen: gültiger Key; schreiben: `write_allowed`; State nur mit `federal_access` änderbar |
+| `/userprofile/` | Benutzerprofile, CRUD | `sensitive_access` (+ `write_allowed`) |
+| `/submissionstarter/`, `/submissioninternational/`, `/submissiongym/`, `/submissionjudge/` | Roh-Anträge, **read-only** | `sensitive_access` + `allow_read_submissions` |
+| `/bankaccount/`, `/manageremail/`, `/emailcron/` | Bundesweite Ressourcen, CRUD | `federal_access` + `sensitive_access` (+ `write_allowed`) |
+| `GET /schema/`, `/docs/`, `/redoc/` | OpenAPI-Schema, Swagger-UI, ReDoc | öffentlich (nur Pre-Auth-IP-Limit) |
 
-Jede Ressource bietet Standard-CRUD (Liste, Detail, Anlegen, Ändern, Löschen).
-Listen sind paginiert (`PAGE_SIZE = 50`).
-Ist ein API-Key per `allowed_states` eingeschränkt, werden Listen und Details
-automatisch auf die erlaubten Landesverbände gefiltert; fremde Detail-URLs
-antworten wie nicht vorhandene Objekte. Schreibzugriffe auf Objekte eines
-anderen Landesverbands werden mit `403 Forbidden` abgelehnt.
-Keys ohne `federal_access` und ohne `allowed_states` bekommen bei
-verbandsgebundenen Ressourcen eine leere Ergebnismenge.
-
-Die generischen `submission*`-Ressourcen sind absichtlich read-only. Anträge
-werden über die dedizierten Fach-Endpunkte unter `/submissions/.../` angelegt,
-damit User-Zuordnung, Verbandsgrenze, Zahlung und Mailbenachrichtigung nicht
-umgangen werden.
-
-API-Zugriffe sind im Django-Admin unter **API-Zugriffe** nachvollziehbar und
-nach Key-Prefix, Status, Methode und Datum filterbar.
+Generische Listen sind paginiert (`PAGE_SIZE = 50`) und unterstützen
+`?feld=wert` (exakter Filter auf direkte Felder), `?search=` und `?ordering=`.
+Bei Landesverbands-Keys werden Listen und Details automatisch gefiltert;
+fremde Detail-URLs antworten `404`, Schreibversuche auf fremde Verbandsdaten
+`403`.
 
 ### Beispiel
 
 ```bash
 curl -H "Authorization: Api-Key 2VvDXE8I.xxxxxxxx" \
-     http://127.0.0.1:8000/api/v1/gym/
+     https://lizenz.example.org/api/v1/capabilities/
 ```
+
+## Capabilities
+
+```
+GET /api/v1/capabilities/
+```
+
+```json
+{
+  "key_prefix": "2VvDXE8I",
+  "federal_access": false,
+  "states": [{ "id": 10, "name": "Nordrhein-Westfalen", "short_name": "NRW" }],
+  "permissions": {
+    "submit_starter": true,
+    "submit_international": false,
+    "submit_gym": false,
+    "submit_judge": false,
+    "register_payments": true,
+    "lookup_licenses": true,
+    "export_licenses": false,
+    "read_submissions": false,
+    "sensitive_access": false,
+    "write_allowed": false
+  }
+}
+```
+
+Ein Frontend kann damit Flows ausblenden, ohne Rechte zu erraten.
 
 ## Antrags-Endpunkte mit Zahlung
 
 Die Fach-Endpunkte legen Anträge so an, dass der bestehende Workflow erhalten
 bleibt:
 
-- der Antrag bekommt einen lokalen System-/Antragsteller-User,
-- `created_via_api` und `api_key_prefix` werden am Antrag gespeichert,
-- `external_reference` macht wiederholte API-Requests idempotent,
-- `allowed_states`/`federal_access` begrenzen den gewählten Verband oder das
-  gewählte Studio,
-- optionale Zahlungsdaten werden nur mit `allow_register_payments` gespeichert,
-- Studio-Anträge erzeugen wie der Webflow ein neues inaktives `Gym`,
-- `send_emails()` wird wie im Webformular aufgerufen: Verwalter (`ManagerEmail`),
-  Landesverband, ggf. Studio, Antragsteller und vorhandene Sonderempfänger
-  bekommen weiterhin die vollständige Mail.
-
-### Capabilities
-
-```
-GET /api/v1/capabilities/
-```
-
-Liefert die für den Key erlaubten Verbände und Rechte. Ein Frontend kann damit
-Buttons/Flows ausblenden, ohne Rechte zu erraten.
+- Der Antrag gehört einem **technischen Benutzer je API-Key**
+  (`api-<PREFIX>`, inaktiv, ohne Passwort). Er wird bewusst **nicht** an ein
+  bestehendes Web-Konto mit der E-Mail des Athleten gehängt: Das würde den
+  Antrag samt Personendaten demjenigen zuordnen, der diese Adresse zuerst
+  registriert hat. Die Kontaktdaten des Antragstellers stehen nur im Antrag.
+- `created_via_api` und `api_key_prefix` werden am Antrag gespeichert.
+- `external_reference` (Pflicht) macht wiederholte Requests idempotent und ist
+  je API-Key durch einen Unique-Constraint in der Datenbank abgesichert; auch
+  zwei gleichzeitige Retries erzeugen nur einen Antrag.
+- `allowed_states`/`federal_access` begrenzen den gewählten Verband bzw. das
+  gewählte Studio.
+- Technischer Benutzer, Antrag, ggf. neues Studio und der Mailversand laufen in
+  **einer Transaktion**: Schlägt der Mailversand fehl, wird nichts gespeichert
+  und die API antwortet `500`; der Client kann mit derselben
+  `external_reference` gefahrlos erneut senden.
+- Studio-Anträge erzeugen wie der Webflow ein neues inaktives `Gym`.
+- `send_emails()` wird wie im Webformular aufgerufen: Verwalter
+  (`ManagerEmail`), Landesverband, ggf. Studio und Antragsteller bekommen die
+  bekannte Mail, bei Zahlungsdaten mit einem zusätzlichen Zahlungsblock.
 
 ### Formularoptionen
 
@@ -189,7 +217,7 @@ GET /api/v1/submissions/options/
 ```
 
 Liefert nur die für den Key erlaubten Landesverbände und aktiven Studios,
-außerdem Länder, Starter-Kategorien und Zahlungsstatus-Werte.
+außerdem Länder, Starter-Kategorien und die Zahlungsstatus-Werte.
 
 ### Starterantrag anlegen
 
@@ -219,7 +247,7 @@ Content-Type: application/json
   "external_reference": "NRW-ORDER-12345",
   "payment": {
     "status": "paid",
-    "method": "dfvnrw",
+    "method": "nrw-website",
     "reference": "NRW-2026-12345",
     "amount_cents": 9000,
     "received_at": "2026-09-16T12:00:00+02:00",
@@ -228,15 +256,24 @@ Content-Type: application/json
 }
 ```
 
-Erfordert `allow_submit_starter`; `external_reference` ist Pflicht und pro
-API-Key eindeutig. Wird dieselbe Referenz erneut gesendet, gibt die API den
-bestehenden Antrag mit `reused: true` zurück, statt einen Doppelantrag anzulegen.
-Der `payment`-Block erfordert zusätzlich `allow_register_payments`. Bei
-`status: "paid"` sind `reference` und `amount_cents > 0` Pflicht. Ohne
-Payment-Block bleibt der Antrag wie bisher unbezahlt beziehungsweise ohne
-registrierte Zahlung.
+- Erfordert `allow_submit_starter`.
+- `external_reference` ist Pflicht und je API-Key eindeutig. Wird dieselbe
+  Referenz erneut gesendet, antwortet die API `200 OK` mit dem bestehenden
+  Antrag und `reused: true`; eine Neuanlage antwortet `201 Created`.
+- Der `payment`-Block erfordert `allow_register_payments`, sonst `403`.
+  - `status`: `none`, `pending`, `paid`, `failed`, `refunded`.
+  - `method`: Freitext, max. 40 Zeichen (z. B. Zahlungsanbieter des Frontends).
+  - `reference`: max. 120 Zeichen; bei `paid` Pflicht.
+  - `amount_cents`: bei `paid` Pflicht und **gleich der Gebühr** des
+    Antragstyps (Starter 9000, Studio 3000, International und Kampfrichter
+    2000), sonst `400`.
+  - `received_at`: optional, darf nicht in der Zukunft liegen; fehlt es, wird
+    der Eingangszeitpunkt des Requests gespeichert.
+  - `note`: optional, max. 500 Zeichen.
+- Ohne `payment`-Block bleibt der Antrag wie ein Webantrag ohne registrierte
+  Zahlung (`payment_status = none`).
 
-Antwort:
+Antwort (`201`):
 
 ```json
 {
@@ -246,20 +283,70 @@ Antwort:
   "payment_status": "Bezahlt",
   "bank_account_id": 2,
   "fee": 90,
-  "designated_use": "Starterlizenz 42<br>\nMustermann, Max",
+  "designated_use": "Starterlizenz 42 Mustermann, Max",
   "external_reference": "NRW-ORDER-12345",
   "reused": false
 }
 ```
 
+`id` ist die Antragsnummer des Lizenzsystems; eine separate Lizenznummer gibt
+es nicht. `designated_use` ist der Verwendungszweck für die Überweisung,
+`bank_account_id` das zugehörige Konto des Verbands.
+
 Die Endpunkte für `international`, `gym` und `judge` folgen demselben Muster mit
-den jeweiligen Modellfeldern und eigenen Rechten.
+den jeweiligen Modellfeldern (siehe Swagger-UI) und eigenen Rechten.
 
 ## Lizenz-Endpoints (Kernfall NRW)
 
 Eine „Lizenz" ist ein bewilligter Antrag für ein Kalenderjahr.
 **Gültig = Status „Bewilligt" UND `creation_date.year == Jahr`** (Standard:
-laufendes Jahr, per `?year=` überschreibbar).
+laufendes Jahr, per `year` überschreibbar).
+
+### Gültigkeit gezielt abfragen (Lookup, datensparsam)
+
+```
+POST /api/v1/licenses/lookup/
+Content-Type: application/json
+
+{
+  "last_name": "Mustermann",
+  "date_of_birth": "1990-05-01",
+  "year": 2026
+}
+```
+
+Parameter: `last_name`, `first_name`, `email`, `date_of_birth` (`YYYY-MM-DD`),
+`year` (optional, 2000 bis Folgejahr).
+
+- Erfordert `allow_lookup_licenses`.
+- Mindestens **zwei** Identifikatoren, davon mindestens einer **`email` oder
+  `date_of_birth`**. Ein Namenspaar allein reicht nicht, weil es sich mit
+  öffentlichen Namenslisten durchprobieren ließe. Sonst `400`.
+- Die Felder werden exakt verglichen (Groß-/Kleinschreibung, keine
+  Teilstrings).
+- Die Identifikatoren werden ausschließlich im JSON-Body übertragen. `GET` ist
+  deaktiviert, damit Namen, E-Mail-Adressen und Geburtsdaten nicht in URLs oder
+  Access-Logs landen. Der POST ist semantisch read-only und benötigt kein
+  `write_allowed`.
+- Datenschutz: gibt **keine Personendaten** zurück, nur ob eine gültige Lizenz
+  existiert (Typ + Jahr).
+- Ein Typ wird nur geprüft, wenn er mindestens zwei der angegebenen Felder
+  besitzt: Starter/International (alle vier), Kampfrichter (Name/E-Mail, kein
+  Geburtsdatum). Studiolizenzen haben nur eine E-Mail und sind nur im
+  Massen-Export enthalten.
+- Bei Landesverbands-Keys werden nur Lizenzen der erlaubten Verbände geprüft.
+
+Antwort:
+
+```json
+{
+  "year": 2026,
+  "valid": true,
+  "matches": [
+    { "license_type": "starter", "label": "Starterlizenz", "year": 2026, "valid": true }
+  ]
+}
+```
 
 ### Alle gültigen Lizenzen (Massen-Export)
 
@@ -267,17 +354,18 @@ laufendes Jahr, per `?year=` überschreibbar).
 GET /api/v1/licenses/valid/?year=2026&type=starter&page=1&page_size=100
 ```
 
-- **Erfordert `sensitive_access` und `allow_export_licenses`** — es ist ein
+- **Erfordert `sensitive_access` und `allow_export_licenses`**: es ist ein
   Personendaten-Export.
-- `year` optional (Standard: laufendes Jahr)
-- `type` optional: `starter` | `international` | `judge` | `studio`
-- **Paginiert** (`page`, `page_size`; Standard 100, Maximum 500).
+- `year` optional (Standard: laufendes Jahr), `type` optional:
+  `starter` | `international` | `judge` | `studio`.
+- Paginiert (`page`, `page_size`; Standard 100, Maximum 500), zählt und
+  schneidet auf Datenbankebene. Eine Seite jenseits des Endes liefert leere
+  `results`.
 - Felder minimal. `date_of_birth` wird **nur** mit `?include=date_of_birth`
-  mitgeliefert (Datensparsamkeit).
-- Bei Landesverbands-Keys werden nur gültige Lizenzen aus den erlaubten
-  Landesverbänden exportiert.
+  mitgeliefert.
+- Bei Landesverbands-Keys werden nur Lizenzen der erlaubten Verbände exportiert.
 
-Antwort (paginiert):
+Antwort:
 
 ```json
 {
@@ -297,90 +385,64 @@ Antwort (paginiert):
 }
 ```
 
-### Gültigkeit gezielt abfragen (Lookup, datensparsam)
-
-```
-POST /api/v1/licenses/lookup/
-Content-Type: application/json
-
-{
-  "last_name": "Mustermann",
-  "date_of_birth": "1990-05-01",
-  "year": 2026
-}
-```
-
-Parameter (mindestens **zwei** angeben): `last_name`, `first_name`, `email`,
-`date_of_birth` (`YYYY-MM-DD`), `year` (optional).
-
-- Die Identifikatoren werden ausschließlich im JSON-Body übertragen. `GET` ist
-  deaktiviert, damit Namen, E-Mail-Adressen und Geburtsdaten nicht in URLs oder
-  üblichen Access-Logs landen.
-- Der POST ist semantisch read-only und benötigt kein `write_allowed`.
-- Erfordert `allow_lookup_licenses`.
-- Datenschutz: gibt **keine Personendaten** zurück, nur ob eine gültige Lizenz
-  existiert (Typ + Jahr).
-- Die Zwei-Feld-Pflicht verhindert Enumeration (z. B. Geburtsdaten durchprobieren).
-- Ein Typ wird nur geprüft, wenn er **mindestens zwei** der angegebenen Felder
-  besitzt: Starter/International (alle vier), Kampfrichter (Name/E-Mail, kein
-  Geburtsdatum), Studio (nur E-Mail → per Lookup nicht auffindbar, nur im
-  Massen-Export).
-- Mit `< 2` Feldern: `400`.
-
-Antwort:
-
-```json
-{
-  "year": 2026,
-  "valid": true,
-  "matches": [
-    { "license_type": "starter", "label": "Starterlizenz", "year": 2026, "valid": true }
-  ]
-}
-```
-
 ### Interaktive Doku / Schema
 
 - Swagger-UI: `GET /api/v1/docs/`
 - ReDoc: `GET /api/v1/redoc/`
 - OpenAPI-Schema (JSON/YAML): `GET /api/v1/schema/`
 
-## Webhooks
+Das Schema deklariert das Security-Scheme `ApiKeyAuth` global, generierte
+Clients setzen den Header automatisch.
 
-Eine Änderungsbenachrichtigung per Webhook (Push an eine NRW-URL bei
-Statuswechsel) ist geplant, aber **bewusst nicht Teil dieser API**. Grund:
-synchroner Outbound-Versand, SSRF-Fläche und der Versand von Personendaten an
-Dritte brauchen erst eine saubere Lösung (asynchrone Queue mit Retry,
-SSRF-Schutz, DSGVO-Klärung). Kommt in einem eigenen PR.
+## Konfiguration
 
-## Betrieb / TLS
+| Setting | Standard | Zweck |
+|---|---|---|
+| `DJANGO_SECURE` (Env) | aus | HTTPS-Härtung (Secure-Cookies, HSTS, SSL-Redirect, `X-Forwarded-Proto`) aktivieren, sobald TLS terminiert ist |
+| `API_TRUSTED_PROXY_COUNT` | `0` | Anzahl vertrauenswürdiger Reverse-Proxies für die Client-IP |
+| `API_PREAUTH_RATE_LIMIT` | `120/minute` | IP-Limit vor der Key-Prüfung |
+| `API_KEY_REQUEST_RATE_LIMIT` | `5/hour` | Limit für das Beantragungsformular |
+| `REST_FRAMEWORK['DEFAULT_THROTTLE_RATES']['apikey']` | `1000/hour` | Limit pro Key |
+| `CACHES` | Django-Default (LocMem) | Für Rate-Limits in Multi-Prozess-Deployments auf einen gemeinsamen Cache stellen |
+
+### Betrieb / TLS
 
 TLS wird von diesem Repository **nicht** bereitgestellt (die mitgelieferte
 Apache-Konfiguration lauscht auf `:80`). HTTPS muss vom Reverse-Proxy des
-Betreibers (z. B. Coolify) terminiert werden.
+Betreibers terminiert werden.
 
-- Standard ist HTTP-tauglich (keine erzwungenen Secure-Cookies/Redirects), damit
-  ein HTTP-only-Betrieb nicht ausgesperrt wird.
+- Standard ist HTTP-tauglich (keine erzwungenen Secure-Cookies/Redirects).
 - Sobald TLS sicher terminiert ist: `DJANGO_SECURE=1` setzen. Dann greifen
   Secure-Cookies, HSTS, SSL-Redirect und die Auswertung von `X-Forwarded-Proto`.
 - Der Proxy muss eingehende `X-Forwarded-Proto`/`X-Forwarded-For`-Header
   überschreiben. Vor dem Aktivieren `python manage.py check --deploy` ausführen.
 
-## Protokollierung / Audit
+### Migrationen
 
-Jeder API-Zugriff wird über den Logger `dbfv.audit` protokolliert (Standard:
-stdout): Key-Präfix, Client-IP, Methode, Pfad, Statuscode; `403`/`429` als
-Warnung, Key-Widerrufe im Admin ebenfalls. **Nicht** protokolliert werden das
-Key-Secret, der Request-Body und die Query-Zeichenkette (mögliche Suchdaten) —
-geloggt wird nur `request.path` ohne Query. Im Deployment kann der Logger auf
-eine Datei oder einen Collector umgeleitet werden.
+- `api/0001`–`0008`: Key-Modell, Rechte-Flags, Zugriffsverlauf. `0003` und
+  `0006` sind Datenmigrationen für Instanzen, auf denen die API bereits lief:
+  bestehende Keys werden als Bundes-/System-Keys markiert bzw. bekommen die
+  neu eingeführten Leserechte, damit laufende Integrationen nicht ausfallen.
+  Auf einer Instanz ohne vorhandene Keys sind sie wirkungslos.
+- `submission/0016`–`0018`: API-/Zahlungsfelder an allen Antragstypen;
+  `external_reference` ist `NULL` für Webanträge und je API-Key eindeutig.
+
+## Webhooks
+
+Eine Änderungsbenachrichtigung per Webhook (Push an eine NRW-URL bei
+Statuswechsel) ist **bewusst nicht Teil dieser API**: synchroner
+Outbound-Versand, SSRF-Fläche und der Versand von Personendaten an Dritte
+brauchen erst eine saubere Lösung (asynchrone Queue mit Retry, SSRF-Schutz,
+DSGVO-Klärung). Kommt bei Bedarf in einem eigenen PR.
 
 ## Grenzen / offene Punkte
 
-- Schreibende Zugriffe auf Anträge (`submission*`) können zusätzliche Felder
-  benötigen, die das Modell als nicht editierbar markiert (z. B. `user`). Der
-  primäre Anwendungsfall ist derzeit Lesen; Serializer sind bei Bedarf zu
-  erweitern.
-- `write_allowed` ist ein einzelnes Flag pro Key, kein feingranulares
-  Rollen-/Rechtemodell. Für differenzierte Rechte pro Ressource ist ein Ausbau
-  vorgesehen.
+- Die Weboberfläche zeigt API-Herkunft und Zahlungsvermerk eines Antrags noch
+  nicht an; beides steht in der Datenbank, im generischen Read-Endpunkt und in
+  der Benachrichtigungsmail.
+- Bei Key-Rotation (neuer Prefix) gelten alte `external_reference`-Werte als
+  neu; Referenzen sind je Key eindeutig. Vor der Rotation offene Bestellungen
+  abschließen.
+- `APIAccessLog` wächst unbegrenzt; eine Aufbewahrungsfrist ist Betreibersache.
+- Die Gebühren (`FEE`) sind Konstanten am Modell; die Betragsprüfung der
+  Zahlungsregistrierung folgt ihnen.

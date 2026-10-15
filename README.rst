@@ -25,7 +25,7 @@ nicht funktioniert oder du ein anderes Setup hast: http://djangoproject.com/
  $ source python-django/bin/activate
  $ git clone https://github.com/rolandgeider/dbfv.git
  $ cd dbfv
- $ pip install -r requirements.txt
+ $ uv sync            # oder: pip install .
  $ cd submission/static
  $ yarn install
 
@@ -45,6 +45,21 @@ nicht funktioniert oder du ein anderes Setup hast: http://djangoproject.com/
  $ python manage.py createsuperuser
  $ python manage.py loaddata groups bank_accounts federal_states countries gyms
  $ python manage.py runserver
+
+
+REST-API
+========
+
+Unter ``/api/v1/`` gibt es eine REST-API mit API-Key-Authentifizierung, mit
+der berechtigte Landesverbände Lizenzgültigkeiten abfragen und Anträge samt
+Zahlungsvermerk anlegen können. API-Keys werden im Django-Admin
+(``/admin/``, Bereich „API-Keys“) ausgestellt; jeder Key ist auf einzelne
+Landesverbände und einzelne Rechte beschränkbar. Interaktive Doku unter
+``/api/v1/docs/``.
+
+* Technische Dokumentation: ``API.md``
+* Erklärung für Verband und Geschäftsstelle: ``API-README.md``
+* Änderungen: ``CHANGELOG.md``
 
 
 

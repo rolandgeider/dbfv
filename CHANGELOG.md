@@ -6,191 +6,138 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ## [Unreleased]
 
-### Hinzugefügt
+Bündelt die REST-API (vormals PR #157), das UI-Redesign (vormals PR #158) und
+die darauf aufbauende Landesverbands-API für Antrags- und Zahlungsflow.
+Entwickelt im Auftrag des DBFV NRW.
+
+### Hinzugefügt – REST-API
+
 - REST-API unter `/api/v1/` auf Basis von Django REST Framework, inklusive
   OpenAPI-Schema (`/api/v1/schema/`), Swagger-UI (`/api/v1/docs/`) und ReDoc
-  (`/api/v1/redoc/`) via drf-spectacular.
+  (`/api/v1/redoc/`) via drf-spectacular. Django-Admin unter `/admin/`
+  aktiviert (war zuvor nicht eingebunden).
 - API-Key-Authentifizierung (`djangorestframework-api-key`) mit eigenem
-  Key-Modell `ScopedAPIKey` und pro Key konfigurierbaren Rollen/Scopes:
-  - `write_allowed` – Schreibzugriff (`POST`/`PUT`/`PATCH`/`DELETE`); ohne Flag
-    nur Lesezugriff, ohne gültigen Key kein Zugriff.
-  - `sensitive_access` – Zugriff auf sensible Ressourcen (Bankkonten,
-    Benutzerprofile, interne Modelle, Roh-Antrags-CRUD und den Massen-Export).
-  - `allowed_ips` – optionale IP-/CIDR-Allowlist als Zweit-Absicherung für
-    Server-zu-Server-Zugriffe.
-  - `federal_access` – expliziter Bundes-/Systemzugriff über alle Verbände.
-  - `allowed_states` – Landesverbandsgrenze; gesetzte Keys sehen und schreiben
-    nur Daten der gewählten Verbände. Neue Keys ohne `federal_access` und ohne
-    `allowed_states` sehen keine verbandsgebundenen Daten.
+  Key-Modell `ScopedAPIKey`; jedes Recht ist ein eigenes Flag:
+  - `allowed_states` – Landesverbandsgrenze; der Key sieht und schreibt nur
+    Daten der gewählten Verbände.
+  - `federal_access` – expliziter Bundes-/Systemzugriff über alle Verbände;
+    nur damit sind Bankkonten, Manager-E-Mails und Mail-Cron erreichbar.
+  - `allow_lookup_licenses`, `allow_export_licenses`, `allow_read_submissions`
+    – Leserechte für Lizenz-Lookup, Lizenz-Export und Roh-Anträge.
   - `allow_submit_starter`, `allow_submit_international`, `allow_submit_gym`,
-    `allow_submit_judge` und `allow_register_payments` – dedizierte Rechte für
-    fachliche API-Antragsanlage und Zahlungsregistrierung.
-  - `allow_lookup_licenses`, `allow_export_licenses` und
-    `allow_read_submissions` – dedizierte Leserechte für Lizenzlookup,
-    Lizenzexport und Roh-Antragsdaten.
-  Keys sind im Django-Admin verwaltbar (Django-Admin unter `/admin/`
-  aktiviert – war zuvor nicht eingebunden).
-- CRUD-Endpunkte für alle Modelle (Gym, State, Country, BankAccount,
-  ManagerEmail, EmailCron, UserProfile, Submission*) mit Filter (`?feld=wert`),
-  Volltextsuche (`?search=`), Sortierung (`?ordering=`) und Pagination.
-- Lizenz-Endpoints. „Gültig" = Status Bewilligt im laufenden Kalenderjahr:
-  - `/api/v1/licenses/lookup/` – datensparsame, gezielte Gültigkeitsabfrage:
-    mindestens zwei Identifikatoren (Name/E-Mail/Geburtsdatum) nötig, Rückgabe
-    nur Typ/Jahr/gültig, kein Rückgeben von Personendaten (gegen Enumeration).
-  - `/api/v1/licenses/valid/` – Massen-Export, nur mit `sensitive_access`;
-    paginiert (`page`/`page_size`, max. 500), minimale Felder, `date_of_birth`
-    nur mit `?include=date_of_birth`.
-- Öffentliches Formular „API-Key beantragen" (kleiner Footer-Link) mit
-  Honeypot-Spamschutz; Anfragen gehen per E-Mail an die Manager-Adressen.
-- Fachliche Antrags-API:
-  - `/api/v1/capabilities/` – zeigt dem Frontend die Rechte und erlaubten
-    Landesverbände des Keys.
-  - `/api/v1/submissions/options/` – liefert verbandsspezifische
-    Formularoptionen (States, aktive Gyms, Länder, Kategorien, Zahlungsstatus).
-  - `/api/v1/submissions/starter/`,
-    `/api/v1/submissions/international/`, `/api/v1/submissions/gym/` und
-    `/api/v1/submissions/judge/` – legen Anträge über den Fachworkflow an,
-    speichern API-/Zahlungsmetadaten und lösen den bestehenden Mailversand an
-    Verwalter, Landesverband, ggf. Studio und Antragsteller aus. Studio-Anträge
-    erzeugen wie der Webflow ein neues inaktives `Gym`.
-- Zahlungsfelder auf allen Antragstypen (`created_via_api`, `api_key_prefix`,
-  `external_reference`, `payment_status`, `payment_method`, `payment_reference`,
-  `payment_amount_cents`, `payment_received_at`, `payment_note`) als System of
-  Record für künftige NRW-Frontend-Zahlflüsse.
-- API-Antragsanlage ist ueber `external_reference` idempotent; wiederholte
-  Requests mit derselben Referenz liefern den bestehenden Antrag statt einen
-  Doppelantrag anzulegen. Bei `payment.status = paid` sind Zahlungsreferenz und
-  Betrag groesser 0 Pflicht.
-- Haupt-Mails bei Antragsanlage werden nicht mehr stillschweigend verschluckt
-  (`fail_silently=False`), damit API- und Web-Anträge nicht ohne sichtbaren
-  Mailversand gespeichert werden.
-- `API.md` mit Hintergrund und Nutzungsanleitung zur API.
+    `allow_submit_judge`, `allow_register_payments` – fachliche Antragsanlage
+    und Zahlungsregistrierung.
+  - `sensitive_access` – personen-/finanzbezogene Ressourcen.
+  - `write_allowed` – generisches Schreiben; `DELETE` zusätzlich nur mit
+    `sensitive_access`.
+  - `allowed_ips` – optionale IP-/CIDR-Allowlist.
+- Generische Endpunkte: CRUD für Stammdaten und Profile (Gym, State, Country,
+  UserProfile; BankAccount, ManagerEmail, EmailCron nur mit Bundeszugriff),
+  read-only Listen/Details für Submission*, jeweils mit Filter (`?feld=wert`),
+  Suche (`?search=`), Sortierung (`?ordering=`) und Pagination.
+- Lizenz-Endpoints („gültig" = Status Bewilligt im Kalenderjahr):
+  - `POST /api/v1/licenses/lookup/` – datensparsame Gültigkeitsabfrage:
+    mindestens zwei Identifikatoren, davon einer E-Mail oder Geburtsdatum;
+    Rückgabe nur Typ/Jahr/gültig, keine Personendaten.
+  - `GET /api/v1/licenses/valid/` – Massen-Export mit `sensitive_access` und
+    `allow_export_licenses`; DB-seitig paginiert (max. 500), minimale Felder,
+    `date_of_birth` nur mit `?include=date_of_birth`.
+- Fach-Endpunkte für Landesverbände:
+  - `GET /api/v1/capabilities/` – Rechte und erlaubte Verbände des Keys.
+  - `GET /api/v1/submissions/options/` – verbandsspezifische Formularoptionen.
+  - `POST /api/v1/submissions/{starter,international,gym,judge}/` – legen
+    Anträge über den Fachworkflow an (technischer Benutzer je Key, Verbandsgrenze,
+    Zahlungsvermerk, bestehender Mailversand an Verwalter, Landesverband,
+    Studio und Antragsteller; Studio-Anträge erzeugen ein inaktives `Gym`).
+    Idempotent über `external_reference` (je Key eindeutig, DB-Constraint):
+    Wiederholung liefert `200` mit `reused: true` statt eines Doppelantrags.
+    Antrag, Studio und Mails laufen in einer Transaktion.
+- Zahlungsfelder an allen Antragstypen (`created_via_api`, `api_key_prefix`,
+  `external_reference`, `payment_status`, `payment_method`,
+  `payment_reference`, `payment_amount_cents`, `payment_received_at`,
+  `payment_note`). Bei `status = paid` sind Referenz und ein Betrag in Höhe der
+  Gebühr Pflicht; Zahlungszeitpunkt nicht in der Zukunft, Notiz max. 500
+  Zeichen. Die Benachrichtigungsmails enthalten einen Zahlungsblock.
+- Öffentliches Formular „API-Key beantragen" (`/api-key/anfrage`, Footer-Link)
+  mit Honeypot; Anfragen gehen per E-Mail an die Manager-Adressen.
+- `API.md` (technische Doku), `API-README.md` (Erklärung für Verband und
+  Geschäftsstelle), API-Abschnitt in `README.rst`.
 
 ### Sicherheit
-- Rate-Limiting: pro API-Key (Standard 1000/Stunde) plus vorgelagertes
-  IP-Limit vor der Key-Prüfung (`API_PREAUTH_RATE_LIMIT`, Standard 120/Minute);
-  das Beantragungsformular ist zusätzlich pro IP begrenzt
-  (`API_KEY_REQUEST_RATE_LIMIT`).
-- IP-Allowlist gegen `X-Forwarded-For`-Spoofing gehärtet: XFF wird
-  standardmäßig ignoriert (nur `REMOTE_ADDR`), Proxy-Betrieb ausschließlich über
-  `API_TRUSTED_PROXY_COUNT` (fail-closed).
-- Produktions-Settings sicher als Standard: `DEBUG=False`, Clickjacking-Schutz
-  (`X-Frame-Options: DENY`), `SECURE_CONTENT_TYPE_NOSNIFF`.
-- HTTPS-Härtung (Secure-Cookies, HSTS, SSL-Redirect) als Gesamt-Opt-in über
-  `DJANGO_SECURE=1`. TLS wird vom Repository nicht garantiert (die mitgelieferte
-  Apache-Konfiguration lauscht auf `:80`) und muss vom Reverse-Proxy des
-  Betreibers terminiert werden. Der Proxy-TLS-Header (`X-Forwarded-Proto`) wird
-  **nur** bei gesetztem `DJANGO_SECURE=1` ausgewertet, damit ohne
-  vertrauenswürdigen TLS-Proxy kein `https` vorgetäuscht werden kann.
-- IDOR bei Kampfrichteranträgen behoben (Owner-/Berechtigungsprüfung in der
-  Detail-View, analog zu Starter/International/Studio).
-- Berechtigungsprüfungen in gemeinsamen Submission-Views leiten Rechte aus dem
-  konkreten Modell ab (`delete_<model>` / `change_<model>`) statt fixer
-  Modellnamen.
-- CSV-Exporte gegen Spreadsheet-Formula-Injection neutralisiert.
-- „PDF erneut senden" nur noch per POST mit CSRF-Schutz (vorher GET).
-- Audit-Logging aller API-Zugriffe (Logger `dbfv.audit`): Key-Präfix, IP,
-  Methode, Pfad, Status; `403`/`429` und Key-Widerrufe als Warnung. Ohne
-  Key-Secret, Request-Body oder Query-Zeichenkette (keine Suchdaten).
-- Admin-einsehbarer API-Zugriffsverlauf (`APIAccessLog`) mit Zeit, Key-Prefix,
-  IP, Methode, Pfad ohne Query und Status. Keine Secrets, Bodies, Zahlungsdaten
-  oder Suchparameter im Admin-Log.
-- API-Key-Isolation nach Landesverband:
-  - `api/models.py` ergänzt `ScopedAPIKey.allowed_states` und
-    `federal_access` inklusive Admin-Pflege.
-  - `api/migrations/0003_scopedapikey_federal_access.py` markiert bestehende
-    Keys als Bundes-/System-Keys, damit Bestandsintegrationen beim Deploy nicht
-    ausfallen; neue Keys starten ohne verborgenen Vollzugriff.
-  - `api/access.py` bündelt die zentrale State-Scope-Filterung.
-  - `api/views.py` filtert generische CRUD-/Read-Endpunkte und blockiert
-    Schreibzugriffe auf fremde Verbandsdaten.
-  - `api/licenses.py` begrenzt `/licenses/valid/` und `/licenses/lookup/` auf
-    die erlaubten Verbände.
-  - `api/tests.py` deckt Roh-Anträge, Stammdaten, Lizenzexport, Lookup und
-    Fremdverband-Schreibversuche ab.
 
-### Behoben
-- Review-Fixes zu PR #157 (automatischer Copilot-Review):
-  - Scope-Umgehung geschlossen: `DELETE` erfordert jetzt `sensitive_access`.
-    Zuvor konnte ein reiner Schreib-Key offene Stammdaten (Gym/State/Country)
-    löschen, deren `CASCADE` sensible Anträge mitgelöscht hätte
-    (`api/permissions.py`).
-  - Submission-Endpoints (`SubmissionStarter/International/Gym/Judge`) sind jetzt
-    read-only: `POST` lief zuvor in einen `IntegrityError` (Feld `user`
-    `editable=False`, unter API-Key-Auth kein Request-User) und `PATCH` auf den
-    Status umging den Fach-Workflow (z. B. Gym-Aktivierung bei Bewilligung)
-    (`api/views.py`).
-  - CSV-Formula-Injection-Schutz (`csv_safe`) jetzt auch in den TSV-Exporten
-    `submission/views/submissions.py` und `submission/views/gym.py`; zuvor nur in
-    `BaseCsvExportView`.
-  - „API-Key beantragen"-Formular meldet Erfolg nur noch bei tatsächlich
-    zugestellter E-Mail. Zuvor wurde auch ohne Empfänger oder bei Zustellfehler
-    (`fail_silently=True`) „übermittelt" gemeldet und die Anfrage verworfen;
-    jetzt `fail_silently=False`, Fehler/leerer Empfängerkreis werden über
-    `dbfv.audit` geloggt und dem Absender als Fehlermeldung gezeigt
-    (`api/contact.py`).
-  - OpenAPI-Schema stimmt jetzt mit den tatsächlichen Responses überein:
-    Envelope-Serializer für `licenses/lookup/` (`{year, valid, matches}`) und
-    `licenses/valid/` (`{count, next, previous, results}`) statt eines bloßen
-    Arrays; generierte Clients deserialisieren wieder korrekt (`api/licenses.py`).
-  - OpenAPI-Security-Scheme (`ApiKeyAuth`, Header `Authorization: Api-Key …`)
-    deklariert und global auf alle Operationen angewandt; zuvor beschrieb das
-    Schema geschützte Endpunkte ohne den nötigen Header
-    (`dbfv/settings_global.py`).
-  - Massen-Export `licenses/valid/` paginiert jetzt auf DB-Ebene (Count +
-    Fenster-Slice pro Modell) statt erst alle Zeilen aller vier Tabellen in den
-    Speicher zu laden (`api/licenses.py`).
-  - Audit-Middleware ist wieder äußerste Middleware (vor `CommonMiddleware`),
-    damit `APPEND_SLASH`-Redirects (301) und direkt von `CommonMiddleware`
-    erzeugte Antworten mit dem client-sichtbaren Status geloggt werden
-    (`dbfv/settings_global.py`).
+- Landesverbandsgrenze serverseitig: gescopte Keys sehen Listen/Details nur
+  des eigenen Verbands (fremde Details `404`), Schreibversuche auf fremde
+  Daten `403`. Bundesweite Ressourcen (Bankkonto – von mehreren Verbänden
+  geteilt –, Manager-E-Mails, Mail-Cron) sind für gescopte Keys unsichtbar und
+  unveränderbar; Bundesländer können gescopte Keys weder ändern noch löschen.
+- API-Anträge hängen an einem technischen Benutzer je API-Key (`api-<PREFIX>`,
+  inaktiv, ohne Passwort) und werden nicht an bestehende Web-Konten mit
+  gleicher E-Mail gebunden.
+- Rate-Limiting pro API-Key (1000/Stunde) plus vorgelagertes IP-Limit vor der
+  Key-Prüfung (`API_PREAUTH_RATE_LIMIT`, 120/Minute); Beantragungsformular
+  zusätzlich pro IP (`API_KEY_REQUEST_RATE_LIMIT`).
+- Client-IP-Ermittlung: `X-Forwarded-For` wird standardmäßig ignoriert
+  (`API_TRUSTED_PROXY_COUNT = 0`), Proxy-Betrieb nur explizit, fail-closed.
+- Audit-Logging (`dbfv.audit`) und Admin-einsehbarer Zugriffsverlauf
+  (`APIAccessLog`): Zeit, Key-Prefix (max. 8 Zeichen), IP, Methode, Pfad ohne
+  Query, Status; `401`/`403`/`429` und Key-Widerrufe als Warnung. Ohne
+  Key-Secret, Body, Zahlungsdaten oder Suchparameter.
+- Produktions-Settings sicher als Standard: `DEBUG=False`, `X-Frame-Options:
+  DENY`, `SECURE_CONTENT_TYPE_NOSNIFF`; HTTPS-Härtung als Opt-in über
+  `DJANGO_SECURE=1`, `X-Forwarded-Proto` nur dann ausgewertet.
+- OpenAPI-Security-Scheme `ApiKeyAuth` global deklariert; Envelope-Serializer
+  für Lookup und Export, damit Schema und Antworten übereinstimmen.
+- Altlasten unabhängig von der API: IDOR bei Kampfrichteranträgen behoben
+  (Owner-/Rechteprüfung in der Detail-View); Rechteprüfung in gemeinsamen
+  Submission-Views aus dem konkreten Modell abgeleitet; CSV-/TSV-Exporte gegen
+  Spreadsheet-Formula-Injection neutralisiert; „PDF erneut senden" nur per POST
+  mit CSRF; Haupt-Mails bei Antragsanlage nicht mehr stillschweigend verworfen
+  (`fail_silently=False`).
 
-## [Unreleased] — Antragsseiten Design 2.0
+### Hinzugefügt – Antragsseiten Design 2.0
 
-Mehrstufige Antragsformulare (Wizard) für Starter- und Internationale Anträge.
-Der Antrag wird weiterhin in **einem** POST abgeschickt; die Schritte sind rein
-clientseitig (CSS/JS). Serverseitige Django-Validierung bleibt unverändert.
+- Mehrstufige Antragsformulare (Wizard) für Starter- und Internationale
+  Anträge: Studio → Persönliches → Wettkampf → Bestätigung (International mit
+  vorgeschaltetem Schritt „Voraussetzungen"). Der Antrag wird weiterhin in
+  einem POST abgeschickt; Schritte sind rein clientseitig, serverseitige
+  Validierung unverändert (`submission/templates/tags/wizard.html`,
+  `submission/forms.py`, `starter/create.html`, `international/create.html`).
+- Neue Studioauswahl `submission/templates/tags/studio_picker.html`: Suche
+  nach Name/Ort, optionaler Bundesland-Filter mit Anzahl, Studios als
+  anklickbare Karten (Radios, barrierefrei); natives `gym`-Feld als
+  noscript-Fallback.
+- Rechtstexte (Regeln, Anti-Doping, DSGVO) im Modal mit Scroll-Gate; die
+  Zustimmungs-Checkboxen werden erst nach vollständigem Lesen aktiv.
+- Design-Layer in `submission/templates/base.html`: Design-Tokens, neue
+  Navbar, Cards, Sticky-Footer, Seitentitel, `lang="de"`, Favicon;
+  Startseite als Karten-Grid (`index.html`); Detail- und Listenseiten mit
+  Status-Badges; Bootstrap-3-Reste ersetzt; Textkorrekturen.
+- Feldtypen für Client-Validierung je Wizard-Schritt (`date`, `tel`,
+  numerische `inputmode`/`min`/`max`/`step`) in `submission/forms.py`.
 
-### Geändert
-- `submission/templates/base.html`
-  Wizard-Styles zum „Design 2.0"-Style-Layer ergänzt (Stepper, Schritt-Karten,
-  Navigation).
-- `submission/forms.py`
-  `SubmissionStarterForm` und `SubmissionInternationalForm`: crispy-Layout in
-  benannte Wizard-Schritte (`Div` mit `data-step`) gegliedert; Absenden-Button
-  als `wizard-submit` markiert (wird erst im letzten Schritt sichtbar).
-- `submission/templates/submission/starter/create.html`
-  Seite als 4-Schritt-Wizard (Studio → Persönliches → Wettkampf → Bestätigung).
-  Wettkampfregeln/Anti-Doping/DSGVO in ein Bootstrap-Modal verschoben (Link im
-  Bestätigungs-Schritt). Zustimmungs-Checkboxen (`terms_and_conditions`,
-  `data_protection`) starten per JS deaktiviert und werden erst freigeschaltet,
-  wenn der Modal-Text bis ans Ende gescrollt wurde. Sichtbare Bestätigung des
-  gewählten Studios (`aria-live`); Auto-Scroll bei Studioauswahl entfernt.
-- `submission/forms.py` (Nachtrag)
-  `SubmissionStarterForm`: Hinweis + Modal-Link (`#legalModal`) im
-  Bestätigungs-Schritt ergänzt.
-- `submission/templates/tags/wizard.html` (Nachtrag)
-  Dekorative Pfeil-Icons `aria-hidden`; Absenden prüft den letzten Schritt.
-- `submission/templates/submission/international/create.html`
-  Seite als 4-Schritt-Wizard analog zum Starter-Antrag.
+### Geänderte Dateien
 
-### Hinzugefügt
-- `submission/templates/tags/wizard.html`
-  Wiederverwendbare Wizard-Navigation (Zurück/Weiter) + Steuerungs-JS.
-- `submission/templates/tags/studio_picker.html`
-  Neue Studioauswahl: direkte Vereins-/Studiosuche (Name/Ort), optionaler
-  Bundesland-Filter mit Anzahl der Vereine je Land, Studios als anklickbare
-  Cards (Radios, barrierefrei). Ersetzt das alte Accordion in Starter- und
-  Internationalem Antrag. Natives `gym`-Feld bleibt als noscript-Fallback.
-
-### Geändert (2. Iteration)
-- `submission/forms.py`
-  „Ihr Studio"-Zwischenüberschrift entfernt; `_tune_submission_widgets`
-  ergänzt: `date`-Eingaben für Geburtsdatum (+ Meisterschaftsdatum international),
-  `tel`-Feld, numerische `inputmode`/`min`/`max`/`step` für PLZ/Größe/Gewicht.
-  Damit greift die client-seitige Validierung pro Wizard-Schritt.
-- `submission/templates/submission/starter/create.html`
-  Accordion → `studio_picker`-Include; Studio-JS ins Include verschoben.
-- `submission/templates/submission/international/create.html`
-  Accordion → `studio_picker`-Include; zusätzlich vorgeschalteter Wizard-Schritt
-  „Voraussetzungen" mit Pflicht-Bestätigung, bevor das Formular erscheint.
+- Neu: `api/` (App: `access.py`, `admin.py`, `apps.py`, `audit.py`,
+  `client_ip.py`, `contact.py`, `licenses.py`, `middleware.py`, `models.py`,
+  `permissions.py`, `rate_limit.py`, `submissions.py`, `tests.py`,
+  `throttling.py`, `urls.py`, `views.py`, `migrations/0001`–`0008`,
+  `templates/api/api_key_request.html`, `templates/api/api_key_request_email.txt`),
+  `API.md`, `API-README.md`, `CHANGELOG.md`, `.python-version` (3.13: Django
+  5.1 läuft nicht auf 3.14), `submission/migrations/0016`–`0018`,
+  `submission/templates/tags/studio_picker.html`,
+  `submission/templates/tags/wizard.html`.
+- Geändert: `.gitignore` (`*.sqlite3`, `.venv/`, `.DS_Store`), `README.rst`,
+  `pyproject.toml`/`uv.lock` (DRF, api-key, django-filter, drf-spectacular),
+  `dbfv/settings_global.py` (Apps, DRF/Spectacular-Settings, Middleware,
+  Security-Defaults, Audit-Logger, `API_*`-Settings), `dbfv/urls.py`
+  (`/api/v1/`, `/admin/`, `/api-key/anfrage`), `submission/models.py`
+  (API-/Zahlungsfelder, Unique-Constraint, `fail_silently=False`),
+  `submission/forms.py`, `submission/views/generic_views.py`,
+  `submission/views/gym.py`, `submission/views/submission_judge.py`,
+  `submission/views/submissions.py`, Templates `base.html`, `delete.html`,
+  `index.html`, `user/login.html`, `tags/render_form_submit.html`,
+  `tags/render_submission_list.html`, `submission/{starter,international}/create.html`,
+  `submission/{starter,international,judge}/list.html`,
+  `submission/{starter,judge}/view.html`,
+  `submission/{starter,international,gym,judge}/email_new_submission.html`
+  (Zahlungsblock).

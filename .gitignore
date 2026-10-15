@@ -5,9 +5,5 @@ settings.py
 *~
 *.sqlite3
 /submission/static/node_modules/
-CLAUDE.md
-.impeccable/
-.playwright-mcp/
-.code-review-graph/
 .venv/
 .DS_Store

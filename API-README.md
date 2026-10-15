@@ -18,7 +18,8 @@ Was sich verbessert:
 - Mitglieder koennen ihre Lizenz direkt in ihrem Landesverbands-Portal
   beantragen und bezahlen.
 - Der Antrag landet automatisch im DBFV-Lizenzsystem.
-- Die Zahlung wird am Antrag im DBFV-System dokumentiert.
+- Die Zahlung wird am Antrag im DBFV-System gespeichert und in der
+  Benachrichtigungsmail aufgefuehrt (in der Antragsansicht noch nicht sichtbar).
 - Die bekannten Benachrichtigungs-Mails an Verwalter, Landesverband, Studio und
   Antragsteller werden weiter verschickt.
 - Der DBFV-Verwalter muss nicht manuell Daten aus E-Mails oder Listen
@@ -42,8 +43,10 @@ Wenn ein Athlet auf der NRW-Webseite seine Lizenz kauft, passiert folgendes:
    am Antrag vermerkt.
 5. Die normalen E-Mails gehen raus: an die DBFV-Verwalter, den Landesverband,
    ggf. das Studio und den Antragsteller.
-6. Im DBFV-System ist sichtbar, dass der Antrag ueber die API kam und welcher
-   API-Key ihn angelegt hat.
+6. Am Antrag ist gespeichert, dass er ueber die API kam und mit welchem
+   API-Key (Prefix); in der Weboberflaeche wird das derzeit nicht angezeigt,
+   der Antrag haengt aber an einem eigenen technischen Benutzer je API-Key
+   und ist so im Admin eindeutig zuzuordnen.
 
 Das bedeutet: Der DBFV-Chef verliert keine Kontrolle. Im Gegenteil: Er bekommt
 sauberere Daten, schnellere Ablaeufe und weniger manuelle Rueckfragen.
@@ -74,7 +77,10 @@ Ein NRW-Key kann also so eingestellt werden:
 
 Dadurch kann NRW nicht Hessen, Bayern oder Berlin einsehen. Auch wenn jemand die
 URL eines fremden Antrags kennt, bekommt er die Daten nicht, weil die
-Verbandsgrenze serverseitig erzwungen wird.
+Verbandsgrenze serverseitig erzwungen wird. Bundesweite Daten (das gemeinsame
+Bankkonto, die Verwalter-Mailadressen, der Mailversand) sind fuer
+Landesverbands-Keys grundsaetzlich unsichtbar und unveraenderbar; nur ein
+ausdruecklich als Bundes-/Systemzugriff markierter Key kommt daran.
 
 ## Warum der DBFV weniger Arbeit hat
 
@@ -174,8 +180,10 @@ Der NRW-Flow kann dann diese Daten an die API senden:
 - Zustimmung zu Regeln und Datenschutz,
 - Zahlung: bezahlt, Betrag, Referenz, Zeitpunkt.
 
-Das DBFV-System legt daraus einen normalen Starterlizenz-Antrag an. Der Antrag
-bekommt zusaetzlich:
+Das DBFV-System legt daraus einen normalen Starterlizenz-Antrag an. Als
+Kennung liefert die API die Antragsnummer des DBFV-Systems (sie steht auch im
+Verwendungszweck, z. B. "Starterlizenz 42"); eine separate Lizenznummer gibt es
+im Lizenzsystem nicht. Der Antrag bekommt zusaetzlich:
 
 - `created_via_api = True`
 - den API-Key-Prefix als Herkunftsnachweis,
@@ -292,7 +300,10 @@ Punkte, die man vor dem produktiven Start organisatorisch klaeren sollte:
 
 - Welche Zahlungsreferenz soll verbindlich verwendet werden?
 - Welche externe Referenz nutzt NRW pro Bestellung oder Zahlung?
-- Welche Zahlungssumme ist pro Lizenztyp fachlich korrekt?
+- Die API akzeptiert eine Zahlung als "bezahlt" nur in Hoehe der im System
+  hinterlegten Gebuehr (Starter 90 EUR, Studio 30 EUR, International und
+  Kampfrichter 20 EUR). Aendert sich eine Gebuehr, muss sie im Lizenzsystem
+  angepasst werden.
 - Soll der DBFV-Verwalter API-Zahlungen automatisch als ausreichend betrachten
   oder zusaetzlich freigeben?
 - Welche Server-IP bekommt der NRW-Key?
