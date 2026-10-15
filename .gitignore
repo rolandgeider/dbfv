@@ -5,3 +5,7 @@ settings.py
 *~
 *.sqlite
 /submission/static/node_modules/
+CLAUDE.md
+*.sqlite3
+.impeccable/
+.playwright-mcp/
