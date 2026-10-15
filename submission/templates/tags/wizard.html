@@ -1,13 +1,13 @@
 {% comment %}
-Wiederverwendbare Wizard-Navigation + Steuerung.
-Muss innerhalb eines Elements mit [data-wizard] stehen. Erwartet:
-  - mehrere Elemente mit Klasse "wizard-step wstep-N" (N = 1..k). Mehrere
-    Elemente mit gleichem wstep-N bilden zusammen einen Schritt.
-  - eine Fortschrittsanzeige .wizard-progress mit einem <li> je Schritt
-  - den Absenden-Button des crispy-Formulars mit Klasse .wizard-submit
+Reusable wizard navigation and controller.
+Must sit inside an element with [data-wizard]. Expects:
+  - elements with class "wizard-step wstep-N" (N = 1..k); several elements
+    sharing the same wstep-N form one step
+  - a progress list .wizard-progress with one <li> per step
+  - the crispy submit button carrying the class .wizard-submit
 {% endcomment %}
 <noscript>
-    {# Ohne JS: alle Schritte + Absenden zeigen, Wizard-Navigation ausblenden #}
+    {# Without JS: show all steps and the submit button, hide the navigation #}
     <style>
         .wizard-step { display: block !important; }
         .wizard-submit { display: inline-block !important; }
@@ -31,7 +31,7 @@ Muss innerhalb eines Elements mit [data-wizard] stehen. Erwartet:
             var m = /\bwstep-(\d+)\b/.exec(el.className);
             return m ? m[1] : null;
         }
-        // eindeutige Schritt-Nummern in Reihenfolge
+        // distinct step numbers in order
         var steps = [];
         stepEls.forEach(function (el) {
             var s = stepKey(el);
@@ -45,9 +45,11 @@ Muss innerhalb eines Elements mit [data-wizard] stehen. Erwartet:
         var backBtn = wiz.querySelector('[data-wizard-back]');
         var submitBtn = wiz.querySelector('.wizard-submit');
         var form = wiz.querySelector('form');
-        // Native Submit-Validierung aus: versteckte Pflichtfelder würden sonst
-        // den finalen Submit blockieren. Django validiert weiterhin serverseitig.
+        // Disable native submit validation: hidden required fields of other
+        // steps would block the final submit. Django still validates server-side.
         if (form) form.setAttribute('novalidate', 'novalidate');
+        var GENERIC_ERROR = 'Bitte füllen Sie alle Pflichtfelder in diesem Schritt aus.';
+        var LOCKED_ERROR = 'Bitte lesen Sie zuerst den verlinkten Text vollständig; danach lässt sich die Zustimmung ankreuzen.';
 
         var current = 0;
 
@@ -62,6 +64,8 @@ Muss innerhalb eines Elements mit [data-wizard] stehen. Erwartet:
             indicators.forEach(function (li, idx) {
                 li.classList.toggle('is-active', idx === current);
                 li.classList.toggle('is-done', idx < current);
+                if (idx === current) li.setAttribute('aria-current', 'step');
+                else li.removeAttribute('aria-current');
             });
             backBtn.style.visibility = current === 0 ? 'hidden' : 'visible';
             var last = current === steps.length - 1;
@@ -69,12 +73,37 @@ Muss innerhalb eines Elements mit [data-wizard] stehen. Erwartet:
             if (submitBtn) submitBtn.style.display = last ? 'inline-block' : 'none';
         }
 
+        // Inline message for problems the browser bubble cannot show (hidden
+        // fields such as the studio select, or locked consent checkboxes).
+        function stepError(i, text) {
+            var first = elementsFor(i)[0];
+            if (!first) return;
+            var box = first.querySelector('.wizard-step-error');
+            if (!text) { if (box) box.hidden = true; return; }
+            if (!box) {
+                box = document.createElement('div');
+                box.className = 'alert alert-danger wizard-step-error';
+                box.setAttribute('role', 'alert');
+                first.appendChild(box);
+            }
+            box.textContent = text;
+            box.hidden = false;
+        }
+
         function validStep(i) {
             var ok = true;
+            stepError(i, '');
             elementsFor(i).forEach(function (el) {
                 el.querySelectorAll('input, select, textarea').forEach(function (field) {
-                    if (ok && !field.checkValidity()) {
-                        field.reportValidity();
+                    if (!ok) return;
+                    // Disabled consent boxes are skipped by checkValidity(); they
+                    // are required and still locked behind the scroll gate.
+                    if (field.disabled && field.required) {
+                        stepError(i, LOCKED_ERROR);
+                        ok = false;
+                    } else if (!field.checkValidity()) {
+                        if (field.offsetParent) field.reportValidity();
+                        else stepError(i, field.dataset.wizardError || GENERIC_ERROR);
                         ok = false;
                     }
                 });
@@ -82,19 +111,33 @@ Muss innerhalb eines Elements mit [data-wizard] stehen. Erwartet:
             return ok;
         }
 
+        function goTo(i) {
+            current = i;
+            render();
+            wiz.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            var title = elementsFor(current).map(function (el) { return el.querySelector('.wizard-step-title'); })
+                .filter(Boolean)[0];
+            if (title) { title.setAttribute('tabindex', '-1'); title.focus({ preventScroll: true }); }
+        }
+
         nextBtn.addEventListener('click', function () {
             if (!validStep(current)) return;
-            if (current < steps.length - 1) { current++; render(); wiz.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+            if (current < steps.length - 1) goTo(current + 1);
         });
         backBtn.addEventListener('click', function () {
-            if (current > 0) { current--; render(); wiz.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+            if (current > 0) goTo(current - 1);
         });
-        // Letzten Schritt vor dem Absenden prüfen (Form ist novalidate)
+        // Validate the last step before submitting (form is novalidate)
         if (submitBtn) submitBtn.addEventListener('click', function (e) {
             if (!validStep(steps.length - 1)) e.preventDefault();
         });
+        // Double-click protection: the server sends mails synchronously, a
+        // second submit would create a second application.
+        if (form && submitBtn) form.addEventListener('submit', function () {
+            setTimeout(function () { submitBtn.disabled = true; }, 0);
+        });
 
-        // Bei Serverfehlern zum ersten fehlerhaften Schritt springen
+        // After server-side errors jump to the first step with an error
         var errStep = stepEls.find(function (el) { return el.querySelector('.is-invalid, .invalid-feedback'); });
         if (errStep) current = Math.max(0, steps.indexOf(stepKey(errStep)));
 

@@ -72,7 +72,11 @@ Entwickelt im Auftrag des DBFV NRW.
   unveränderbar; Bundesländer können gescopte Keys weder ändern noch löschen.
 - API-Anträge hängen an einem technischen Benutzer je API-Key (`api-<PREFIX>`,
   inaktiv, ohne Passwort) und werden nicht an bestehende Web-Konten mit
-  gleicher E-Mail gebunden.
+  gleicher E-Mail gebunden. Das Lizenz-PDF nach Bewilligung geht an die
+  Adresse im Antrag (`pdf_recipient()`), nicht an den Kontoinhaber.
+- Länder und Benutzerprofile sind für gescopte Keys read-only (kein Hochstufen
+  auf Bundesverband, kein Verschieben aus dem Verband); `year` ist im Export
+  wie im Lookup auf 2000 bis Folgejahr begrenzt (vorher `500` bei Unsinn).
 - Rate-Limiting pro API-Key (1000/Stunde) plus vorgelagertes IP-Limit vor der
   Key-Prüfung (`API_PREAUTH_RATE_LIMIT`, 120/Minute); Beantragungsformular
   zusätzlich pro IP (`API_KEY_REQUEST_RATE_LIMIT`).
@@ -117,6 +121,21 @@ Entwickelt im Auftrag des DBFV NRW.
   Status-Badges; Bootstrap-3-Reste ersetzt; Textkorrekturen.
 - Feldtypen für Client-Validierung je Wizard-Schritt (`date`, `tel`,
   numerische `inputmode`/`min`/`max`/`step`) in `submission/forms.py`.
+- Wizard-Nachbesserungen nach Review: sichtbare Fehlermeldung, wenn ohne
+  Studio auf „Weiter" geklickt wird (das native Select ist versteckt, die
+  Browser-Blase konnte nicht erscheinen); Hinweis statt stummem Server-Roundtrip,
+  wenn die Zustimmung noch hinter dem Scroll-Gate liegt; Doppelklick-Schutz
+  beim Absenden; `aria-current="step"` und Fokus auf den Schritttitel.
+  Die Voraussetzungs-Bestätigung des internationalen Antrags ist jetzt ein
+  echtes Formfeld (`requirements_ack`) und wird serverseitig geprüft.
+- Design-Layer aus `base.html` nach `submission/static/css/dbfv.css`
+  ausgelagert (Tokens durchgängig, kein hartes Rot mehr, Studio-Picker-Styles
+  dabei). Zahlungsblock der Benachrichtigungsmails als Include
+  `tags/email_payment_block.html`, Betrag als „90,00 €". Library-Admin für das
+  ungenutzte Basis-`APIKey`-Modell ausgeblendet. Kleinkram: Sie-Form im
+  API-Key-Formular, BS3-Reste (`alert-error`, `data-toggle`), `rel="noopener"`,
+  einheitliche Währungsschreibweise, falsche `title`-Attribute, Kampfrichter-PDF
+  hieß `Starterlizenz-<id>.pdf`.
 
 ### Geänderte Dateien
 
@@ -128,7 +147,9 @@ Entwickelt im Auftrag des DBFV NRW.
   `API.md`, `API-README.md`, `CHANGELOG.md`, `.python-version` (3.13: Django
   5.1 läuft nicht auf 3.14), `submission/migrations/0016`–`0018`,
   `submission/templates/tags/studio_picker.html`,
-  `submission/templates/tags/wizard.html`.
+  `submission/templates/tags/wizard.html`,
+  `submission/templates/tags/email_payment_block.html`,
+  `submission/static/css/dbfv.css`.
 - Geändert: `.gitignore` (`*.sqlite3`, `.venv/`, `.DS_Store`), `README.rst`,
   `pyproject.toml`/`uv.lock` (DRF, api-key, django-filter, drf-spectacular),
   `dbfv/settings_global.py` (Apps, DRF/Spectacular-Settings, Middleware,

@@ -1,10 +1,7 @@
 {% comment %}
-Studioauswahl (Design 2.0):
-  - Direkte Vereins-/Studiosuche (Name oder Ort), auch ohne Bundesland
-  - Optionaler Bundesland-Filter mit Anzahl der Vereine je Land (in Klammern)
-  - Studios als anklickbare Cards (Radios, barrierefrei)
-Setzt das echte Formularfeld #id_gym. Braucht `states_list` im Kontext und ein
-crispy-Feld `gym` (rendert als #id_gym in #div_id_gym) im umgebenden Formular.
+Studio picker for the application wizard: search by name/city, optional state
+filter with gym counts, gyms as clickable cards (radio inputs). The native
+`gym` select stays in the DOM as the noscript fallback and receives the value.
 {% endcomment %}
 <div class="studio-picker mb-2">
     <div class="row g-2 mb-3">
@@ -58,15 +55,6 @@ crispy-Feld `gym` (rendert als #id_gym in #div_id_gym) im umgebenden Formular.
 {% endif %}
 <p id="studio-confirm" role="status" aria-live="polite" class="small text-success mt-2 mb-0"></p>
 
-<style>
-    #div_id_gym { display: none; }  /* natives Feld = Fallback ohne JS */
-    .studio-card { cursor: pointer; transition: border-color .12s ease, box-shadow .12s ease; }
-    .studio-card:hover { border-color: #b3121b; }
-    .studio-card.is-selected {
-        border-color: #b3121b;
-        box-shadow: 0 0 0 .15rem rgba(179,18,27,.25);
-    }
-</style>
 <noscript>
     <style>
         .studio-picker { display: none; }
@@ -75,16 +63,19 @@ crispy-Feld `gym` (rendert als #id_gym in #div_id_gym) im umgebenden Formular.
 </noscript>
 
 <script>
-// Erst nach DOMContentLoaded: hier ist jQuery (blockierendes Script) geladen
+// After DOMContentLoaded: jQuery (blocking script) is loaded by then
 document.addEventListener('DOMContentLoaded', function () {
     var picker = document.querySelector('.studio-picker');
     if (!picker) return;
     var $gym = $('#id_gym');
+    // The native select is hidden, so the wizard shows this text instead of
+    // the browser's validation bubble when no studio is chosen.
+    $gym.attr('data-wizard-error', 'Bitte wählen Sie ein Studio aus.');
     var $state = $('#state-picker');
     var $search = $('#studio-search');
     var cols = Array.prototype.slice.call(document.querySelectorAll('#studio-list .studio-card-col'));
 
-    // Anzahl Vereine je Bundesland in die Auswahl schreiben
+    // Show the number of gyms per state in the state filter
     var counts = {};
     cols.forEach(function (el) { counts[el.dataset.state] = (counts[el.dataset.state] || 0) + 1; });
     $state.find('option').each(function () {
@@ -121,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     $gym.on('change', confirmText);
 
-    // Vorauswahl bei Formularfehlern / Bearbeitung übernehmen
+    // Restore the selection after a server-side validation error
     var cur = $gym.val();
     if (cur) {
         var $r = $('.gym-radio[value="' + cur + '"]');

@@ -60,10 +60,15 @@
                 Gewissen gemacht und bestätige sie mit dem Absenden des Formulars.</p>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="req-ack" required>
+                <input class="form-check-input{% if form.requirements_ack.errors %} is-invalid{% endif %}"
+                       type="checkbox" id="req-ack" name="requirements_ack" required
+                       {% if form.requirements_ack.value %}checked{% endif %}>
                 <label class="form-check-label" for="req-ack">
                     Ich habe die Voraussetzungen gelesen und erfülle sie.
                 </label>
+                {% for error in form.requirements_ack.errors %}
+                    <div class="invalid-feedback d-block">{{ error }}</div>
+                {% endfor %}
             </div>
         </div>
 
@@ -93,11 +98,11 @@
         <div class="card-body">
             <h5 class="card-title">Bearbeitungsgebühr</h5>
             <p class="card-text">
-                Die Bearbeitungsgebühr in Höhe von {{ fee }}€ pro internationalem Start ist im Voraus zu entrichten.
+                Die Bearbeitungsgebühr in Höhe von {{ fee }} € pro internationalem Start ist im Voraus zu entrichten.
                 Bitte neben dem Namen und der Antragsnummer auch die anvisierte Meisterschaft benennen.
                 Die finale Bearbeitung erfolgt erst nach Eingang der Gebühr!
             </p>
-            <p class="card-text mb-0">Bei einer Anmeldung nach dem Anmeldeschluss fällt eine zusätzliche Bearbeitungsgebühr von 30€ an.</p>
+            <p class="card-text mb-0">Bei einer Anmeldung nach dem Anmeldeschluss fällt eine zusätzliche Bearbeitungsgebühr von 30 € an.</p>
         </div>
     </div>
 {% endblock %}

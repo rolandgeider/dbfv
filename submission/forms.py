@@ -59,8 +59,8 @@ from submission.models import (
 
 def _tune_submission_widgets(form, date_fields):
     """
-    Setzt sinnvolle HTML5-Eingabetypen/-Attribute für die Antragsfelder, damit
-    Browser (und die Wizard-Schrittprüfung) client-seitig validieren können.
+    Set sensible HTML5 input types/attributes on the application fields so
+    browsers (and the wizard's per-step check) can validate client-side.
     """
     for name in date_fields:
         form.fields[name].widget = DateInput(attrs={'type': 'date'}, format='%Y-%m-%d')
@@ -231,6 +231,14 @@ class SubmissionInternationalForm(ModelForm):
     class Meta:
         model = SubmissionInternational
         exclude = ('submission_status', )
+
+    requirements_ack = BooleanField(
+        label='Voraussetzungen',
+        help_text='Ich habe die Voraussetzungen gelesen und erfülle sie.',
+        required=True,
+        error_messages={'required': 'Bitte bestätigen Sie die Voraussetzungen.'},
+    )
+    """Rendered by the template's first wizard step, not part of the crispy layout."""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

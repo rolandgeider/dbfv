@@ -6,7 +6,7 @@
 {% block scripts %}
     <script>
         $(document).ready(function () {
-            // Zustimmung erst nach vollständigem Lesen des Rechtstexts freigeben
+            // Unlock the consent boxes only after the legal text was read to the end
             const $consent = $('#id_terms_and_conditions, #id_data_protection').prop('disabled', true);
             const body = document.getElementById('legalModalBody');
             function unlockIfRead() {
@@ -16,7 +16,7 @@
                 }
             }
             $(body).on('scroll', unlockIfRead);
-            // Kurzer Text ohne Scrollbalken: beim Öffnen sofort freigeben
+            // Short text without a scrollbar: unlock as soon as the modal opens
             $('#legalModal').on('shown.bs.modal', unlockIfRead);
         });
     </script>
@@ -76,7 +76,7 @@
             </p>
             <p>
                 Die Regeln für die entsprechenden Klassen finden Sie auf der Homepage
-                <a href="http://dbfv.de" target="_blank">dbfv.de</a>.
+                <a href="https://dbfv.de" target="_blank" rel="noopener">dbfv.de</a>.
             </p>
 
             <h5>Anti-Doping</h5>
@@ -105,7 +105,7 @@
                 Athleten, die aus der sportlichen Betätigung unmittelbar oder mittelbar
                 Wettbewerbsvorteile erzielen, strafbar. Es drohen hier ebenfalls
                 Freiheits- und Geldstrafen.
-                <a href="https://www.gesetze-im-internet.de/antidopg/" target="_blank">https://www.gesetze-im-internet.de/antidopg/</a>
+                <a href="https://www.gesetze-im-internet.de/antidopg/" target="_blank" rel="noopener">https://www.gesetze-im-internet.de/antidopg/</a>
             </p>
 
             <h5>Datenschutzbestimmungen – Hinweise zur Datenverarbeitung</h5>
@@ -169,7 +169,7 @@
     <div class="card shadow-sm">
         <div class="card-body">
             <h5 class="card-title">Lizenzgebühr</h5>
-            <p class="card-text mb-0">Die Lizenzgebühr in Höhe von €75,64 + ges. MwSt = €{{ fee }} ist im Voraus zu
+            <p class="card-text mb-0">Die Lizenzgebühr in Höhe von 75,64 € + ges. MwSt. = {{ fee }} € ist im Voraus zu
                 entrichten. Bitte immer Name und Antragsnummer angeben. Die Bearbeitung
                 erfolgt erst nach Eingang der Gebühr!</p>
         </div>

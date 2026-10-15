@@ -112,11 +112,11 @@
     <p><a href="{% url 'submission-edit-status' object.id %}"
           title="Status bearbeiten">Status bearbeiten</a></p>
     <p><a href="{% url 'submission-export-mailmerge' object.id %}"
-          title="Status bearbeiten">Für Serienbrief exportieren</a></p>
+          title="Für Serienbrief exportieren">Für Serienbrief exportieren</a></p>
     <p><a href="{% url 'bank-account-view' %}"
-              title="Bearbeiten">Kontodaten anzeigen</a></p>
+              title="Kontodaten anzeigen">Kontodaten anzeigen</a></p>
     <p><a href="{% url 'submission-delete' object.pk %}"
-              title="Bearbeiten">Antrag löschen</a></p>
+              title="Antrag löschen">Antrag löschen</a></p>
 </div>
 {% else %}
     {% if object.submission_status == object.SUBMISSION_STATUS_EINGEGANGEN %}

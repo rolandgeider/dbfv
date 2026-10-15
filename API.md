@@ -43,7 +43,9 @@ Authorization: Api-Key <PREFIX.SCHLUESSEL>
   und der Mail-Cron.
 - Landesverbands-Keys dürfen Bundesländer weder anlegen, ändern noch löschen
   (Löschen würde per `CASCADE` alle Studios, Profile und Anträge des Verbands
-  mitreißen).
+  mitreißen). Länder und Benutzerprofile können sie lesen, aber nur
+  Bundes-Keys schreiben: `UserProfile.type` vergibt Bundesverbandsrechte, und
+  ein Profil darf nicht aus dem Verband herausgeschoben werden.
 - **Bundes-/Systemzugriff:** Verbandsübergreifender Zugriff ist nur mit
   `federal_access=True` möglich. Neue Keys ohne `federal_access` und ohne
   `allowed_states` sehen keine verbandsgebundenen Daten.
@@ -138,8 +140,8 @@ Basis: `/api/v1/`
 | `POST /submissions/judge/` | Kampfrichterantrag anlegen | `allow_submit_judge` |
 | `POST /licenses/lookup/` | Gültigkeit einer Person prüfen, ohne Personendaten zurückzugeben | `allow_lookup_licenses` |
 | `GET /licenses/valid/` | Massen-Export gültiger Lizenzen | `sensitive_access` + `allow_export_licenses` |
-| `/gym/`, `/state/`, `/country/` | Stammdaten, CRUD | lesen: gültiger Key; schreiben: `write_allowed`; State nur mit `federal_access` änderbar |
-| `/userprofile/` | Benutzerprofile, CRUD | `sensitive_access` (+ `write_allowed`) |
+| `/gym/`, `/state/`, `/country/` | Stammdaten, CRUD | lesen: gültiger Key; schreiben: `write_allowed`; State und Country nur mit `federal_access` änderbar |
+| `/userprofile/` | Benutzerprofile | lesen: `sensitive_access`; schreiben: zusätzlich `federal_access` + `write_allowed` |
 | `/submissionstarter/`, `/submissioninternational/`, `/submissiongym/`, `/submissionjudge/` | Roh-Anträge, **read-only** | `sensitive_access` + `allow_read_submissions` |
 | `/bankaccount/`, `/manageremail/`, `/emailcron/` | Bundesweite Ressourcen, CRUD | `federal_access` + `sensitive_access` (+ `write_allowed`) |
 | `GET /schema/`, `/docs/`, `/redoc/` | OpenAPI-Schema, Swagger-UI, ReDoc | öffentlich (nur Pre-Auth-IP-Limit) |
@@ -204,7 +206,11 @@ bleibt:
 - Technischer Benutzer, Antrag, ggf. neues Studio und der Mailversand laufen in
   **einer Transaktion**: Schlägt der Mailversand fehl, wird nichts gespeichert
   und die API antwortet `500`; der Client kann mit derselben
-  `external_reference` gefahrlos erneut senden.
+  `external_reference` erneut senden. Die Mails gehen nacheinander raus;
+  scheitert der Versand mittendrin, haben die ersten Empfänger die Mail schon
+  und bekommen sie beim Retry ein zweites Mal.
+- Das Lizenz-PDF nach Bewilligung geht an die E-Mail-Adresse im Antrag (nicht
+  an den technischen Benutzer).
 - Studio-Anträge erzeugen wie der Webflow ein neues inaktives `Gym`.
 - `send_emails()` wird wie im Webformular aufgerufen: Verwalter
   (`ManagerEmail`), Landesverband, ggf. Studio und Antragsteller bekommen die
@@ -356,8 +362,8 @@ GET /api/v1/licenses/valid/?year=2026&type=starter&page=1&page_size=100
 
 - **Erfordert `sensitive_access` und `allow_export_licenses`**: es ist ein
   Personendaten-Export.
-- `year` optional (Standard: laufendes Jahr), `type` optional:
-  `starter` | `international` | `judge` | `studio`.
+- `year` optional (Standard: laufendes Jahr, erlaubt 2000 bis Folgejahr),
+  `type` optional: `starter` | `international` | `judge` | `studio`.
 - Paginiert (`page`, `page_size`; Standard 100, Maximum 500), zählt und
   schneidet auf Datenbankebene. Eine Seite jenseits des Endes liefert leere
   `results`.

@@ -1,0 +1,10 @@
+{% if submission.payment_status != submission.PAYMENT_STATUS_NONE %}
+
+Zahlung:
+* Status:           {{ submission.get_payment_status_display }}
+* Betrag:           {{ submission.payment_amount_display|default:"-" }}
+* Methode:          {{ submission.payment_method|default:"-" }}
+* Referenz:         {{ submission.payment_reference|default:"-" }}
+* Registriert am:   {{ submission.payment_received_at|default:"-" }}
+* Hinweis:          {{ submission.payment_note|default:"-" }}
+{% endif %}

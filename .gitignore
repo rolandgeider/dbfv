@@ -3,6 +3,7 @@
 settings.py
 *.pyc
 *~
+*.sqlite
 *.sqlite3
 /submission/static/node_modules/
 .venv/
