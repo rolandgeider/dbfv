@@ -85,6 +85,8 @@ Entwickelt im Auftrag des DBFV NRW.
 - Produktions-Settings sicher als Standard: `DEBUG=False`, `X-Frame-Options:
   DENY`, `SECURE_CONTENT_TYPE_NOSNIFF`; HTTPS-Härtung als Opt-in über
   `DJANGO_SECURE=1`, `X-Forwarded-Proto` nur dann ausgewertet.
+  `SecurityMiddleware` eingebunden, ohne die die `SECURE_*`-Settings keine
+  Wirkung hätten (`check --deploy`, W001).
 - OpenAPI-Security-Scheme `ApiKeyAuth` global deklariert; Envelope-Serializer
   für Lookup und Export, damit Schema und Antworten übereinstimmen.
 - Altlasten unabhängig von der API: IDOR bei Kampfrichteranträgen behoben

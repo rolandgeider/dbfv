@@ -131,6 +131,9 @@ MIDDLEWARE = (
     # Outermost: audits the final response, incl. CommonMiddleware redirects
     # (APPEND_SLASH 301) and the 429 from the limiter below.
     'api.middleware.ApiAuditMiddleware',
+    # Applies SECURE_* (HSTS, SSL redirect, nosniff); without it those settings
+    # are silently ignored (manage.py check --deploy, security.W001).
+    'django.middleware.security.SecurityMiddleware',
     'django.middleware.common.CommonMiddleware',
     # Runs before DRF permissions so invalid API keys are rate-limited too.
     'api.middleware.ApiPreAuthRateLimitMiddleware',
