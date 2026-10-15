@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.core import mail
 from django.core.cache import cache
 from django.db import IntegrityError, transaction
+from django.template.loader import render_to_string
 from django.test import RequestFactory, override_settings
 
 # dbfv
@@ -18,6 +19,8 @@ from submission.models import (
     Gym,
     ManagerEmail,
     State,
+    SubmissionInternational,
+    SubmissionJudge,
     SubmissionStarter,
     UserProfile,
 )
@@ -444,6 +447,36 @@ class LicenseEndpointTest(APITestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertFalse(res.data['valid'])
 
+    def test_lookup_all_states_flag_checks_guest_starters(self):
+        # An athlete from Hessen wants to start in NRW: the NRW key may verify
+        # the licence, but still learns nothing beyond "valid".
+        nrw = _make_starter(state_name='NRW', state_short='NRW')
+        _make_starter(
+            dob='1991-06-02',
+            state_name='Hessen',
+            state_short='HE',
+            last_name='Fremd',
+            email='f@x.de',
+        )
+        _, key = _scoped_key_for(
+            nrw.gym.state,
+            sensitive_access=False,
+            allow_lookup_licenses=True,
+            allow_lookup_all_states=True,
+        )
+        self.client.credentials(HTTP_AUTHORIZATION=f'Api-Key {key}')
+
+        res = self.client.post(
+            '/api/v1/licenses/lookup/',
+            {'last_name': 'Fremd', 'date_of_birth': '1991-06-02'}, format='json',
+        )
+        export = self.client.get('/api/v1/licenses/valid/')
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertTrue(res.data['valid'])
+        self.assertEqual(set(res.data.keys()), {'year', 'valid', 'matches'})
+        self.assertEqual(export.status_code, status.HTTP_403_FORBIDDEN)
+
 
 class StateScopedApiTest(APITestCase):
     def setUp(self):
@@ -694,6 +727,67 @@ class SubmissionIntakeApiTest(APITestCase):
         self.assertIn('max@example.test', recipients)
         self.assertTrue(any('NRW-2026-1' in message.body for message in mail.outbox))
         self.assertTrue(any('90,00 €' in message.body for message in mail.outbox))
+        applicant_mail = next(message for message in mail.outbox if 'max@example.test' in message.to)
+        self.assertNotIn('Bitte überweisen Sie', applicant_mail.body)
+
+    def test_starter_requires_affirmative_terms(self):
+        _, key = _scoped_key_for(self.nrw, allow_submit_starter=True)
+        self._auth(key)
+        for value in (False, None):
+            with self.subTest(terms=value):
+                payload = self._starter_payload()
+                payload.pop('payment')
+                if value is None:
+                    payload.pop('terms_and_conditions')
+                else:
+                    payload['terms_and_conditions'] = value
+                res = self.client.post('/api/v1/submissions/starter/', payload, format='json')
+                self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+                self.assertIn('terms_and_conditions', res.data)
+        self.assertFalse(SubmissionStarter.objects.exists())
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_person_submissions_require_active_gym(self):
+        _, key = _scoped_key_for(
+            self.nrw, allow_submit_starter=True, allow_submit_international=True
+        )
+        self._auth(key)
+        for kind in ('starter', 'international'):
+            payload = self._starter_payload()
+            payload.pop('payment')
+            payload.update(championship='Test Cup', championship_date='2026-11-20',
+                           best_placement='Deutsche Meisterschaft 2025')
+            for active in (False, True):
+                with self.subTest(kind=kind, active=active):
+                    self.nrw_gym.is_active = active
+                    self.nrw_gym.save(update_fields=['is_active'])
+                    res = self.client.post(f'/api/v1/submissions/{kind}/', payload, format='json')
+                    if active:
+                        self.assertEqual(res.status_code, status.HTTP_201_CREATED, res.data)
+                    else:
+                        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+                        self.assertIn('gym', res.data)
+
+    def test_payment_instructions_respect_payment_status_for_all_person_templates(self):
+        for model in (SubmissionStarter, SubmissionInternational, SubmissionJudge):
+            submission = model(email='applicant@example.test')
+            if model is SubmissionJudge:
+                submission.state = self.nrw
+            else:
+                submission.gym = self.nrw_gym
+                submission.nationality = self.country
+            for payment_status, _ in model.PAYMENT_STATUS:
+                with self.subTest(model=model.__name__, payment_status=payment_status):
+                    submission.payment_status = payment_status
+                    body = render_to_string(submission.get_email_template(), {
+                        'submission': submission, 'is_user': True,
+                        'bankaccount': self.bank, 'fee': submission.FEE,
+                    })
+                    if payment_status == model.PAYMENT_STATUS_PAID:
+                        self.assertIn('Bezahlt', body)
+                        self.assertNotIn('Bitte überweisen Sie', body)
+                    else:
+                        self.assertIn('Bitte überweisen Sie', body)
 
     def test_repeated_external_reference_reuses_existing_submission(self):
         _, key = _scoped_key_for(
@@ -786,12 +880,82 @@ class SubmissionIntakeApiTest(APITestCase):
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         submission = SubmissionStarter.objects.get(pk=res.data['id'])
         self.assertNotEqual(submission.user, web_user)
-        self.assertEqual(submission.user.username, f"api-{key.split('.', 1)[0]}")
+        self.assertEqual(submission.user.username, f"api:{key.split('.', 1)[0].encode().hex()}")
         self.assertFalse(submission.user.is_active)
         self.assertFalse(submission.user.has_usable_password())
         self.assertEqual(submission.user.email, '')
         # applicant data stays on the submission only
         self.assertEqual(submission.email, 'max@example.test')
+
+    def test_technical_user_does_not_reuse_registered_username(self):
+        key_obj, key = _scoped_key_for(self.nrw, allow_submit_starter=True)
+        web_user = User.objects.create_user(
+            f'api-{key_obj.prefix}', email='other@example.test', password='secret'
+        )
+        self._auth(key)
+        payload = self._starter_payload()
+        payload.pop('payment')
+        first = self.client.post('/api/v1/submissions/starter/', payload, format='json')
+        self.assertEqual(first.status_code, status.HTTP_201_CREATED, first.data)
+        submission = SubmissionStarter.objects.get(pk=first.data['id'])
+        self.assertNotEqual(submission.user_id, web_user.pk)
+        self.assertFalse(submission.user.is_active)
+        self.assertFalse(submission.user.has_usable_password())
+
+        # The selected technical owner stays stable if the colliding account is renamed.
+        web_user.username = 'renamed-web-user'
+        web_user.save(update_fields=['username'])
+        payload['external_reference'] = 'SECOND-ORDER'
+        second = self.client.post('/api/v1/submissions/starter/', payload, format='json')
+        self.assertEqual(second.status_code, status.HTTP_201_CREATED, second.data)
+        self.assertEqual(SubmissionStarter.objects.get(pk=second.data['id']).user_id, submission.user_id)
+        self.client.credentials()
+        self.client.force_login(web_user)
+        self.assertEqual(self.client.get(submission.get_absolute_url()).status_code, 403)
+        web_user.refresh_from_db()
+        self.assertTrue(web_user.is_active)
+        self.assertTrue(web_user.check_password('secret'))
+
+    def test_safe_legacy_technical_user_is_preserved(self):
+        key_obj, key = _scoped_key_for(self.nrw, allow_submit_starter=True)
+        legacy = User.objects.create_user(f'api-{key_obj.prefix}', is_active=False)
+        self._auth(key)
+        payload = self._starter_payload()
+        payload.pop('payment')
+        response = self.client.post('/api/v1/submissions/starter/', payload, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.data)
+        self.assertEqual(SubmissionStarter.objects.get(pk=response.data['id']).user_id, legacy.pk)
+
+    def test_unsafe_reserved_user_fails_closed_without_side_effects(self):
+        key_obj, key = _scoped_key_for(self.nrw, allow_submit_starter=True)
+        user = User.objects.create_user(f'api:{key_obj.prefix.encode().hex()}', is_active=False)
+        self._auth(key)
+        payload = self._starter_payload()
+        payload.pop('payment')
+        for unsafe in ({'is_active': True}, {'email': 'reset@example.test'},
+                       {'password': 'usable'}, {'is_staff': True}, {'is_superuser': True}):
+            with self.subTest(unsafe=unsafe):
+                user.is_active = user.is_staff = user.is_superuser = False
+                user.email = ''
+                user.set_unusable_password()
+                for name, value in unsafe.items():
+                    setattr(user, name, value)
+                user.save()
+                response = self.client.post('/api/v1/submissions/starter/', payload, format='json')
+                self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
+                self.assertFalse(SubmissionStarter.objects.exists())
+                self.assertEqual(len(mail.outbox), 0)
+
+    def test_reserved_username_is_not_publicly_registrable_and_matches_exactly(self):
+        from django.core.exceptions import ValidationError
+        from api.submissions import _is_technical_user
+        username = 'api:416263'
+        user = User(username=username, is_active=False)
+        user.set_unusable_password()
+        self.assertTrue(_is_technical_user(user, username))
+        self.assertFalse(_is_technical_user(user, username.upper()))
+        with self.assertRaises(ValidationError):
+            User._meta.get_field('username').clean(username, user)
 
     def test_license_pdf_goes_to_the_applicant_not_the_technical_user(self):
         _, key = _scoped_key_for(self.nrw, allow_submit_starter=True)

@@ -57,6 +57,7 @@ Authorization: Api-Key <PREFIX.SCHLUESSEL>
 | `allowed_states` | Landesverbände, auf die der Key begrenzt ist |
 | `federal_access` | Bundes-/Systemzugriff über alle Verbände, inkl. Bankkonten, Manager-E-Mails, Mail-Cron |
 | `allow_lookup_licenses` | `POST /licenses/lookup/` (gezielte, datensparsame Gültigkeitsprüfung) |
+| `allow_lookup_all_states` | Lookup prüft auch Lizenzen anderer Landesverbände (Gaststarter bei NRW-Wettkämpfen); Antwort bleibt „gültig ja/nein" |
 | `allow_export_licenses` | `GET /licenses/valid/` (Massen-Export; zusätzlich `sensitive_access` nötig) |
 | `allow_read_submissions` | Roh-Anträge über `/submission*/` lesen (zusätzlich `sensitive_access` nötig) |
 | `allow_submit_starter` / `_international` / `_gym` / `_judge` | Anträge über `/submissions/<typ>/` anlegen |
@@ -116,6 +117,7 @@ obj, key = ScopedAPIKey.objects.create_key(
     allow_submit_starter=True,     # Starteranträge anlegen
     allow_register_payments=True,  # Zahlung aus dem NRW-Frontend übernehmen
     allow_lookup_licenses=True,    # gezielte Lizenzprüfung
+    allow_lookup_all_states=True,  # auch Gaststarter anderer Verbände prüfen
     allowed_ips="203.0.113.0/24",  # optional
 )
 obj.allowed_states.add(nrw_state)  # Pflicht für Landesverbands-Keys
@@ -177,6 +179,7 @@ GET /api/v1/capabilities/
     "submit_judge": false,
     "register_payments": true,
     "lookup_licenses": true,
+    "lookup_all_states": true,
     "export_licenses": false,
     "read_submissions": false,
     "sensitive_access": false,
@@ -341,6 +344,9 @@ Parameter: `last_name`, `first_name`, `email`, `date_of_birth` (`YYYY-MM-DD`),
   Geburtsdatum). Studiolizenzen haben nur eine E-Mail und sind nur im
   Massen-Export enthalten.
 - Bei Landesverbands-Keys werden nur Lizenzen der erlaubten Verbände geprüft.
+  Mit `allow_lookup_all_states` prüft der Lookup bundesweit: Ein Athlet aus
+  Hessen, der bei einem NRW-Wettkampf starten will, lässt sich so verifizieren,
+  ohne dass NRW seine Daten sieht.
 
 Antwort:
 
@@ -425,7 +431,7 @@ Betreibers terminiert werden.
 
 ### Migrationen
 
-- `api/0001`–`0008`: Key-Modell, Rechte-Flags, Zugriffsverlauf. `0003` und
+- `api/0001`–`0009`: Key-Modell, Rechte-Flags, Zugriffsverlauf. `0003` und
   `0006` sind Datenmigrationen für Instanzen, auf denen die API bereits lief:
   bestehende Keys werden als Bundes-/System-Keys markiert bzw. bekommen die
   neu eingeführten Leserechte, damit laufende Integrationen nicht ausfallen.

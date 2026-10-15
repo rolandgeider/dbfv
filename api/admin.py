@@ -24,7 +24,8 @@ class ScopedAPIKeyAdmin(APIKeyModelAdmin):
         *APIKeyModelAdmin.list_filter, 'write_allowed', 'sensitive_access',
         'federal_access', 'allow_submit_starter', 'allow_submit_international',
         'allow_submit_gym', 'allow_submit_judge', 'allow_register_payments',
-        'allow_lookup_licenses', 'allow_export_licenses', 'allow_read_submissions',
+        'allow_lookup_licenses', 'allow_lookup_all_states', 'allow_export_licenses',
+        'allow_read_submissions',
     ]
     filter_horizontal = ['allowed_states']
 
@@ -49,7 +50,7 @@ class ScopedAPIKeyAdmin(APIKeyModelAdmin):
         if obj.allow_register_payments:
             scopes.append('Zahlung')
         if obj.allow_lookup_licenses:
-            scopes.append('Lookup')
+            scopes.append('Lookup bundesweit' if obj.allow_lookup_all_states else 'Lookup')
         if obj.allow_export_licenses:
             scopes.append('Export')
         if obj.allow_read_submissions:

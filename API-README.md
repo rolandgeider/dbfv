@@ -233,6 +233,7 @@ Im Django-Admin koennen pro API-Key unter anderem diese Rechte gesetzt werden:
 | `allow_submit_judge` | Kampfrichter-Antraege anlegen |
 | `allow_register_payments` | Zahlungsdaten beim Antrag speichern |
 | `allow_lookup_licenses` | Einzelne Lizenz gezielt pruefen |
+| `allow_lookup_all_states` | Lookup auch fuer Athleten anderer Landesverbaende (Gaststarter), Antwort bleibt nur "gueltig ja/nein" |
 | `allow_export_licenses` | Gueltige Lizenzen als Liste exportieren |
 | `allow_read_submissions` | Roh-Antragsdaten lesen |
 | `sensitive_access` | Zugriff auf besonders sensible Daten |
@@ -273,7 +274,10 @@ Fuer den geplanten NRW-Lizenzkauf:
 - `federal_access`: aus
 - `allow_submit_starter`: an
 - `allow_register_payments`: an
-- `allow_lookup_licenses`: optional an
+- `allow_lookup_licenses`: an (Lizenzpruefung bei der Wettkampfanmeldung)
+- `allow_lookup_all_states`: an, damit auch Gaststarter aus anderen
+  Landesverbaenden geprueft werden koennen; NRW sieht dabei keine Daten,
+  nur ob die Lizenz gueltig ist
 - `allow_submit_gym`: nur wenn NRW darueber Studio-/Vereinsantraege stellen soll
 - `allow_submit_judge`: aus, solange nicht benoetigt
 - `allow_submit_international`: aus, solange nicht benoetigt

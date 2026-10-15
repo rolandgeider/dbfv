@@ -46,9 +46,9 @@ def valid_queryset(model, year, request=None):
 def _year(request):
     raw = request.query_params.get('year')
     if not raw:
-        return timezone.now().year
+        return timezone.localdate().year
     year = int(raw)  # raises ValueError -> handled by caller
-    if not (2000 <= year <= timezone.now().year + 1):
+    if not (2000 <= year <= timezone.localdate().year + 1):
         raise ValueError('year out of range')
     return year
 
@@ -234,7 +234,7 @@ class LicenseLookupRequestSerializer(serializers.Serializer):
                 'date_of_birth sein.'
             )
         year = attrs.get('year')
-        if year is not None and not (2000 <= year <= timezone.now().year + 1):
+        if year is not None and not (2000 <= year <= timezone.localdate().year + 1):
             raise serializers.ValidationError({'year': 'Jahr außerhalb des gültigen Bereichs.'})
         return attrs
 
@@ -258,7 +258,8 @@ class LicenseLookupView(APIView):
         responses=LicenseLookupResponseSerializer,
     )
     def post(self, request):
-        if not getattr(request, '_scoped_api_key', None).allow_lookup_licenses:
+        api_key = getattr(request, '_scoped_api_key', None)
+        if not api_key or not api_key.allow_lookup_licenses:
             return Response(
                 {'detail': 'Dieser API-Key darf keine Lizenzen abfragen.'},
                 status=status.HTTP_403_FORBIDDEN,
@@ -266,7 +267,7 @@ class LicenseLookupView(APIView):
         request_serializer = LicenseLookupRequestSerializer(data=request.data)
         request_serializer.is_valid(raise_exception=True)
         validated = request_serializer.validated_data
-        year = validated.pop('year', timezone.now().year)
+        year = validated.pop('year', timezone.localdate().year)
         provided = {
             field: value.isoformat() if hasattr(value, 'isoformat') else value.strip()
             for field, value in validated.items()
@@ -279,7 +280,11 @@ class LicenseLookupView(APIView):
             applicable = {f: v for f, v in provided.items() if f in LOOKUP_FIELDS[slug]}
             if len(applicable) < 2:
                 continue
-            if valid_queryset(model, year, request).filter(**applicable).exists():
+            # Guest starters from other states are a normal competition case;
+            # with the flag the lookup crosses the state boundary. It still
+            # discloses nothing but "valid yes/no".
+            scope_request = None if api_key.allow_lookup_all_states else request
+            if valid_queryset(model, year, scope_request).filter(**applicable).exists():
                 matches.append(
                     {'license_type': slug, 'label': label, 'year': year, 'valid': True}
                 )

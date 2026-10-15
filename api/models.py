@@ -71,6 +71,13 @@ class ScopedAPIKey(AbstractAPIKey):
         verbose_name='Lizenz-Lookup per API',
         help_text='Erlaubt gezielte, datensparsame Lizenz-Gültigkeitsabfragen.',
     )
+    allow_lookup_all_states = models.BooleanField(
+        default=False,
+        verbose_name='Lizenz-Lookup bundesweit',
+        help_text='Erlaubt dem Lookup auch Lizenzen anderer Landesverbände zu prüfen '
+        '(Gaststarter). Es wird weiterhin nur „gültig ja/nein" zurückgegeben, '
+        'keine Personendaten.',
+    )
     allow_export_licenses = models.BooleanField(
         default=False,
         verbose_name='Lizenz-Export per API',

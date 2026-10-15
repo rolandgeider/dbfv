@@ -10,6 +10,7 @@ from datetime import timedelta
 # Third Party
 from drf_spectacular.utils import extend_schema
 from rest_framework import serializers, status
+from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -32,6 +33,24 @@ from submission.models import (
 )
 
 
+class APIUserConflict(APIException):
+    status_code = status.HTTP_409_CONFLICT
+    default_detail = 'Technisches API-Konto ist nicht sicher konfiguriert. Bitte die Verwaltung kontaktieren.'
+    default_code = 'api_user_conflict'
+
+
+def _is_technical_user(user, username):
+    # Compare exactly even on databases with case-insensitive username lookups.
+    return (
+        user.username == username
+        and not user.is_active
+        and not user.has_usable_password()
+        and user.email == ''
+        and not user.is_staff
+        and not user.is_superuser
+    )
+
+
 def _api_user(api_key):
     """
     Return the technical user that owns submissions created with ``api_key``.
@@ -42,8 +61,24 @@ def _api_user(api_key):
     submission without e-mail would even match accounts with an empty e-mail.
     The applicant's contact data lives only in the submission itself.
     """
+    # ':' cannot be registered via Django's public username validator. Hex
+    # preserves distinct prefixes even under case-insensitive DB collations.
+    username = f'api:{api_key.prefix.encode("utf-8").hex()}'
+    user = User.objects.filter(username=username).first()
+    if user is not None:
+        if not _is_technical_user(user, username):
+            raise APIUserConflict()
+        return user
+
+    # Keep the owner of integrations created before the reserved namespace,
+    # but never attach applications to a coincidentally named web account.
+    legacy_name = f'api-{api_key.prefix}'
+    legacy = User.objects.filter(username=legacy_name).first()
+    if legacy is not None and _is_technical_user(legacy, legacy_name):
+        return legacy
+
     user, _ = User.objects.get_or_create(
-        username=f'api-{api_key.prefix}',
+        username=username,
         defaults={
             'first_name': 'API',
             'last_name': api_key.name,
@@ -52,6 +87,9 @@ def _api_user(api_key):
             'password': make_password(None),  # unusable
         },
     )
+    # get_or_create can return a concurrent winner; validate that path too.
+    if not _is_technical_user(user, username):
+        raise APIUserConflict()
     return user
 
 
@@ -104,6 +142,8 @@ class _ExternalReferenceMixin(serializers.Serializer):
 
 
 class StarterSubmissionSerializer(_ExternalReferenceMixin, serializers.ModelSerializer):
+    gym = serializers.PrimaryKeyRelatedField(queryset=Gym.objects.filter(is_active=True))
+    terms_and_conditions = serializers.BooleanField(write_only=True)
     data_protection = serializers.BooleanField(write_only=True)
     championships = serializers.ListField(
         child=serializers.CharField(), required=False, allow_empty=True, write_only=True
@@ -120,6 +160,11 @@ class StarterSubmissionSerializer(_ExternalReferenceMixin, serializers.ModelSeri
             'external_reference',
         ]
 
+    def validate_terms_and_conditions(self, value):
+        if not value:
+            raise serializers.ValidationError('Regeln des DBFV e.V. müssen bestätigt sein.')
+        return value
+
     def validate_data_protection(self, value):
         if not value:
             raise serializers.ValidationError('Datenschutzbestimmung muss bestätigt sein.')
@@ -127,6 +172,7 @@ class StarterSubmissionSerializer(_ExternalReferenceMixin, serializers.ModelSeri
 
 
 class InternationalSubmissionSerializer(_ExternalReferenceMixin, serializers.ModelSerializer):
+    gym = serializers.PrimaryKeyRelatedField(queryset=Gym.objects.filter(is_active=True))
     terms_and_conditions = serializers.BooleanField(write_only=True)
     payment = PaymentSerializer(required=False, write_only=True)
 
@@ -457,6 +503,7 @@ class CapabilitiesView(APIView):
                 'submit_judge': api_key.allow_submit_judge,
                 'register_payments': api_key.allow_register_payments,
                 'lookup_licenses': api_key.allow_lookup_licenses,
+                'lookup_all_states': api_key.allow_lookup_all_states,
                 'export_licenses': api_key.allow_export_licenses,
                 'read_submissions': api_key.allow_read_submissions,
                 'sensitive_access': api_key.sensitive_access,

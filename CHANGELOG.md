@@ -23,7 +23,9 @@ Entwickelt im Auftrag des DBFV NRW.
   - `federal_access` – expliziter Bundes-/Systemzugriff über alle Verbände;
     nur damit sind Bankkonten, Manager-E-Mails und Mail-Cron erreichbar.
   - `allow_lookup_licenses`, `allow_export_licenses`, `allow_read_submissions`
-    – Leserechte für Lizenz-Lookup, Lizenz-Export und Roh-Anträge.
+    – Leserechte für Lizenz-Lookup, Lizenz-Export und Roh-Anträge;
+    `allow_lookup_all_states` lässt den Lookup bundesweit prüfen (Gaststarter
+    anderer Landesverbände), weiterhin ohne Personendaten in der Antwort.
   - `allow_submit_starter`, `allow_submit_international`, `allow_submit_gym`,
     `allow_submit_judge`, `allow_register_payments` – fachliche Antragsanlage
     und Zahlungsregistrierung.
@@ -142,7 +144,7 @@ Entwickelt im Auftrag des DBFV NRW.
 - Neu: `api/` (App: `access.py`, `admin.py`, `apps.py`, `audit.py`,
   `client_ip.py`, `contact.py`, `licenses.py`, `middleware.py`, `models.py`,
   `permissions.py`, `rate_limit.py`, `submissions.py`, `tests.py`,
-  `throttling.py`, `urls.py`, `views.py`, `migrations/0001`–`0008`,
+  `throttling.py`, `urls.py`, `views.py`, `migrations/0001`–`0009`,
   `templates/api/api_key_request.html`, `templates/api/api_key_request_email.txt`),
   `API.md`, `API-README.md`, `CHANGELOG.md`, `.python-version` (3.13: Django
   5.1 läuft nicht auf 3.14), `submission/migrations/0016`–`0018`,
