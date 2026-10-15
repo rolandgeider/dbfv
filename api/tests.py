@@ -822,6 +822,28 @@ class SubmissionIntakeApiTest(APITestCase):
         self.assertIn('nrw@example.test', recipients)
         self.assertIn('verein@example.test', recipients)
 
+    def test_judge_submission_without_email_sends_notifications(self):
+        # Judge e-mail is optional; a None recipient used to break send_emails().
+        _, key = _scoped_key_for(self.nrw, allow_submit_judge=True)
+        self._auth(key)
+
+        res = self.client.post(
+            '/api/v1/submissions/judge/',
+            {
+                'last_name': 'Richter', 'first_name': 'Rita', 'street': 'Weg 1',
+                'zip_code': 12345, 'city': 'Koeln', 'state': self.nrw.pk,
+                'tel_number': '0123', 'data_protection': True,
+                'external_reference': 'NRW-JUDGE-1',
+            },
+            format='json',
+        )
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        recipients = {recipient for message in mail.outbox for recipient in message.to}
+        self.assertIn('boss@example.test', recipients)
+        self.assertIn('nrw@example.test', recipients)
+        self.assertNotIn(None, recipients)
+
     def test_capabilities_and_options_are_state_scoped(self):
         _, key = _scoped_key_for(self.nrw, allow_submit_starter=True)
         self._auth(key)

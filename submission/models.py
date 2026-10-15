@@ -904,7 +904,10 @@ class SubmissionJudge(AbstractSubmission):
         if self.state.email:
             email_list.append(self.state.email)
 
-        email_list.append(self.email)
+        # E-Mail ist bei Kampfrichtern optional; None als Empfaenger liesse
+        # den gesamten Mailversand (und damit den Antrag) scheitern.
+        if self.email:
+            email_list.append(self.email)
         email_list.append('kampfrichter@dbfv.de')
 
         # Hamburg

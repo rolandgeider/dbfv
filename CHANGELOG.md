@@ -94,7 +94,8 @@ Entwickelt im Auftrag des DBFV NRW.
   Submission-Views aus dem konkreten Modell abgeleitet; CSV-/TSV-Exporte gegen
   Spreadsheet-Formula-Injection neutralisiert; „PDF erneut senden" nur per POST
   mit CSRF; Haupt-Mails bei Antragsanlage nicht mehr stillschweigend verworfen
-  (`fail_silently=False`).
+  (`fail_silently=False`); Kampfrichterantrag ohne E-Mail-Adresse ließ den
+  Mailversand mit `None` als Empfänger scheitern (`SubmissionJudge.get_email_list`).
 
 ### Hinzugefügt – Antragsseiten Design 2.0
 
