@@ -64,7 +64,9 @@ Entwickelt im Auftrag des DBFV NRW.
   `payment_note`). Bei `status = paid` sind Referenz und ein Betrag in Höhe der
   Gebühr Pflicht; Zahlungszeitpunkt nicht in der Zukunft, Notiz max. 500
   Zeichen. Die Benachrichtigungsmails enthalten einen Zahlungsblock; bei
-  `paid` entfällt die Überweisungsaufforderung.
+  `paid` entfällt die Überweisungsaufforderung. Die Kontozuordnung je
+  Landesverband (`get_bank_account()`, Sonderfälle NRW/Berlin) bleibt
+  unverändert; Zahlungsregistrierung ist pro Key abschaltbar (Standard aus).
 - Öffentliches Formular „API-Key beantragen" (`/api-key/anfrage`, Footer-Link)
   mit Honeypot; Anfragen gehen per E-Mail an die Manager-Adressen.
 - `API.md` (technische Doku), `API-README.md` (Erklärung für Verband und

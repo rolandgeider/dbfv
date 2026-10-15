@@ -295,6 +295,21 @@ Content-Type: application/json
 - Ohne `payment`-Block bleibt der Antrag wie ein Webantrag ohne registrierte
   Zahlung (`payment_status = none`).
 
+#### Wer die Zahlung entgegennimmt
+
+Die API ändert nichts daran, wohin Gebühren fließen. Das Antragssystem gibt
+wie bisher je Landesverband das Konto vor (`get_bank_account()`: Bundeskonto,
+Sonderfälle NRW und Berlin mit eigenem Konto). Für NRW gilt damit weiterhin
+der abgesprochene Ablauf: NRW nimmt die Gebühr entgegen und leitet sie an den
+DBFV weiter. Die API dokumentiert eine im NRW-Frontend geleistete Zahlung nur
+am Antrag, damit der DBFV sie sieht.
+
+Ob ein Landesverband Zahlungen überhaupt registrieren darf, entscheidet der
+DBFV pro Key über `allow_register_payments` (Standard: aus). Ohne das Recht
+wird jeder `payment`-Block mit `403` abgelehnt, und der Antrag läuft wie ein
+Webantrag mit Überweisungsaufforderung an das vorgegebene Konto. Das Recht
+lässt sich im Django-Admin jederzeit zurücknehmen.
+
 Antwort (`201`):
 
 ```json

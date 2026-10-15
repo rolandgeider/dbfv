@@ -71,6 +71,13 @@ Jeder API-Key hat einzeln waehlbare Rechte:
 - ob Roh-Antragsdaten gelesen werden duerfen,
 - ob ein Key bundesweiten Systemzugriff hat.
 
+Wer die Gebuehr entgegennimmt, regelt die API nicht. Das Antragssystem gibt
+wie bisher pro Landesverband das Konto vor; fuer NRW ist das, wie besprochen,
+das NRW-Konto, und NRW leitet die Gebuehr an den DBFV weiter. Die API
+vermerkt eine bei NRW eingegangene Zahlung nur am Antrag. Ob NRW das darf,
+schaltet der DBFV pro Key ein oder aus (`allow_register_payments`, Standard
+aus); ohne das Recht laeuft der Antrag wie bisher mit Ueberweisungsaufforderung.
+
 Ein NRW-Key kann also so eingestellt werden:
 
 - nur NRW,
