@@ -223,6 +223,16 @@ class LicenseLookupRequestSerializer(serializers.Serializer):
                 'Mindestens zwei Identifikatoren angeben '
                 '(last_name, first_name, email, date_of_birth).'
             )
+        # A name pair alone can be walked with a name list; demand one
+        # identifier that is not guessable from public data.
+        if not ({'email', 'date_of_birth'} & identifiers.keys()):
+            raise serializers.ValidationError(
+                'Mindestens einer der Identifikatoren muss email oder '
+                'date_of_birth sein.'
+            )
+        year = attrs.get('year')
+        if year is not None and not (2000 <= year <= timezone.now().year + 1):
+            raise serializers.ValidationError({'year': 'Jahr außerhalb des gültigen Bereichs.'})
         return attrs
 
 

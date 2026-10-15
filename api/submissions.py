@@ -4,9 +4,6 @@ These endpoints intentionally do not expose generic CRUD writes. They create
 domain submissions through the same notification path as the web forms.
 """
 
-# Standard Library
-import re
-
 # Third Party
 from drf_spectacular.utils import extend_schema
 from rest_framework import serializers, status
@@ -15,7 +12,7 @@ from rest_framework.views import APIView
 
 # Django
 from django.contrib.auth.models import User
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from django.utils import timezone
 
 # dbfv
@@ -31,29 +28,29 @@ from submission.models import (
 )
 
 
-def _api_user(email, first_name='', last_name=''):
-    """Return a local user for an API-created submission."""
-    user = User.objects.filter(email__iexact=email).first()
-    if user:
-        return user
+def _api_user(api_key):
+    """
+    Return the technical user that owns submissions created with ``api_key``.
 
-    local = email.split('@', 1)[0]
-    safe = re.sub(r'[^a-zA-Z0-9_.-]+', '-', local).strip('-') or 'user'
-    base = f'api-{safe}'[:140]
-    username = base
-    suffix = 1
-    while User.objects.filter(username=username).exists():
-        username = f'{base[:135]}-{suffix}'
-        suffix += 1
-
-    user = User(
+    Submissions are deliberately *not* attached to an existing web account
+    with the applicant's e-mail address: that would hand the submission (and
+    its personal data) to whoever registered that address first, and a judge
+    submission without e-mail would even match accounts with an empty e-mail.
+    The applicant's contact data lives only in the submission itself.
+    """
+    username = f'api-{api_key.prefix}'
+    user, created = User.objects.get_or_create(
         username=username,
-        email=email,
-        first_name=first_name[:150],
-        last_name=last_name[:150],
+        defaults={
+            'first_name': 'API',
+            'last_name': api_key.name[:150],
+            'email': '',
+            'is_active': False,
+        },
     )
-    user.set_unusable_password()
-    user.save()
+    if created:
+        user.set_unusable_password()
+        user.save(update_fields=['password'])
     return user
 
 
@@ -75,7 +72,12 @@ class PaymentSerializer(serializers.Serializer):
     reference = serializers.CharField(required=False, allow_blank=True, max_length=120)
     amount_cents = serializers.IntegerField(required=False, min_value=0)
     received_at = serializers.DateTimeField(required=False)
-    note = serializers.CharField(required=False, allow_blank=True)
+    note = serializers.CharField(required=False, allow_blank=True, max_length=500)
+
+    def validate_received_at(self, value):
+        if value > timezone.now() + timezone.timedelta(minutes=5):
+            raise serializers.ValidationError('Zahlungszeitpunkt darf nicht in der Zukunft liegen.')
+        return value
 
     def validate(self, attrs):
         if attrs.get('status') == SubmissionStarter.PAYMENT_STATUS_PAID:
@@ -241,12 +243,19 @@ class _SubmissionCreateView(APIView):
             extra_data['payment'] = payment_data
         return extra_data
 
-    def _apply_payment(self, submission, payment_data, api_key):
+    def _apply_payment(self, submission, payment_data):
         if not payment_data:
             return
-        if not api_key.allow_register_payments:
+        fee_cents = submission.FEE * 100
+        if (
+            payment_data['status'] == submission.PAYMENT_STATUS_PAID
+            and payment_data.get('amount_cents') != fee_cents
+        ):
             raise serializers.ValidationError({
-                'payment': 'Dieser API-Key darf keine Zahlungen registrieren.'
+                'payment': {
+                    'amount_cents': f'Bei bezahlten Anträgen muss der Betrag der Gebühr '
+                    f'von {submission.FEE} € entsprechen ({fee_cents} Cent).'
+                }
             })
         submission.payment_status = payment_data['status']
         submission.payment_method = payment_data.get('method', '')
@@ -263,7 +272,7 @@ class _SubmissionCreateView(APIView):
             'payment_status': submission.get_payment_status_display(),
             'bank_account_id': submission.get_bank_account(),
             'fee': submission.FEE,
-            'designated_use': submission.get_bank_designated_use(),
+            'designated_use': submission.get_bank_designated_use().replace('<br>\n', ' '),
             'external_reference': submission.external_reference,
             'reused': reused,
         }
@@ -284,6 +293,11 @@ class _SubmissionCreateView(APIView):
         validated = dict(serializer.validated_data)
         payment_data = validated.pop('payment', None)
         external_reference = validated.pop('external_reference')
+        if payment_data and not api_key.allow_register_payments:
+            return Response(
+                {'payment': ['Dieser API-Key darf keine Zahlungen registrieren.']},
+                status=status.HTTP_403_FORBIDDEN,
+            )
         # Form-only confirmation fields are validated above and not model fields.
         for field in self.form_only_fields:
             validated.pop(field, None)
@@ -296,39 +310,51 @@ class _SubmissionCreateView(APIView):
             )
 
         extra_data = self._build_extra_data(validated, payment_data)
-        existing = self.model.objects.filter(
+        existing = self._existing(api_key, external_reference)
+        if existing is not None:
+            return self._reused_response(api_key, existing)
+
+        try:
+            # One transaction: technical user, submission, gym (studio
+            # applications) and notification mails either all succeed or
+            # nothing is stored. A mail failure therefore surfaces as 500 and
+            # the client may safely retry with the same external_reference.
+            with transaction.atomic():
+                submission = self.model(
+                    **validated,
+                    user=_api_user(api_key),
+                    created_via_api=True,
+                    api_key_prefix=api_key.prefix,
+                    external_reference=external_reference,
+                )
+                self._apply_payment(submission, payment_data)
+                submission.save()
+                submission = self._after_submission_saved(submission)
+                submission.send_emails(extra_data)
+        except IntegrityError:
+            # Lost the race against a parallel retry with the same reference:
+            # the unique constraint (api_key_prefix, external_reference) held.
+            existing = self._existing(api_key, external_reference)
+            if existing is None:
+                raise
+            return self._reused_response(api_key, existing)
+
+        return Response(self._response_payload(submission), status=status.HTTP_201_CREATED)
+
+    def _existing(self, api_key, external_reference):
+        return self.model.objects.filter(
             created_via_api=True,
             api_key_prefix=api_key.prefix,
             external_reference=external_reference,
         ).first()
-        if existing:
-            if not _state_allowed(api_key, self._state_id_from_submission(existing)):
-                return Response(
-                    {'detail': 'Bestehender Antrag liegt außerhalb des erlaubten Landesverbands.'},
-                    status=status.HTTP_403_FORBIDDEN,
-                )
-            return Response(self._response_payload(existing, reused=True), status=status.HTTP_200_OK)
 
-        user = _api_user(
-            validated.get('email') or '',
-            validated.get('first_name', ''),
-            validated.get('last_name', validated.get('name', '')),
-        )
-
-        with transaction.atomic():
-            submission = self.model(
-                **validated,
-                user=user,
-                created_via_api=True,
-                api_key_prefix=api_key.prefix,
-                external_reference=external_reference,
+    def _reused_response(self, api_key, existing):
+        if not _state_allowed(api_key, self._state_id_from_submission(existing)):
+            return Response(
+                {'detail': 'Bestehender Antrag liegt außerhalb des erlaubten Landesverbands.'},
+                status=status.HTTP_403_FORBIDDEN,
             )
-            self._apply_payment(submission, payment_data, api_key)
-            submission.save()
-            submission = self._after_submission_saved(submission)
-            submission.send_emails(extra_data)
-
-        return Response(self._response_payload(submission), status=status.HTTP_201_CREATED)
+        return Response(self._response_payload(existing, reused=True), status=status.HTTP_200_OK)
 
     def _state_id_from_submission(self, submission):
         if self.state_field == 'gym':

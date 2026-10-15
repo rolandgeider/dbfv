@@ -16,7 +16,9 @@ def key_prefix(request):
     auth = request.META.get('HTTP_AUTHORIZATION', '')
     if auth.startswith('Api-Key '):
         token = auth[len('Api-Key '):].strip()
-        return token.split('.', 1)[0] or '-'  # prefix only, never the secret
+        # Prefix only, never the secret; bounded so attacker-controlled input
+        # cannot bloat the log or overflow APIAccessLog.key_prefix.
+        return token.split('.', 1)[0][:8] or '-'
     return '-'
 
 

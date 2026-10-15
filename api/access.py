@@ -2,9 +2,11 @@
 
 # dbfv
 from api.models import ScopedAPIKey
+from core.models import EmailCron
 from submission.models import (
     BankAccount,
     Gym,
+    ManagerEmail,
     State,
     SubmissionGym,
     SubmissionInternational,
@@ -13,6 +15,12 @@ from submission.models import (
     UserProfile,
 )
 
+# Models that are not bound to a single Landesverband. BankAccount is shared by
+# several states (State.bank_account is a plain FK), ManagerEmail receives every
+# notification nationwide and EmailCron carries outgoing mail. A state-scoped
+# key must therefore never see or change them; only federal/system keys may.
+FEDERAL_ONLY_MODELS = {BankAccount, ManagerEmail, EmailCron}
+
 
 def api_key_from_request(request):
     """Return the validated ScopedAPIKey for this request, or None."""
@@ -20,12 +28,11 @@ def api_key_from_request(request):
     if cached is not None:
         return cached
 
-    key = request.META.get('HTTP_AUTHORIZATION', '')
-    if key.startswith('Api-Key '):
-        key = key.removeprefix('Api-Key ').strip()
-    else:
-        key = request.META.get('HTTP_X_API_KEY', '').strip()
-
+    # Same header the permission class, throttle and audit log read.
+    auth = request.META.get('HTTP_AUTHORIZATION', '')
+    if not auth.startswith('Api-Key '):
+        return None
+    key = auth.removeprefix('Api-Key ').strip()
     if not key:
         return None
     try:
@@ -52,13 +59,15 @@ def filter_queryset_for_request(queryset, request):
 
     ``federal_access`` is intentionally unrestricted for federal or internal
     integration keys. Keys without federal_access and without allowed_states see
-    no state-bound rows.
+    no state-bound rows. Federal-only models are hidden from scoped keys.
     """
     state_ids = allowed_state_ids_for_request(request)
     if state_ids is None:
         return queryset
 
     model = queryset.model
+    if model in FEDERAL_ONLY_MODELS:
+        return queryset.none()
     if model is State:
         return queryset.filter(pk__in=state_ids)
     if model is Gym:
@@ -67,8 +76,6 @@ def filter_queryset_for_request(queryset, request):
         return queryset.filter(gym__state_id__in=state_ids)
     if model in (SubmissionGym, SubmissionJudge, UserProfile):
         return queryset.filter(state_id__in=state_ids)
-    if model is BankAccount:
-        return queryset.filter(state__id__in=state_ids).distinct()
     return queryset
 
 

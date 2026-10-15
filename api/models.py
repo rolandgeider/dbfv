@@ -30,8 +30,10 @@ class ScopedAPIKey(AbstractAPIKey):
         default=False,
         verbose_name='Zugriff auf sensible Daten',
         help_text='Erlaubt Zugriff auf personen-/finanzbezogene Ressourcen '
-        '(Bankkonten, Benutzerprofile, Rohanträge, interne Modelle). Ohne '
-        'Haken nur Stammdaten und Lizenz-Endpoints.',
+        '(Bankkonten, Benutzerprofile, Rohanträge, interne Modelle, '
+        'Lizenz-Massenexport). Ohne Haken nur Stammdaten (Studios, '
+        'Bundesländer, Länder) und die per Einzelrecht freigegebenen '
+        'Lizenz-/Antrags-Endpunkte.',
     )
     federal_access = models.BooleanField(
         default=False,

@@ -207,6 +207,10 @@ REST_FRAMEWORK = {
 # limited per API key by APIKeyRateThrottle.
 API_PREAUTH_RATE_LIMIT = '120/minute'
 API_KEY_REQUEST_RATE_LIMIT = '5/hour'
+# Number of trusted reverse proxies in front of the app. 0 = trust only
+# REMOTE_ADDR (X-Forwarded-For is ignored). Set to 1 behind a single proxy that
+# overwrites X-Forwarded-For; see API.md "Client-IP-Ermittlung".
+API_TRUSTED_PROXY_COUNT = 0
 
 SPECTACULAR_SETTINGS = {
     'TITLE': 'DBFV API',

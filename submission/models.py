@@ -167,6 +167,18 @@ def attachment_submission_dir(instance, filename):
 # Submissions
 #
 #
+def api_reference_constraint(model_name):
+    """Unique (api_key_prefix, external_reference) per submission model.
+
+    NULL references (web submissions) never collide, on every supported
+    backend, which is why ``external_reference`` is nullable instead of ''.
+    """
+    return models.UniqueConstraint(
+        fields=['api_key_prefix', 'external_reference'],
+        name=f'{model_name}_api_reference_unique',
+    )
+
+
 class AbstractSubmission(models.Model):
     """
     Abstract class with fields and logic common to all submissions types
@@ -216,7 +228,12 @@ class AbstractSubmission(models.Model):
 
     created_via_api = models.BooleanField(default=False, editable=False)
     api_key_prefix = models.CharField(max_length=8, blank=True, editable=False)
-    external_reference = models.CharField(max_length=120, blank=True, editable=False)
+    external_reference = models.CharField(
+        max_length=120, blank=True, null=True, default=None, editable=False
+    )
+    """Client-side reference of API-created submissions; NULL for web submissions.
+    Unique per API key (see ``api_reference_constraint``) so that a retried
+    request can never create a second submission."""
     payment_status = models.CharField(
         max_length=16, choices=PAYMENT_STATUS, default=PAYMENT_STATUS_NONE, editable=False
     )
@@ -320,6 +337,7 @@ class SubmissionStarter(AbstractSubmission):
         Order first by state name, then by gym name
         """
         ordering = ["creation_date", "gym"]
+        constraints = [api_reference_constraint("submissionstarter")]
 
     MAILMERGE_HEADER = [
         'ID', 'Vorname', 'Nachname', 'Geburtsdatum', 'Aktiv Seit', 'Straße', 'Hausnummer', 'PLZ',
@@ -587,6 +605,7 @@ class SubmissionInternational(AbstractSubmission):
         Order first by state name, then by gym name
         """
         ordering = ["creation_date", "gym"]
+        constraints = [api_reference_constraint("submissioninternational")]
 
     MAILMERGE_HEADER = [
         'ID', 'Vorname', 'Nachname', 'Geburtsdatum', 'Aktiv Seit', 'Straße', 'PLZ', 'Stadt',
@@ -731,6 +750,7 @@ class SubmissionGym(AbstractSubmission):
         Order first by state name, then by gym name
         """
         ordering = ["creation_date", "state"]
+        constraints = [api_reference_constraint("submissiongym")]
 
     FEE = 30
 
@@ -816,6 +836,7 @@ class SubmissionJudge(AbstractSubmission):
         Order first by state name, then by gym name
         """
         ordering = ["creation_date", "state"]
+        constraints = [api_reference_constraint("submissionjudge")]
 
     MAILMERGE_HEADER = [
         'ID', 'Vorname', 'Nachname', 'Straße', 'PLZ', 'Stadt', 'Telefon', 'Email', 'Bundesverband',

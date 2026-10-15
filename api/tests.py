@@ -9,6 +9,7 @@ from django.test import RequestFactory, override_settings
 
 # dbfv
 from api.models import APIAccessLog, ScopedAPIKey
+from core.models import EmailCron
 from submission.models import BankAccount, Country, Gym, ManagerEmail, State, SubmissionStarter
 
 
@@ -342,6 +343,23 @@ class LicenseEndpointTest(APITestCase):
         )
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_lookup_requires_a_strong_identifier(self):
+        # A name pair alone could be walked with a public name list.
+        res = self.client.post(
+            '/api/v1/licenses/lookup/',
+            {'last_name': 'Mustermann', 'first_name': 'Max'},
+            format='json',
+        )
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_lookup_rejects_year_out_of_range(self):
+        res = self.client.post(
+            '/api/v1/licenses/lookup/',
+            {'last_name': 'Mustermann', 'date_of_birth': '1990-05-01', 'year': 99999},
+            format='json',
+        )
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_lookup_needs_lookup_scope(self):
         _, key = _federal_key(name='no-lookup')
         self.client.credentials(HTTP_AUTHORIZATION=f'Api-Key {key}')
@@ -483,6 +501,59 @@ class StateScopedApiTest(APITestCase):
 
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
 
+    def test_scoped_key_cannot_delete_its_own_state(self):
+        # Deleting the state would cascade into every NRW gym, profile and submission.
+        _, key = _scoped_key_for(self.nrw, sensitive_access=True, write_allowed=True)
+        self._auth(key)
+
+        res = self.client.delete(f'/api/v1/state/{self.nrw.pk}/')
+
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertTrue(State.objects.filter(pk=self.nrw.pk).exists())
+
+    def test_federal_only_models_are_hidden_from_scoped_keys(self):
+        # The bank account is shared by several states, ManagerEmail receives
+        # every notification nationwide and EmailCron carries outgoing mail.
+        ManagerEmail.objects.create(email='boss@example.test')
+        EmailCron.objects.create(subject='s', body='b', email='x@example.test')
+        _, key = _scoped_key_for(self.nrw, sensitive_access=True, write_allowed=True)
+        self._auth(key)
+
+        self.assertEqual(self.client.get('/api/v1/bankaccount/').data['count'], 0)
+        self.assertEqual(self.client.get('/api/v1/manageremail/').data['count'], 0)
+        self.assertEqual(self.client.get('/api/v1/emailcron/').data['count'], 0)
+        self.assertEqual(
+            self.client.get(f'/api/v1/bankaccount/{self.bank.pk}/').status_code,
+            status.HTTP_404_NOT_FOUND,
+        )
+        self.assertEqual(
+            self.client.patch(
+                f'/api/v1/bankaccount/{self.bank.pk}/', {'iban': 'DE99'}, format='json'
+            ).status_code,
+            status.HTTP_404_NOT_FOUND,
+        )
+        self.assertEqual(
+            self.client.delete(f'/api/v1/bankaccount/{self.bank.pk}/').status_code,
+            status.HTTP_404_NOT_FOUND,
+        )
+        self.assertEqual(
+            self.client.post(
+                '/api/v1/manageremail/', {'email': 'attacker@example.test'}, format='json'
+            ).status_code,
+            status.HTTP_403_FORBIDDEN,
+        )
+        self.assertEqual(BankAccount.objects.get(pk=self.bank.pk).iban, 'DE00')
+        self.assertFalse(ManagerEmail.objects.filter(email='attacker@example.test').exists())
+
+    def test_federal_key_still_manages_bank_accounts(self):
+        _, key = _federal_key(name='fed', sensitive_access=True, write_allowed=True)
+        self._auth(key)
+
+        res = self.client.get('/api/v1/bankaccount/')
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data['count'], 1)
+
 
 class SubmissionIntakeApiTest(APITestCase):
     def setUp(self):
@@ -622,8 +693,100 @@ class SubmissionIntakeApiTest(APITestCase):
             '/api/v1/submissions/starter/', self._starter_payload(), format='json'
         )
 
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertFalse(SubmissionStarter.objects.exists())
+
+    def test_paid_amount_must_match_fee(self):
+        _, key = _scoped_key_for(
+            self.nrw,
+            allow_submit_starter=True,
+            allow_register_payments=True,
+        )
+        self._auth(key)
+        payload = self._starter_payload()
+        payload['payment']['amount_cents'] = 1
+
+        res = self.client.post('/api/v1/submissions/starter/', payload, format='json')
+
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('amount_cents', res.data['payment'])
+        self.assertFalse(SubmissionStarter.objects.exists())
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_payment_received_at_must_not_be_in_the_future(self):
+        _, key = _scoped_key_for(
+            self.nrw,
+            allow_submit_starter=True,
+            allow_register_payments=True,
+        )
+        self._auth(key)
+        payload = self._starter_payload()
+        payload['payment']['received_at'] = '2099-01-01T00:00:00+00:00'
+
+        res = self.client.post('/api/v1/submissions/starter/', payload, format='json')
+
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertFalse(SubmissionStarter.objects.exists())
+
+    def test_api_submissions_belong_to_technical_key_user_not_to_web_accounts(self):
+        # Django
+        from django.contrib.auth.models import User
+
+        web_user = User.objects.create_user(
+            'max', email='max@example.test', password='pw', is_superuser=True
+        )
+        _, key = _scoped_key_for(self.nrw, allow_submit_starter=True)
+        self._auth(key)
+        payload = self._starter_payload()
+        payload.pop('payment')
+
+        res = self.client.post('/api/v1/submissions/starter/', payload, format='json')
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        submission = SubmissionStarter.objects.get(pk=res.data['id'])
+        self.assertNotEqual(submission.user, web_user)
+        self.assertEqual(submission.user.username, f"api-{key.split('.', 1)[0]}")
+        self.assertFalse(submission.user.is_active)
+        self.assertFalse(submission.user.has_usable_password())
+        self.assertEqual(submission.user.email, '')
+        # applicant data stays on the submission only
+        self.assertEqual(submission.email, 'max@example.test')
+
+    def test_designated_use_is_plain_text(self):
+        _, key = _scoped_key_for(self.nrw, allow_submit_starter=True)
+        self._auth(key)
+        payload = self._starter_payload()
+        payload.pop('payment')
+
+        res = self.client.post('/api/v1/submissions/starter/', payload, format='json')
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        self.assertNotIn('<br>', res.data['designated_use'])
+        self.assertIn('Mustermann, Max', res.data['designated_use'])
+
+    def test_duplicate_reference_is_rejected_by_the_database(self):
+        # Django
+        from django.db import IntegrityError, transaction
+
+        first = _make_starter(state_name='NRW3', state_short='NW3')
+        first.created_via_api = True
+        first.api_key_prefix = 'ABCDEFGH'
+        first.external_reference = 'NRW-ORDER-X'
+        first.save()
+
+        with self.assertRaises(IntegrityError), transaction.atomic():
+            SubmissionStarter.objects.create(
+                user=first.user, date_of_birth='1990-05-01', active_since='2010',
+                last_name='Doppelt', first_name='Max', street='Weg', house_nr='1',
+                zip_code=12345, city='Köln', tel_number='0', email='d@x.de',
+                nationality=first.nationality, height=180, weight=80, category='1',
+                terms_and_conditions=True, gym=first.gym, created_via_api=True,
+                api_key_prefix='ABCDEFGH', external_reference='NRW-ORDER-X',
+            )
+
+        # web submissions carry no reference and never collide with each other
+        self.assertIsNone(_make_starter(state_name='NRW4', state_short='NW4').external_reference)
+        self.assertIsNone(_make_starter(state_name='NRW5', state_short='NW5').external_reference)
 
     def test_state_scope_blocks_foreign_gym_submission(self):
         _, key = _scoped_key_for(
@@ -701,3 +864,9 @@ class AuditLogTest(APITestCase):
         self.assertEqual(rows[1].status_code, status.HTTP_403_FORBIDDEN)
         self.assertNotIn('TOPSECRETNAME', rows[0].path)
         self.assertNotIn(key.split('.', 1)[1], rows[0].path)
+
+    def test_logged_key_prefix_is_bounded(self):
+        self.client.get('/api/v1/country/', HTTP_AUTHORIZATION='Api-Key ' + 'A' * 300 + '.x')
+        row = APIAccessLog.objects.get()
+        self.assertEqual(row.key_prefix, 'A' * 8)
+        self.assertEqual(row.status_code, status.HTTP_403_FORBIDDEN)
