@@ -6,14 +6,6 @@ Must sit inside an element with [data-wizard]. Expects:
   - a progress list .wizard-progress with one <li> per step
   - the crispy submit button carrying the class .wizard-submit
 {% endcomment %}
-<noscript>
-    {# Without JS: show all steps and the submit button, hide the navigation #}
-    <style>
-        .wizard-step { display: block !important; }
-        .wizard-submit { display: inline-block !important; }
-        .wizard-nav { display: none !important; }
-    </style>
-</noscript>
 <div class="wizard-nav">
     <button type="button" class="btn btn-outline-secondary btn-back" data-wizard-back>
         <i class="bi bi-arrow-left" aria-hidden="true"></i> Zurück
@@ -127,20 +119,33 @@ Must sit inside an element with [data-wizard]. Expects:
         backBtn.addEventListener('click', function () {
             if (current > 0) goTo(current - 1);
         });
-        // Validate the last step before submitting (form is novalidate)
-        if (submitBtn) submitBtn.addEventListener('click', function (e) {
-            if (!validStep(steps.length - 1)) e.preventDefault();
-        });
-        // Double-click protection: the server sends mails synchronously, a
-        // second submit would create a second application.
-        if (form && submitBtn) form.addEventListener('submit', function () {
-            setTimeout(function () { submitBtn.disabled = true; }, 0);
+        // Cover button clicks and keyboard submission, including fields in
+        // earlier steps and the prerequisites checkbox associated via form=.
+        var submitting = false;
+        if (form) form.addEventListener('submit', function (e) {
+            if (submitting) {
+                e.preventDefault();
+                return;
+            }
+            for (var i = 0; i < steps.length; i++) {
+                if (!validStep(i)) {
+                    e.preventDefault();
+                    goTo(i);
+                    validStep(i); // Show native validation after revealing it.
+                    return;
+                }
+            }
+            // Mails are sent synchronously; prevent a second application while
+            // the first request is in flight, but allow retries after errors.
+            submitting = true;
+            if (submitBtn) setTimeout(function () { submitBtn.disabled = true; }, 0);
         });
 
         // After server-side errors jump to the first step with an error
         var errStep = stepEls.find(function (el) { return el.querySelector('.is-invalid, .invalid-feedback'); });
         if (errStep) current = Math.max(0, steps.indexOf(stepKey(errStep)));
 
+        wiz.classList.add('is-enhanced');
         render();
     });
 })();

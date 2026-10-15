@@ -104,21 +104,22 @@ body > footer { flex-shrink: 0; }
 .wizard-progress li.is-done:not(:first-child)::after,
 .wizard-progress li.is-active:not(:first-child)::after { background: var(--dbfv-red); }
 
-.wizard-step { display: none; }
-.wizard-step.is-current { display: block; animation: wizard-fade .2s ease; }
+.wizard.is-enhanced .wizard-step { display: none; }
+.wizard.is-enhanced .wizard-step.is-current { display: block; animation: wizard-fade .2s ease; }
 @keyframes wizard-fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 .wizard-step-title { font-weight: 700; margin-bottom: 1rem; }
 
-.wizard-nav { display: flex; justify-content: space-between; gap: .75rem; margin-top: 1.5rem; }
+.wizard-nav { display: none; justify-content: space-between; gap: .75rem; margin-top: 1.5rem; }
+.wizard.is-enhanced .wizard-nav { display: flex; }
 .wizard-nav .btn-back { margin-right: auto; }
-.wizard-submit { display: none; }  /* shown by the wizard JS on the last step */
+.wizard.is-enhanced .wizard-submit { display: none; }  /* shown by the wizard JS on the last step */
 .wizard-step-error { margin-top: 1rem; }
 
 /* Navbar brand line */
 .navbar-dbfv { border-bottom: 3px solid var(--dbfv-red); }
 
 /* --- Studio picker --- */
-#div_id_gym { display: none; }  /* native select = fallback without JS */
+.wizard.is-enhanced #div_id_gym { display: none; }  /* native select = fallback without JS */
 .studio-card { cursor: pointer; transition: border-color .12s ease, box-shadow .12s ease; }
 .studio-card:hover { border-color: var(--dbfv-red); }
 .studio-card.is-selected {

@@ -210,6 +210,12 @@ class SubmissionUpdateView(BaseSubmissionUpdateView):
     """
     model = SubmissionStarter
     form_class = SubmissionStarterForm
+    template_name = 'submission/starter/create.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['states_list'] = State.objects.all()
+        return context
 
 
 class SubmissionUpdateStatusView(DbfvFormMixin, generic.UpdateView):
@@ -385,7 +391,8 @@ def send_pdf(request, pk):
         return HttpResponseForbidden()
 
     submission = get_object_or_404(SubmissionStarter, pk=pk)
-    submission.send_pdf_email()
+    if submission.send_pdf_email():
+        SubmissionStarter.objects.filter(pk=submission.pk).update(pdf_sent=True)
 
     return HttpResponseRedirect(submission.get_absolute_url())
 
@@ -399,6 +406,7 @@ def send_judge_pdf(request, pk):
         return HttpResponseForbidden()
 
     submission = get_object_or_404(SubmissionJudge, pk=pk)
-    submission.send_pdf_email()
+    if submission.send_pdf_email():
+        SubmissionJudge.objects.filter(pk=submission.pk).update(pdf_sent=True)
 
     return HttpResponseRedirect(submission.get_absolute_url())

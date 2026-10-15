@@ -270,6 +270,22 @@ class AbstractSubmission(models.Model):
         """
         return (getattr(self, 'email', '') or self.user.email or '').strip()
 
+    def _send_approval_pdf(self, update_fields):
+        """Send on approval or retry an undelivered PDF; preserve partial saves."""
+        if not self.pk or self.submission_status != self.SUBMISSION_STATUS_BEWILLIGT:
+            return update_fields
+        if update_fields is not None and not {'submission_status', 'email'} & set(update_fields):
+            return update_fields
+        previous = type(self).objects.filter(pk=self.pk).values('submission_status', 'pdf_sent').first()
+        if previous and (
+            previous['submission_status'] != self.SUBMISSION_STATUS_BEWILLIGT
+            or not previous['pdf_sent']
+        ) and self.send_pdf_email():
+            self.pdf_sent = True
+            if update_fields is not None:
+                return set(update_fields) | {'pdf_sent'}
+        return update_fields
+
     def get_email_list(self):
         """
         Collects and returns a list with the recipients of notification emails
@@ -507,7 +523,7 @@ Ihr DBFV e. V.
         recipient = self.pdf_recipient()
         if not recipient:
             logger.warning(f'No recipient for PDF of submission {self.id}, skipping')
-            return
+            return False
         logger.info(f'Sending PDF for submission {self.id} - ({recipient})')
         msg = EmailMultiAlternatives(
             email_subject,
@@ -525,7 +541,7 @@ Ihr DBFV e. V.
         msg.attach(msg_part)
 
         # Send the email
-        msg.send()
+        return msg.send() == 1
 
     def get_email_list(self):
         """
@@ -613,9 +629,7 @@ Ihr DBFV e. V.
         """
         For existing submissions, if we change the status to approved, email the user
         """
-        if self.pk and self.submission_status == self.SUBMISSION_STATUS_BEWILLIGT:
-            self.send_pdf_email()
-            self.pdf_sent = True
+        kwargs['update_fields'] = self._send_approval_pdf(kwargs.get('update_fields'))
 
         super().save(*args, **kwargs)
 
@@ -969,7 +983,7 @@ Ihr DBFV e. V.
         recipient = self.pdf_recipient()
         if not recipient:
             logger.warning(f'No recipient for PDF of judge submission {self.id}, skipping')
-            return
+            return False
         logger.info(f'Sending PDF for judge submission {self.id} - ({recipient})')
         msg = EmailMultiAlternatives(
             email_subject,
@@ -987,15 +1001,13 @@ Ihr DBFV e. V.
         msg.attach(msg_part)
 
         # Send the email
-        msg.send()
+        return msg.send() == 1
 
     def save(self, *args, **kwargs):
         """
         For existing submissions, if we change the status to approved, email the user
         """
-        if self.pk and self.submission_status == self.SUBMISSION_STATUS_BEWILLIGT:
-            self.send_pdf_email()
-            self.pdf_sent = True
+        kwargs['update_fields'] = self._send_approval_pdf(kwargs.get('update_fields'))
 
         super().save(*args, **kwargs)
 

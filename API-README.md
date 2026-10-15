@@ -22,6 +22,11 @@ Was sich verbessert:
   Benachrichtigungsmail aufgefuehrt (in der Antragsansicht noch nicht sichtbar).
 - Die bekannten Benachrichtigungs-Mails an Verwalter, Landesverband, Studio und
   Antragsteller werden weiter verschickt.
+- Bereits als bezahlt registrierte Antraege erhalten keine erneute
+  Ueberweisungsaufforderung. Ein Lizenz-PDF gilt erst nach tatsaechlichem
+  Versand als verschickt; eine fehlende E-Mail-Adresse bleibt erkennbar.
+- Neue Starter- und internationale Antraege sind nur fuer aktive Studios
+  moeglich. Die Zustimmung zu den Regeln ist auch ueber die API Pflicht.
 - Der DBFV-Verwalter muss nicht manuell Daten aus E-Mails oder Listen
   uebertragen.
 

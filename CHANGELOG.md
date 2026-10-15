@@ -10,6 +10,46 @@ Bündelt die REST-API (vormals PR #157), das UI-Redesign (vormals PR #158) und
 die darauf aufbauende Landesverbands-API für Antrags- und Zahlungsflow.
 Entwickelt im Auftrag des DBFV NRW.
 
+### Korrigiert – drei Prüfwellen vor dem PR
+
+- API/Berechtigungen: fremde Webkonten mit Namen `api-<PREFIX>` werden nicht
+  mehr zu Eigentümern von API-Anträgen. Neue technische Konten verwenden den
+  nicht registrierbaren Namensraum `api:<hex-PREFIX>`; sichere bestehende
+  technische Konten bleiben verwendbar. Unsichere reservierte Konten werden
+  mit `409` abgewiesen. Starter-Anträge erfordern eine ausdrückliche Zustimmung
+  zu Regeln und Datenschutz; neue Starter-/internationale Anträge benötigen
+  ein aktives Studio. Idempotente Retries bleiben nach Studio-Deaktivierung
+  möglich (`api/submissions.py`, `api/tests.py`).
+- Formulare: die internationale Pflichtbestätigung wird dem Crispy-Formular
+  auch ohne JavaScript zugeordnet; beide Bearbeitungsseiten verwenden die
+  vollständigen Wizards samt Studioauswahl und Bestätigungen. CSS blendet nur
+  initialisierte Wizard-Schritte aus. Alle Absendewege einschließlich Enter
+  validieren sämtliche Schritte; wiederholtes Absenden wird verhindert
+  (`submission/forms.py`, `submission/views/submissions.py`,
+  `submission/views/submissions_international.py`,
+  `submission/templates/submission/starter/create.html`,
+  `submission/templates/submission/international/create.html`,
+  `submission/templates/tags/wizard.html`, `submission/static/css/dbfv.css`,
+  neue Regressionstests `submission/test_forms.py`).
+- Zahlung/Mails: bezahlte Anträge erhalten keine Überweisungsaufforderung mehr
+  (`submission/templates/submission/{starter,international,judge}/email_new_submission.html`).
+  Web-Anlage von Antrag und ggf. Studio wird bei Mailfehlern zurückgerollt;
+  Wiederholen erzeugt keine verwaisten oder doppelten Datensätze
+  (`submission/views/generic_views.py`, neue Tests `submission/test_lifecycle.py`).
+- Bewilligung/PDF: `pdf_sent` folgt dem tatsächlichen Versanderfolg, auch bei
+  Teil-Speicherungen und explizitem Wiederholungsversand. Ohne Empfänger wird
+  kein Versand vorgetäuscht; spätere Ergänzung der Adresse erlaubt einen
+  erneuten Versuch. Unveränderte Bewilligung löst keine doppelten PDFs aus
+  (`submission/models.py`, `submission/views/submissions.py`,
+  `submission/test_lifecycle.py`).
+- Kalenderjahr: Lookup, Export und Jahresgrenzen folgen `Europe/Berlin`
+  statt UTC, einschließlich der Stunde um Neujahr (`api/licenses.py`, neue
+  Tests `api/test_license_year.py`). Verträge und Verhalten in `API.md` und
+  `API-README.md` aktualisiert.
+- Integration: Browserprüfung der vier Create-/Edit-Seiten bei 1280 und
+  390 Pixeln sowie beider Anträge ohne JavaScript; Formularzuordnung,
+  Pflichtfelder, Scroll-Bestätigung, Enter und Doppelklickschutz geprüft.
+
 ### Hinzugefügt – REST-API
 
 - REST-API unter `/api/v1/` auf Basis von Django REST Framework, inklusive

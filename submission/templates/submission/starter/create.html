@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 
-{% block title %}Antrag für Starterlizenz{% endblock %}
+{% block title %}{% if object %}Starterlizenz bearbeiten{% else %}Antrag für Starterlizenz{% endif %}{% endblock %}
 
 {% block scripts %}
     <script>
@@ -26,8 +26,12 @@
     <div class="card shadow-sm mb-4">
         <div class="card-body">
             <p class="mb-2">
+                {% if object %}
+                Hier bearbeiten Sie Ihren Antrag auf eine Starterlizenz des DBFV e. V.
+                {% else %}
                 Hier beantragen Sie die Ausstellung einer Starterlizenz des DBFV e. V.,
                 welche Sie zur Teilnahme an allen Meisterschaften unseres Verbandes berechtigt.
+                {% endif %}
             </p>
             <p class="mb-0 text-body-secondary">
                 Die Angaben habe ich nach bestem Wissen und Gewissen gemacht und bestätige diese
@@ -166,6 +170,7 @@
 {% endblock %}
 
 {% block sidebar %}
+    {% if not object %}
     <div class="card shadow-sm">
         <div class="card-body">
             <h5 class="card-title">Lizenzgebühr</h5>
@@ -174,4 +179,5 @@
                 erfolgt erst nach Eingang der Gebühr!</p>
         </div>
     </div>
+    {% endif %}
 {% endblock %}

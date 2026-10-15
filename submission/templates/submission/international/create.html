@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 
-{% block title %}Antrag auf internationalen Start{% endblock %}
+{% block title %}{% if object %}Internationalen Antrag bearbeiten{% else %}Antrag auf internationalen Start{% endif %}{% endblock %}
 
 {% block content %}
     <div class="wizard" data-wizard>
@@ -61,7 +61,8 @@
             </div>
             <div class="form-check">
                 <input class="form-check-input{% if form.requirements_ack.errors %} is-invalid{% endif %}"
-                       type="checkbox" id="req-ack" name="requirements_ack" required
+                       type="checkbox" id="req-ack" name="requirements_ack"
+                       form="{{ form.helper.form_id }}" required
                        {% if form.requirements_ack.value %}checked{% endif %}>
                 <label class="form-check-label" for="req-ack">
                     Ich habe die Voraussetzungen gelesen und erfülle sie.
@@ -94,6 +95,7 @@
 {% endblock %}
 
 {% block sidebar %}
+    {% if not object %}
     <div class="card shadow-sm">
         <div class="card-body">
             <h5 class="card-title">Bearbeitungsgebühr</h5>
@@ -105,4 +107,5 @@
             <p class="card-text mb-0">Bei einer Anmeldung nach dem Anmeldeschluss fällt eine zusätzliche Bearbeitungsgebühr von 30 € an.</p>
         </div>
     </div>
+    {% endif %}
 {% endblock %}

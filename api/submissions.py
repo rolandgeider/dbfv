@@ -142,7 +142,6 @@ class _ExternalReferenceMixin(serializers.Serializer):
 
 
 class StarterSubmissionSerializer(_ExternalReferenceMixin, serializers.ModelSerializer):
-    gym = serializers.PrimaryKeyRelatedField(queryset=Gym.objects.filter(is_active=True))
     terms_and_conditions = serializers.BooleanField(write_only=True)
     data_protection = serializers.BooleanField(write_only=True)
     championships = serializers.ListField(
@@ -172,7 +171,6 @@ class StarterSubmissionSerializer(_ExternalReferenceMixin, serializers.ModelSeri
 
 
 class InternationalSubmissionSerializer(_ExternalReferenceMixin, serializers.ModelSerializer):
-    gym = serializers.PrimaryKeyRelatedField(queryset=Gym.objects.filter(is_active=True))
     terms_and_conditions = serializers.BooleanField(write_only=True)
     payment = PaymentSerializer(required=False, write_only=True)
 
@@ -362,6 +360,11 @@ class _SubmissionCreateView(APIView):
         existing = self._existing(api_key, external_reference)
         if existing is not None:
             return self._reused_response(api_key, existing)
+
+        # New applications require an active gym, while a retry must still
+        # return its original application if that gym has since been disabled.
+        if self.state_field == 'gym' and not validated['gym'].is_active:
+            raise serializers.ValidationError({'gym': ['Bitte ein aktives Studio auswählen.']})
 
         try:
             # One transaction: technical user, submission, gym (studio

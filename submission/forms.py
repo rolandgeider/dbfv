@@ -246,6 +246,9 @@ class SubmissionInternationalForm(ModelForm):
         _tune_submission_widgets(self, ['date_of_birth', 'championship_date'])
 
         self.helper = FormHelper()
+        # The prerequisites step is rendered outside the crispy form. Associate
+        # its checkbox with this form so browsers include it in every POST.
+        self.helper.form_id = 'international-submission-form'
         self.helper.add_input(
             Submit('submit', 'Speichern', css_class='btn-success btn-lg wizard-submit')
         )

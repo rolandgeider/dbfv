@@ -806,6 +806,14 @@ class SubmissionIntakeApiTest(APITestCase):
         self.assertEqual(first.data['id'], second.data['id'])
         self.assertTrue(second.data['reused'])
         self.assertEqual(SubmissionStarter.objects.count(), 1)
+        self.nrw_gym.is_active = False
+        self.nrw_gym.save(update_fields=['is_active'])
+        mail.outbox.clear()
+        retry = self.client.post('/api/v1/submissions/starter/', payload, format='json')
+        self.assertEqual(retry.status_code, status.HTTP_200_OK)
+        self.assertEqual(retry.data['id'], first.data['id'])
+        self.assertTrue(retry.data['reused'])
+        self.assertEqual(len(mail.outbox), 0)
 
     def test_paid_payment_requires_reference_and_amount(self):
         _, key = _scoped_key_for(

@@ -196,7 +196,14 @@ Die Fach-Endpunkte legen Anträge so an, dass der bestehende Workflow erhalten
 bleibt:
 
 - Der Antrag gehört einem **technischen Benutzer je API-Key**
-  (`api-<PREFIX>`, inaktiv, ohne Passwort). Er wird bewusst **nicht** an ein
+  (`api:<hex-kodierter PREFIX>`, inaktiv, ohne Passwort und E-Mail). Dieser
+  Namensraum ist über die öffentliche Registrierung nicht zugänglich.
+  Vorhandene `api-<PREFIX>`-Konten werden nur bei exaktem Namen, Inaktivität,
+  unbenutzbarem Passwort, leerer E-Mail und ohne Staff-/Superuser-Rechte
+  weiterverwendet. Bei einer Kollision mit einem Webkonto entsteht ein
+  getrenntes technisches Konto; ein unsicheres Konto im reservierten
+  Namensraum führt zu `409 Conflict`. Webkonten werden dabei nicht geändert.
+  Der Antrag wird bewusst **nicht** an ein
   bestehendes Web-Konto mit der E-Mail des Athleten gehängt: Das würde den
   Antrag samt Personendaten demjenigen zuordnen, der diese Adresse zuerst
   registriert hat. Die Kontaktdaten des Antragstellers stehen nur im Antrag.
@@ -205,7 +212,9 @@ bleibt:
   je API-Key durch einen Unique-Constraint in der Datenbank abgesichert; auch
   zwei gleichzeitige Retries erzeugen nur einen Antrag.
 - `allowed_states`/`federal_access` begrenzen den gewählten Verband bzw. das
-  gewählte Studio.
+  gewählte Studio. Neue Starter- und internationale Anträge erfordern ein
+  aktives Studio (`400` bei inaktivem Studio). Ein idempotenter Retry liefert
+  den bestehenden Antrag auch nach späterer Deaktivierung des Studios.
 - Technischer Benutzer, Antrag, ggf. neues Studio und der Mailversand laufen in
   **einer Transaktion**: Schlägt der Mailversand fehl, wird nichts gespeichert
   und die API antwortet `500`; der Client kann mit derselben
@@ -213,11 +222,16 @@ bleibt:
   scheitert der Versand mittendrin, haben die ersten Empfänger die Mail schon
   und bekommen sie beim Retry ein zweites Mal.
 - Das Lizenz-PDF nach Bewilligung geht an die E-Mail-Adresse im Antrag (nicht
-  an den technischen Benutzer).
+  an den technischen Benutzer). `pdf_sent` wird nur nach tatsächlichem Versand
+  gesetzt. Ohne Empfänger bleibt es falsch; nach Ergänzen der Adresse kann
+  der Versand erneut erfolgen. Änderungen an bereits versandten Anträgen
+  lösen keinen weiteren automatischen PDF-Versand aus; erneute Bewilligung
+  und der explizite Wiederholungsversand bleiben möglich.
 - Studio-Anträge erzeugen wie der Webflow ein neues inaktives `Gym`.
 - `send_emails()` wird wie im Webformular aufgerufen: Verwalter
   (`ManagerEmail`), Landesverband, ggf. Studio und Antragsteller bekommen die
   bekannte Mail, bei Zahlungsdaten mit einem zusätzlichen Zahlungsblock.
+  Bei `payment.status = paid` entfällt die Überweisungsaufforderung.
 
 ### Formularoptionen
 
@@ -266,6 +280,8 @@ Content-Type: application/json
 ```
 
 - Erfordert `allow_submit_starter`.
+- `terms_and_conditions` und `data_protection` müssen ausdrücklich `true`
+  sein; fehlende oder abgelehnte Bestätigungen ergeben `400`.
 - `external_reference` ist Pflicht und je API-Key eindeutig. Wird dieselbe
   Referenz erneut gesendet, antwortet die API `200 OK` mit dem bestehenden
   Antrag und `reused: true`; eine Neuanlage antwortet `201 Created`.
@@ -309,7 +325,8 @@ den jeweiligen Modellfeldern (siehe Swagger-UI) und eigenen Rechten.
 
 Eine „Lizenz" ist ein bewilligter Antrag für ein Kalenderjahr.
 **Gültig = Status „Bewilligt" UND `creation_date.year == Jahr`** (Standard:
-laufendes Jahr, per `year` überschreibbar).
+laufendes Jahr in `Europe/Berlin`, per `year` überschreibbar). Auch die
+Validierung der Obergrenze „Folgejahr“ verwendet das Berliner Kalenderjahr.
 
 ### Gültigkeit gezielt abfragen (Lookup, datensparsam)
 

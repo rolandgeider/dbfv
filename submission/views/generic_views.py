@@ -19,6 +19,7 @@ import csv
 import datetime
 
 # Django
+from django.db import transaction
 from django.http import (
     HttpResponse,
     HttpResponseForbidden,
@@ -104,6 +105,7 @@ class BaseSubmissionCreateView(DbfvFormMixin, generic.CreateView):
 
     extra_data = []
 
+    @transaction.atomic
     def form_valid(self, form):
         """
         Manually set the user when saving the form
