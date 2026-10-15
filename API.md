@@ -196,17 +196,14 @@ Die Fach-Endpunkte legen Anträge so an, dass der bestehende Workflow erhalten
 bleibt:
 
 - Der Antrag gehört einem **technischen Benutzer je API-Key**
-  (`api:<hex-kodierter PREFIX>`, inaktiv, ohne Passwort und E-Mail). Dieser
-  Namensraum ist über die öffentliche Registrierung nicht zugänglich.
-  Vorhandene `api-<PREFIX>`-Konten werden nur bei exaktem Namen, Inaktivität,
-  unbenutzbarem Passwort, leerer E-Mail und ohne Staff-/Superuser-Rechte
-  weiterverwendet. Bei einer Kollision mit einem Webkonto entsteht ein
-  getrenntes technisches Konto; ein unsicheres Konto im reservierten
-  Namensraum führt zu `409 Conflict`. Webkonten werden dabei nicht geändert.
-  Der Antrag wird bewusst **nicht** an ein
-  bestehendes Web-Konto mit der E-Mail des Athleten gehängt: Das würde den
-  Antrag samt Personendaten demjenigen zuordnen, der diese Adresse zuerst
-  registriert hat. Die Kontaktdaten des Antragstellers stehen nur im Antrag.
+  (`api:<PREFIX als Hex>`, inaktiv, ohne Passwort und E-Mail). Der Doppelpunkt
+  ist über die öffentliche Registrierung nicht anlegbar, der Namensraum also
+  reserviert; liegt dort trotzdem ein fremdes oder aktives Konto, antwortet
+  die API `409 Conflict`, Webkonten werden nie verändert. Der Antrag wird
+  bewusst **nicht** an ein bestehendes Web-Konto mit der E-Mail des Athleten
+  gehängt: Das würde den Antrag samt Personendaten demjenigen zuordnen, der
+  diese Adresse zuerst registriert hat. Die Kontaktdaten des Antragstellers
+  stehen nur im Antrag.
 - `created_via_api` und `api_key_prefix` werden am Antrag gespeichert.
 - `external_reference` (Pflicht) macht wiederholte Requests idempotent und ist
   je API-Key durch einen Unique-Constraint in der Datenbank abgesichert; auch
