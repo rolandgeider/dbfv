@@ -243,11 +243,32 @@ class AbstractSubmission(models.Model):
     payment_received_at = models.DateTimeField(blank=True, null=True, editable=False)
     payment_note = models.TextField(blank=True, editable=False)
 
+    @property
+    def payment_amount_display(self):
+        """Registered payment amount as '90,00 €' for mails; '' if none."""
+        if self.payment_amount_cents is None:
+            return ''
+        euro, cents = divmod(self.payment_amount_cents, 100)
+        return f'{euro},{cents:02d} €'
+
     def get_bank_designated_use(self):
         """
         Returns the designated use to be used when doing the bank transfer
         """
         return u'{0} {1}<br>\n{2}'.format(self.get_license_type(), self.pk, self.get_name)
+
+    def get_bank_designated_use_text(self):
+        """Plain-text variant of the designated use (API responses, mails)."""
+        return u'{0} {1} {2}'.format(self.get_license_type(), self.pk, self.get_name)
+
+    def pdf_recipient(self):
+        """
+        Address the license PDF goes to: the applicant's address from the
+        submission, falling back to the owning account. API-created submissions
+        belong to a technical user without e-mail, so the submission's own
+        address is the only one that reaches the athlete.
+        """
+        return (getattr(self, 'email', '') or self.user.email or '').strip()
 
     def get_email_list(self):
         """
@@ -483,12 +504,16 @@ Teilnahme an unseren Meisterschaften.
 
 Ihr DBFV e. V.
         """
-        logger.info(f'Sending PDF for submission {self.id} - ({self.user.email})')
+        recipient = self.pdf_recipient()
+        if not recipient:
+            logger.warning(f'No recipient for PDF of submission {self.id}, skipping')
+            return
+        logger.info(f'Sending PDF for submission {self.id} - ({recipient})')
         msg = EmailMultiAlternatives(
             email_subject,
             email_text,
             settings.DEFAULT_FROM_EMAIL,
-            [self.user.email],
+            [recipient],
         )
         msg.mixed_subtype = 'related'
 
@@ -904,8 +929,8 @@ class SubmissionJudge(AbstractSubmission):
         if self.state.email:
             email_list.append(self.state.email)
 
-        # E-Mail ist bei Kampfrichtern optional; None als Empfaenger liesse
-        # den gesamten Mailversand (und damit den Antrag) scheitern.
+        # E-mail is optional for judges; a None recipient would make the whole
+        # mail dispatch (and with it the application) fail.
         if self.email:
             email_list.append(self.email)
         email_list.append('kampfrichter@dbfv.de')
@@ -941,12 +966,16 @@ Teilnahme an unseren Meisterschaften.
 
 Ihr DBFV e. V.
         """
-        logger.info(f'Sending PDF for judge submission {self.id} - ({self.user.email})')
+        recipient = self.pdf_recipient()
+        if not recipient:
+            logger.warning(f'No recipient for PDF of judge submission {self.id}, skipping')
+            return
+        logger.info(f'Sending PDF for judge submission {self.id} - ({recipient})')
         msg = EmailMultiAlternatives(
             email_subject,
             email_text,
             settings.DEFAULT_FROM_EMAIL,
-            [self.user.email],
+            [recipient],
         )
         msg.mixed_subtype = 'related'
 
@@ -954,7 +983,7 @@ Ihr DBFV e. V.
         response = HttpResponse(content_type='application/pdf')
         build_judge_pdf(HttpRequest(), self, response)
         msg_part = MIMEApplication(response.content)
-        msg_part['Content-Disposition'] = f'attachment; filename="Starterlizenz-{self.id}.pdf"'
+        msg_part['Content-Disposition'] = f'attachment; filename="Kampfrichterlizenz-{self.id}.pdf"'
         msg.attach(msg_part)
 
         # Send the email

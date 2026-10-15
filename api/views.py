@@ -5,6 +5,7 @@ from rest_framework.exceptions import PermissionDenied
 # dbfv
 from api.access import (
     FEDERAL_ONLY_MODELS,
+    FEDERAL_WRITE_ONLY_MODELS,
     allowed_state_ids_for_request,
     filter_queryset_for_request,
     state_ids_for_object_data,
@@ -82,7 +83,7 @@ def _viewset_for(model):
             state_ids = allowed_state_ids_for_request(self.request)
             if state_ids is None:
                 return
-            if model in FEDERAL_ONLY_MODELS:
+            if model in FEDERAL_ONLY_MODELS or model in FEDERAL_WRITE_ONLY_MODELS:
                 raise PermissionDenied(
                     'Diese Ressource ist nur mit Bundes-/Systemzugriff bearbeitbar.'
                 )
@@ -109,8 +110,13 @@ def _viewset_for(model):
         def perform_destroy(self, instance):
             # Deleting a State cascades into every gym, profile and submission
             # of that Landesverband; only federal/system keys may do that.
-            if model is State and allowed_state_ids_for_request(self.request) is not None:
+            scoped = allowed_state_ids_for_request(self.request) is not None
+            if scoped and model is State:
                 raise PermissionDenied('Dieser API-Key darf keine Landesverbände löschen.')
+            if scoped and model in FEDERAL_WRITE_ONLY_MODELS:
+                raise PermissionDenied(
+                    'Diese Ressource ist nur mit Bundes-/Systemzugriff löschbar.'
+                )
             instance.delete()
 
     StateScopedViewSet.__name__ = f'{model.__name__}ViewSet'

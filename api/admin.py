@@ -1,5 +1,6 @@
 # Third Party
 from rest_framework_api_key.admin import APIKeyModelAdmin
+from rest_framework_api_key.models import APIKey
 
 # Django
 from django.contrib import admin
@@ -7,6 +8,10 @@ from django.contrib import admin
 # dbfv
 from api.audit import log_key_revoked
 from api.models import APIAccessLog, ScopedAPIKey
+
+# The library registers its own plain APIKey model; keys of that type are never
+# accepted by the API, so hide it to avoid a second, non-functional key admin.
+admin.site.unregister(APIKey)
 
 
 @admin.register(ScopedAPIKey)

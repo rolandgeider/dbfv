@@ -4,6 +4,9 @@ These endpoints intentionally do not expose generic CRUD writes. They create
 domain submissions through the same notification path as the web forms.
 """
 
+# Standard Library
+from datetime import timedelta
+
 # Third Party
 from drf_spectacular.utils import extend_schema
 from rest_framework import serializers, status
@@ -11,6 +14,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 # Django
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from django.db import IntegrityError, transaction
 from django.utils import timezone
@@ -38,19 +42,16 @@ def _api_user(api_key):
     submission without e-mail would even match accounts with an empty e-mail.
     The applicant's contact data lives only in the submission itself.
     """
-    username = f'api-{api_key.prefix}'
-    user, created = User.objects.get_or_create(
-        username=username,
+    user, _ = User.objects.get_or_create(
+        username=f'api-{api_key.prefix}',
         defaults={
             'first_name': 'API',
-            'last_name': api_key.name[:150],
+            'last_name': api_key.name,
             'email': '',
             'is_active': False,
+            'password': make_password(None),  # unusable
         },
     )
-    if created:
-        user.set_unusable_password()
-        user.save(update_fields=['password'])
     return user
 
 
@@ -75,7 +76,7 @@ class PaymentSerializer(serializers.Serializer):
     note = serializers.CharField(required=False, allow_blank=True, max_length=500)
 
     def validate_received_at(self, value):
-        if value > timezone.now() + timezone.timedelta(minutes=5):
+        if value > timezone.now() + timedelta(minutes=5):
             raise serializers.ValidationError('Zahlungszeitpunkt darf nicht in der Zukunft liegen.')
         return value
 
@@ -253,8 +254,10 @@ class _SubmissionCreateView(APIView):
         ):
             raise serializers.ValidationError({
                 'payment': {
-                    'amount_cents': f'Bei bezahlten Anträgen muss der Betrag der Gebühr '
-                    f'von {submission.FEE} € entsprechen ({fee_cents} Cent).'
+                    'amount_cents': [
+                        f'Bei bezahlten Anträgen muss der Betrag der Gebühr '
+                        f'von {submission.FEE} € entsprechen ({fee_cents} Cent).'
+                    ]
                 }
             })
         submission.payment_status = payment_data['status']
@@ -272,7 +275,7 @@ class _SubmissionCreateView(APIView):
             'payment_status': submission.get_payment_status_display(),
             'bank_account_id': submission.get_bank_account(),
             'fee': submission.FEE,
-            'designated_use': submission.get_bank_designated_use().replace('<br>\n', ' '),
+            'designated_use': submission.get_bank_designated_use_text(),
             'external_reference': submission.external_reference,
             'reused': reused,
         }

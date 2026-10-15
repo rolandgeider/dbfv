@@ -45,9 +45,12 @@ def valid_queryset(model, year, request=None):
 
 def _year(request):
     raw = request.query_params.get('year')
-    if raw:
-        return int(raw)  # raises ValueError -> handled by caller
-    return timezone.now().year
+    if not raw:
+        return timezone.now().year
+    year = int(raw)  # raises ValueError -> handled by caller
+    if not (2000 <= year <= timezone.now().year + 1):
+        raise ValueError('year out of range')
+    return year
 
 
 _YEAR_PARAM = OpenApiParameter(

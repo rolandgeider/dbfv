@@ -15,7 +15,7 @@ class APIKeyRateThrottle(SimpleRateThrottle):
         ident = None
         if auth.startswith('Api-Key '):
             token = auth[len('Api-Key '):].strip()
-            ident = token.split('.', 1)[0] or None  # prefix only, never the secret
+            ident = token.split('.', 1)[0][:8] or None  # prefix only, never the secret
         if not ident:
             ident = self.get_ident(request)
         return self.cache_format % {'scope': self.scope, 'ident': ident}

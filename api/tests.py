@@ -3,14 +3,24 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 # Django
+from django.contrib.auth.models import User
 from django.core import mail
 from django.core.cache import cache
+from django.db import IntegrityError, transaction
 from django.test import RequestFactory, override_settings
 
 # dbfv
 from api.models import APIAccessLog, ScopedAPIKey
 from core.models import EmailCron
-from submission.models import BankAccount, Country, Gym, ManagerEmail, State, SubmissionStarter
+from submission.models import (
+    BankAccount,
+    Country,
+    Gym,
+    ManagerEmail,
+    State,
+    SubmissionStarter,
+    UserProfile,
+)
 
 
 class ScopedAPIKeyPermissionTest(APITestCase):
@@ -235,12 +245,6 @@ def _make_starter(
     email='m@x.de',
 ):
     """Create a SubmissionStarter with all required relations."""
-    # Django
-    from django.contrib.auth.models import User
-
-    # dbfv
-    from submission.models import SubmissionStarter
-
     bank = BankAccount.objects.create(
         owner_name=f'DBFV {state_short}', iban=f'DE00{state_short}', bic='X',
         bank_name='Bank',
@@ -351,6 +355,13 @@ class LicenseEndpointTest(APITestCase):
             format='json',
         )
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_export_rejects_year_out_of_range(self):
+        self.client.credentials(HTTP_AUTHORIZATION=f'Api-Key {self.priv}')
+        self.assertEqual(
+            self.client.get('/api/v1/licenses/valid/', {'year': 99999}).status_code,
+            status.HTTP_400_BAD_REQUEST,
+        )
 
     def test_lookup_rejects_year_out_of_range(self):
         res = self.client.post(
@@ -545,6 +556,38 @@ class StateScopedApiTest(APITestCase):
         self.assertEqual(BankAccount.objects.get(pk=self.bank.pk).iban, 'DE00')
         self.assertFalse(ManagerEmail.objects.filter(email='attacker@example.test').exists())
 
+    def test_scoped_key_cannot_write_countries_or_user_profiles(self):
+        country = Country.objects.create(name='Germany')
+        profile_user = User.objects.create(username='nrw-member')
+        profile = UserProfile.objects.get(user=profile_user)
+        profile.state = self.nrw
+        profile.save()
+        _, key = _scoped_key_for(self.nrw, sensitive_access=True, write_allowed=True)
+        self._auth(key)
+
+        # readable within the scope ...
+        self.assertEqual(self.client.get('/api/v1/country/').data['count'], 1)
+        self.assertEqual(self.client.get('/api/v1/userprofile/').data['count'], 1)
+        # ... but no promotion to Bundesverband, no moving out of the state,
+        # no nationwide master data changes.
+        promote = self.client.patch(
+            f'/api/v1/userprofile/{profile.pk}/', {'type': 2}, format='json'
+        )
+        detach = self.client.patch(
+            f'/api/v1/userprofile/{profile.pk}/', {'state': None}, format='json'
+        )
+        rename = self.client.patch(
+            f'/api/v1/country/{country.pk}/', {'name': 'X'}, format='json'
+        )
+        delete = self.client.delete(f'/api/v1/country/{country.pk}/')
+
+        for res in (promote, detach, rename, delete):
+            self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+        profile.refresh_from_db()
+        self.assertEqual(profile.type, 3)
+        self.assertEqual(profile.state, self.nrw)
+        self.assertTrue(Country.objects.filter(pk=country.pk, name='Germany').exists())
+
     def test_federal_key_still_manages_bank_accounts(self):
         _, key = _federal_key(name='fed', sensitive_access=True, write_allowed=True)
         self._auth(key)
@@ -650,6 +693,7 @@ class SubmissionIntakeApiTest(APITestCase):
         self.assertIn('gym@example.test', recipients)
         self.assertIn('max@example.test', recipients)
         self.assertTrue(any('NRW-2026-1' in message.body for message in mail.outbox))
+        self.assertTrue(any('90,00 €' in message.body for message in mail.outbox))
 
     def test_repeated_external_reference_reuses_existing_submission(self):
         _, key = _scoped_key_for(
@@ -729,9 +773,6 @@ class SubmissionIntakeApiTest(APITestCase):
         self.assertFalse(SubmissionStarter.objects.exists())
 
     def test_api_submissions_belong_to_technical_key_user_not_to_web_accounts(self):
-        # Django
-        from django.contrib.auth.models import User
-
         web_user = User.objects.create_user(
             'max', email='max@example.test', password='pw', is_superuser=True
         )
@@ -752,6 +793,21 @@ class SubmissionIntakeApiTest(APITestCase):
         # applicant data stays on the submission only
         self.assertEqual(submission.email, 'max@example.test')
 
+    def test_license_pdf_goes_to_the_applicant_not_the_technical_user(self):
+        _, key = _scoped_key_for(self.nrw, allow_submit_starter=True)
+        self._auth(key)
+        payload = self._starter_payload()
+        payload.pop('payment')
+        res = self.client.post('/api/v1/submissions/starter/', payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        mail.outbox.clear()
+
+        submission = SubmissionStarter.objects.get(pk=res.data['id'])
+        submission.send_pdf_email()
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to, ['max@example.test'])
+
     def test_designated_use_is_plain_text(self):
         _, key = _scoped_key_for(self.nrw, allow_submit_starter=True)
         self._auth(key)
@@ -765,9 +821,6 @@ class SubmissionIntakeApiTest(APITestCase):
         self.assertIn('Mustermann, Max', res.data['designated_use'])
 
     def test_duplicate_reference_is_rejected_by_the_database(self):
-        # Django
-        from django.db import IntegrityError, transaction
-
         first = _make_starter(state_name='NRW3', state_short='NW3')
         first.created_via_api = True
         first.api_key_prefix = 'ABCDEFGH'

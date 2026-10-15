@@ -5,6 +5,7 @@ from api.models import ScopedAPIKey
 from core.models import EmailCron
 from submission.models import (
     BankAccount,
+    Country,
     Gym,
     ManagerEmail,
     State,
@@ -20,6 +21,12 @@ from submission.models import (
 # notification nationwide and EmailCron carries outgoing mail. A state-scoped
 # key must therefore never see or change them; only federal/system keys may.
 FEDERAL_ONLY_MODELS = {BankAccount, ManagerEmail, EmailCron}
+
+# Readable within the scope, but writable only with federal access: Country is
+# shared nationwide, and UserProfile.type grants Bundesverband rights, so a
+# state-scoped key must not be able to promote accounts or move profiles
+# between states.
+FEDERAL_WRITE_ONLY_MODELS = {Country, UserProfile}
 
 
 def api_key_from_request(request):
