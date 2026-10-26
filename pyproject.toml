@@ -12,7 +12,7 @@ dependencies = [
     "django-recaptcha~=4.1.0",
     "gunicorn>=26.0,<26.3",
     "pyjwt>=2.12.1,<2.16.0",
-    "reportlab~=5.0.0",
+    "reportlab>=5.0,<5.2",
 ]
 
 [dependency-groups]
