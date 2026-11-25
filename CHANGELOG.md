@@ -74,6 +74,9 @@ Beitrag des DBFV NRW (Landesverband Nordrhein-Westfalen).
 
 ### Sicherheit
 
+- Django von 5.1.15 auf 5.2.19 (LTS) angehoben: 5.1 erhält seit Ende 2025
+  keine Sicherheitsupdates mehr, 5.2 LTS bis April 2028. Keine Code- oder
+  Migrationsänderungen nötig.
 - Landesverbandsgrenze serverseitig: gescopte Keys sehen Listen/Details nur
   des eigenen Verbands (fremde Details `404`), Schreibversuche auf fremde
   Daten `403`. Bundesweite Ressourcen (Bankkonto – von mehreren Verbänden
@@ -172,7 +175,8 @@ Beitrag des DBFV NRW (Landesverband Nordrhein-Westfalen).
   `submission/static/css/dbfv.css`, `submission/test_forms.py`,
   `submission/test_lifecycle.py`.
 - Geändert: `.gitignore` (`*.sqlite3`, `.venv/`, `.DS_Store`), `README.rst`,
-  `pyproject.toml`/`uv.lock` (DRF, api-key, django-filter, drf-spectacular),
+  `pyproject.toml`/`uv.lock` (DRF, api-key, django-filter, drf-spectacular;
+  Django 5.1.15 → 5.2.19 LTS),
   `dbfv/settings_global.py` (Apps, DRF/Spectacular-Settings, Middleware,
   Security-Defaults, Audit-Logger, `API_*`-Settings), `dbfv/urls.py`
   (`/api/v1/`, `/admin/`, `/api-key/anfrage`), `submission/models.py`
